@@ -1,0 +1,176 @@
+{
+  "leads": {
+    "name": "Leads",
+    "icon": "👤",
+
+    "table_columns": [
+      "name",
+      "email",
+      "phone",
+      "company",
+      "status",
+      "industry",
+      "source",
+      "probability",
+      "assigned_to",
+      "employees"
+    ],
+
+    "form_fields": [
+      "name",
+      "email",
+      "phone",
+      "company",
+      "industry",
+      "source",
+      "probability",
+      "value",
+      "budget",
+      "expected_close_date",
+      "decision_maker",
+      "website",
+      "location",
+      "employees",
+      "notes"
+    ],
+
+    "fields": [
+      {
+        "key": "name",
+        "type": "text",
+        "label": "Full Name",
+        "required": true
+      },
+      {
+        "key": "email",
+        "type": "email",
+        "label": "Email Address",
+        "required": true
+      },
+      {
+        "key": "phone",
+        "type": "text",
+        "label": "Phone Number",
+        "required": true
+      },
+      {
+        "key": "company",
+        "type": "text",
+        "label": "Company",
+        "required": true
+      },
+      {
+        "key": "status",
+        "type": "select",
+        "label": "Status",
+        "required": true,
+        "options": [
+          { "value": "new", "label": "New" },
+          { "value": "contacted", "label": "Contacted" },
+          { "value": "qualified", "label": "Qualified" },
+          { "value": "proposal", "label": "Proposal" },
+          { "value": "won", "label": "Won" },
+          { "value": "lost", "label": "Lost" }
+        ]
+      },
+      {
+        "key": "industry",
+        "type": "select",
+        "label": "Industry",
+        "options": [
+          { "value": "IT", "label": "IT" },
+          { "value": "Finance", "label": "Finance" },
+          { "value": "Healthcare", "label": "Healthcare" },
+          { "value": "Education", "label": "Education" },
+          { "value": "Manufacturing", "label": "Manufacturing" },
+          { "value": "Retail", "label": "Retail" },
+          { "value": "Real Estate", "label": "Real Estate" },
+          { "value": "Other", "label": "Other" }
+        ]
+      },
+      {
+        "key": "source",
+        "type": "select",
+        "label": "Source",
+        "required": true,
+        "options": [
+          { "value": "Website", "label": "Website" },
+          { "value": "Referral", "label": "Referral" },
+          { "value": "Social Media", "label": "Social Media" },
+          { "value": "Cold Call", "label": "Cold Call" },
+          { "value": "Event", "label": "Event" },
+          { "value": "Email Campaign", "label": "Email Campaign" },
+          { "value": "Other", "label": "Other" }
+        ]
+      },
+      {
+        "key": "probability",
+        "type": "number",
+        "label": "Probability (%)",
+        "min": 0,
+        "max": 100
+      },
+      {
+        "key": "value",
+        "type": "currency",
+        "label": "Deal Value"
+      },
+      {
+        "key": "budget",
+        "type": "currency",
+        "label": "Budget"
+      },
+      {
+        "key": "expected_close_date",
+        "type": "date",
+        "label": "Expected Close Date"
+      },
+      {
+        "key": "decision_maker",
+        "type": "text",
+        "label": "Decision Maker"
+      },
+      {
+        "key": "website",
+        "type": "url",
+        "label": "Website"
+      },
+      {
+        "key": "location",
+        "type": "text",
+        "label": "Location"
+      },
+     
+      {
+        "key": "assigned_to",
+        "type": "user",
+        "label": "Assigned To"
+      },
+      {
+        "key": "notes",
+        "label": "Notes",
+        "type": "repeat",
+        "item_label": "Note",
+        "fields": [
+          {
+            "key": "text",
+            "type": "textarea",
+            "label": "Note"
+          },
+          {
+            "key": "created_by",
+            "type": "user",
+            "label": "Written By"
+          }
+        ]
+      }
+    ],
+
+    "default_sort": {
+      "field": "created_at",
+      "direction": "desc"
+    },
+
+    "page_size": 25
+  }
+}

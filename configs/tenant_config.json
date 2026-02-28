@@ -1,0 +1,9 @@
+{
+  "base_domain": "localhost",
+  "subdomains": [
+    "bigco",
+    "alpha",
+    "testco",
+    "demo"
+  ]
+}

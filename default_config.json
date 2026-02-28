@@ -1,0 +1,43 @@
+{
+  "modules": {
+    "leads": {
+      "enabled": true,
+      "fields": [
+        {
+          "name": "full_name",
+          "label": "Full Name",
+          "type": "text",
+          "required": true,
+          "max_length": 100
+        },
+        {
+          "name": "email",
+          "label": "Email Address",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "phone",
+          "label": "Phone Number",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "source",
+          "label": "Lead Source",
+          "type": "select",
+          "options": ["Website", "Referral", "Social Media", "Other"]
+        }
+      ],
+      "list_view_columns": ["full_name", "email", "phone", "source"],
+      "searchable_fields": ["full_name", "email"]
+    }
+  },
+  "pages": {
+    "leads": {
+      "title": "Leads Management",
+      "description": "Manage your leads and prospects",
+      "permissions": ["view_leads", "add_leads", "delete_leads"]
+    }
+  }
+}

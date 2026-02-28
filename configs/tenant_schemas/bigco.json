@@ -1,0 +1,1180 @@
+{
+
+  
+  "navigation": {
+    "operations": {
+      "label": "Operations",
+      "icon": "fas fa-briefcase",
+      "sections": {
+
+        "revenue": {
+          "label": "Revenue",
+          "items": [
+            {
+              "name": "Customers",
+              "path": "/customers",
+              "icon": "fas fa-users"
+            },
+            {
+              "name": "Invoicing",
+              "path": "/invoices",
+              "icon": "fas fa-file-invoice"
+            }
+          ]
+        },
+
+        "expenses": {
+          "label": "Expenses",
+          "items": [
+            {
+              "name": "Vendors",
+              "path": "/vendors",
+              "icon": "fas fa-truck"
+            },
+            {
+              "name": "Expense Input",
+              "path": "/expenses",
+              "icon": "fas fa-receipt"
+            },
+            {
+              "name": "Expense Invoicing",
+              "path": "/expense-invoices",
+              "icon": "fas fa-file-invoice-dollar"
+            }
+          ]
+        },
+
+        "accounting": {
+          "label": "Accounting",
+          "items": [
+            {
+              "name": "Chart of Accounts",
+              "path": "/chart-of-accounts",
+              "icon": "fas fa-book"
+            },
+            {
+              "name": "Manual Journals",
+              "path": "/manual-journals",
+              "icon": "fas fa-pen"
+            }
+          ]
+        },
+
+        "inventory": {
+          "label": "Inventory",
+          "items": [
+            {
+              "name": "Inventory",
+              "path": "/inventory",
+              "icon": "fas fa-box"
+            },
+            {
+              "name": "Sales Invoices",
+              "path": "/inventory-sales-invoices",
+              "icon": "fas fa-file-invoice"
+            },
+            {
+              "name": "Purchase Invoices",
+              "path": "/inventory-invoices",
+              "icon": "fas fa-file-invoice-dollar"
+            }
+          ]
+        }
+
+      }
+    }
+  },
+
+  "leads": {
+    "name": "Leads",
+    "icon": "👤",
+
+    "table_columns": [
+      "name",
+      "email",
+      "phone",
+      "company",
+      "status",
+      "industry",
+      "source",
+      "probability",
+      "assigned_to"
+    ],
+
+    "form_fields": [
+      "name",
+      "email",
+      "phone",
+      "company",
+      "status",
+      "industry",
+      "source",
+      "probability",
+      "value",
+      "budget",
+      "expected_close_date",
+      "decision_maker",
+      "website",
+      "location",
+      "employees",
+      "notes"
+    ],
+
+    "fields": [
+      {
+        "key": "name",
+        "type": "text",
+        "label": "Full Name",
+        "required": true
+      },
+      {
+        "key": "email",
+        "type": "email",
+        "label": "Email Address",
+        "required": true
+      },
+      {
+        "key": "phone",
+        "type": "text",
+        "label": "Phone Number",
+        "required": true
+      },
+      {
+        "key": "company",
+        "type": "text",
+        "label": "Company",
+        "required": true
+      },
+      {
+        "key": "status",
+        "type": "select",
+        "label": "Status",
+        "required": true,
+        "options": [
+          { "value": "new", "label": "New" },
+          { "value": "contacted", "label": "Contacted" },
+          { "value": "qualified", "label": "Qualified" },
+          { "value": "proposal", "label": "Proposal" },
+          { "value": "won", "label": "Won" },
+          { "value": "lost", "label": "Lost" }
+        ]
+      },
+      {
+        "key": "industry",
+        "type": "select",
+        "label": "Industry",
+        "options": [
+          { "value": "IT", "label": "IT" },
+          { "value": "Finance", "label": "Finance" },
+          { "value": "Healthcare", "label": "Healthcare" },
+          { "value": "Education", "label": "Education" },
+          { "value": "Manufacturing", "label": "Manufacturing" },
+          { "value": "Retail", "label": "Retail" },
+          { "value": "Real Estate", "label": "Real Estate" },
+          { "value": "Other", "label": "Other" }
+        ]
+      },
+      {
+        "key": "source",
+        "type": "select",
+        "label": "Source",
+        "required": true,
+        "options": [
+          { "value": "Website", "label": "Website" },
+          { "value": "Referral", "label": "Referral" },
+          { "value": "Social Media", "label": "Social Media" },
+          { "value": "Cold Call", "label": "Cold Call" },
+          { "value": "Event", "label": "Event" },
+          { "value": "Email Campaign", "label": "Email Campaign" },
+          { "value": "Other", "label": "Other" }
+        ]
+      },
+      {
+        "key": "probability",
+        "type": "number",
+        "label": "Probability (%)",
+        "min": 0,
+        "max": 100
+      },
+      {
+        "key": "value",
+        "type": "currency",
+        "label": "Deal Value"
+      },
+      {
+        "key": "budget",
+        "type": "currency",
+        "label": "Budget"
+      },
+      {
+        "key": "expected_close_date",
+        "type": "date",
+        "label": "Expected Close Date"
+      },
+      {
+        "key": "decision_maker",
+        "type": "text",
+        "label": "Decision Maker"
+      },
+      {
+        "key": "website",
+        "type": "url",
+        "label": "Website"
+      },
+      {
+        "key": "location",
+        "type": "text",
+        "label": "Location"
+      },
+      {
+        "key": "employees",
+        "type": "number",
+        "label": "Number of Employees"
+      },
+      {
+        "key": "assigned_to",
+        "type": "user",
+        "label": "Assigned To"
+      },
+      {
+        "key": "notes",
+        "label": "Notes",
+        "type": "repeat",
+        "item_label": "Note",
+        "fields": [
+          {
+            "key": "text",
+            "type": "textarea",
+            "label": "Note"
+          },
+          {
+            "key": "created_by",
+            "type": "user",
+            "label": "Written By"
+          }
+        ]
+      }
+    ],
+
+    "default_sort": {
+      "field": "created_at",
+      "direction": "desc"
+    },
+
+    "page_size": 25
+  },
+
+  "customers": {
+    "name": "Customers",
+    "icon": "🏢",
+
+    "table_columns": [
+      "company",
+      "contact_name",
+      "email",
+      "phone",
+      "status",
+      "industry",
+      "city",
+      "customer_since"
+    ],
+
+    "form_fields": [
+      "company",
+      "contact_name",
+      "title",
+      "email",
+      "phone",
+      "industry",
+      "website",
+      "status",
+      "customer_since",
+      "trn",
+      "address",
+      "city",
+      "state",
+      "notes"
+    ],
+
+    "fields": [
+      {
+        "key": "company",
+        "type": "text",
+        "label": "Company Name",
+        "required": true
+      },
+      {
+        "key": "contact_name",
+        "type": "text",
+        "label": "Contact Person",
+        "required": true
+      },
+      {
+        "key": "title",
+        "type": "text",
+        "label": "Job Title",
+        "required": false
+      },
+      {
+        "key": "email",
+        "type": "email",
+        "label": "Email Address",
+        "required": true
+      },
+      {
+        "key": "phone",
+        "type": "phone",
+        "label": "Phone Number",
+        "required": true
+      },
+      {
+        "key": "industry",
+        "type": "select",
+        "label": "Industry",
+        "required": false,
+        "options": [
+          { "value": "Technology", "label": "Technology" },
+          { "value": "Finance", "label": "Finance" },
+          { "value": "Healthcare", "label": "Healthcare" },
+          { "value": "Education", "label": "Education" },
+          { "value": "Manufacturing", "label": "Manufacturing" },
+          { "value": "Retail", "label": "Retail" },
+          { "value": "Real Estate", "label": "Real Estate" },
+          { "value": "Construction", "label": "Construction" },
+          { "value": "Hospitality", "label": "Hospitality" },
+          { "value": "Transportation", "label": "Transportation" },
+          { "value": "Energy", "label": "Energy" },
+          { "value": "Media", "label": "Media" },
+          { "value": "Consulting", "label": "Consulting" },
+          { "value": "Legal", "label": "Legal" },
+          { "value": "Non-profit", "label": "Non-profit" },
+          { "value": "Other", "label": "Other" }
+        ]
+      },
+      {
+        "key": "website",
+        "type": "url",
+        "label": "Website",
+        "required": false
+      },
+      {
+        "key": "trn",
+        "type": "number",
+        "label": "TRN",
+        "required": true
+      },
+      {
+        "key": "status",
+        "type": "select",
+        "label": "Status",
+        "required": true,
+        "options": [
+          { "value": "active", "label": "Active" },
+          { "value": "inactive", "label": "Inactive" },
+          { "value": "lead", "label": "Lead" },
+          { "value": "prospect", "label": "Prospect" },
+          { "value": "churned", "label": "Churned" },
+          { "value": "vip", "label": "VIP" }
+        ]
+      },
+      {
+        "key": "customer_since",
+        "type": "date",
+        "label": "Customer Since",
+        "required": false
+      },
+      {
+        "key": "address",
+        "type": "text",
+        "label": "Street Address",
+        "required": false
+      },
+      {
+        "key": "city",
+        "type": "text",
+        "label": "City",
+        "required": false
+      },
+      {
+        "key": "state",
+        "type": "text",
+        "label": "State/Province",
+        "required": false
+      },
+      {
+        "key": "notes",
+        "type": "repeat",
+        "label": "Notes",
+        "item_label": "Note",
+        "fields": [
+          {
+            "key": "text",
+            "type": "textarea",
+            "label": "Note"
+          },
+          {
+            "key": "created_by",
+            "type": "user",
+            "label": "Written By"
+          },
+          {
+            "key": "created_at",
+            "type": "datetime",
+            "label": "Date"
+          }
+        ]
+      }
+    ],
+
+    "default_sort": {
+      "field": "customer_since",
+      "direction": "desc"
+    },
+
+    "page_size": 25
+  },
+
+
+  "vendors": {
+  "name": "Vendors",
+  "icon": "🏬",
+
+  "table_columns": [
+    "company",
+    "contact_name",
+    "email",
+    "phone",
+    "status",
+    "city",
+    "vendor_since"
+  ],
+
+  "form_fields": [
+    "company",
+    "contact_name",
+    "email",
+    "phone",
+    "industry",
+    "website",
+    "status",
+    "vendor_since",
+    "address",
+    "city",
+    "state",
+    "notes"
+  ],
+
+  "fields": [
+    { "key": "company", "type": "text", "label": "Company Name", "required": true },
+    { "key": "contact_name", "type": "text", "label": "Contact Person", "required": true },
+    { "key": "email", "type": "email", "label": "Email", "required": true },
+    { "key": "phone", "type": "phone", "label": "Phone", "required": true },
+    { "key": "industry", "type": "text", "label": "Industry" },
+    { "key": "website", "type": "url", "label": "Website" },
+    { "key": "status", "type": "select", "label": "Status",
+      "options": [
+        { "value": "active", "label": "Active" },
+        { "value": "inactive", "label": "Inactive" }
+      ]
+    },
+    { "key": "vendor_since", "type": "date", "label": "Vendor Since" },
+    { "key": "address", "type": "text", "label": "Address" },
+    { "key": "city", "type": "text", "label": "City" },
+    { "key": "state", "type": "text", "label": "State" },
+
+    {
+      "key": "notes",
+      "type": "repeat",
+      "label": "Notes",
+      "item_label": "Note",
+      "fields": [
+        { "key": "text", "type": "textarea", "label": "Note" },
+        { "key": "created_by", "type": "user", "label": "Written By" },
+        { "key": "created_at", "type": "datetime", "label": "Date" }
+      ]
+    }
+  ],
+
+  "default_sort": {
+    "field": "vendor_since",
+    "direction": "desc"
+  },
+
+  "page_size": 25
+},
+
+
+  "expenses": {
+  "name": "Expenses",
+  "icon": "💳",
+
+  "table_columns": [
+    "expense_number",
+    "date",
+    "vendor_name",
+    "notes",
+    "total",
+    "status"
+  ],
+
+  "form_fields": [
+    "expense_number",
+    "date",
+    "vendor_name",
+    "currency",
+    "amount",
+    "vat_applicable",
+    "vat_amount",
+    "account",
+    "payment_method",
+    "status",
+    "notes"
+  ],
+
+  "fields": [
+    {
+      "key": "expense_number",
+      "type": "text",
+      "label": "Expense Number",
+      "required": true
+    },
+    {
+      "key": "date",
+      "type": "date",
+      "label": "Expense Date",
+      "required": true
+    },
+    {
+      "key": "vendor_name",
+      "type": "text",
+      "label": "Vendor Name",
+      "required": true
+    },
+    {
+      "key": "vendor_email",
+      "type": "email",
+      "label": "Vendor Email",
+      "required": false
+    },
+    {
+      "key": "currency",
+      "type": "select",
+      "label": "Currency",
+      "options": [
+        { "value": "USD", "label": "USD" },
+        { "value": "AED", "label": "AED" },
+        { "value": "INR", "label": "INR" }
+      ]
+    },
+    {
+      "key": "amount",
+      "type": "number",
+      "label": "Amount",
+      "required": true
+    },
+    {
+  "key": "vat_applicable",
+  "type": "boolean",
+  "label": "VAT Applicable"
+},
+    {
+      "key": "vat_amount",
+      "type": "number",
+      "label": "VAT Amount",
+      "required": false
+    },
+    {
+      "key": "total",
+      "type": "calculated",
+      "label": "Total"
+    },
+    {
+  "key": "account",
+  "type": "account_select",
+  "label": "Expense Account",
+  "required": true
+},
+    {
+  "key": "payment_account",
+  "type": "account_select",
+  "label": "Payment Account (Bank / Cash)",
+  "required": true,
+  "account_type": "Asset"
+},
+    {
+      "key": "status",
+      "type": "select",
+      "label": "Status",
+      "options": [
+        { "value": "DRAFT", "label": "Draft" },
+        { "value": "POSTED", "label": "Posted" }
+
+      ]
+    },
+    {
+      "key": "notes",
+      "type": "textarea",
+      "label": "Notes"
+    }
+  ],
+
+  "default_sort": {
+    "field": "date",
+    "direction": "desc"
+  },
+
+  "page_size": 25
+},
+
+"inventories": {
+  "name": "Inventory",
+  "icon": "📦",
+
+  "table_columns": [
+    "item_code",
+    "item_name",
+    "category",
+    "selling_price",
+    "current_quantity",
+    "minimum_quantity",
+    "status"
+  ],
+
+  "form_fields": [
+    "item_code",
+    "item_name",
+    "category",
+    "description",
+    "unit_of_measure",
+    "selling_price",
+    "minimum_quantity",
+    "warehouse",
+    "status"
+  ],
+
+  "fields": [
+    { "key": "item_code", "type": "text", "label": "Item Code", "required": true },
+    { "key": "item_name", "type": "text", "label": "Item Name", "required": true },
+    { "key": "category", "type": "text", "label": "Category" },
+    { "key": "description", "type": "textarea", "label": "Description" },
+    { "key": "unit_of_measure", "type": "text", "label": "Unit of Measure" },
+    { "key": "selling_price", "type": "number", "label": "Selling Price" },
+    { "key": "minimum_quantity", "type": "number", "label": "Minimum Quantity" },
+    { "key": "warehouse", "type": "text", "label": "Warehouse" },
+    {
+      "key": "status",
+      "type": "select",
+      "label": "Status",
+      "options": [
+        { "label": "Active", "value": "ACTIVE" },
+        { "label": "Inactive", "value": "INACTIVE" }
+      ]
+    }
+  ],
+
+  "default_sort": {
+    "field": "created_at",
+    "direction": "desc"
+  },
+
+  "page_size": 25
+},
+
+"invoices": {
+  "name": "Invoices",
+  "icon": "🧾",
+
+  "table_columns": [
+    "number",
+    "customer_name",
+    "date",
+    "due_date",
+    "status",
+    "total"
+  ],
+
+  "form_fields": [
+    "customer",
+    "add_as_customer",
+    "date",
+    "due_date",
+    "status",
+    "items",
+    "notes"
+  ],
+
+  "fields": [
+    {
+      "key": "customer",
+      "type": "customer_select",
+      "label": "Customer",
+      "required": false
+    },
+    {
+      "key": "add_as_customer",
+      "type": "boolean",
+      "label": "Save as Customer"
+    },
+    {
+      "key": "date",
+      "type": "date",
+      "label": "Invoice Date",
+      "required": true
+    },
+    {
+      "key": "due_date",
+      "type": "date",
+      "label": "Due Date"
+    },
+    {
+      "key": "status",
+      "type": "select",
+      "label": "Status",
+      "options": [
+        { "value": "draft", "label": "Draft" },
+        { "value": "sent", "label": "Sent" },
+        { "value": "paid", "label": "Paid" },
+        { "value": "overdue", "label": "Overdue" }
+      ]
+    },
+    {
+      "key": "items",
+      "type": "repeat",
+      "label": "Items",
+      "fields": [
+        {
+          "key": "inventory_item",
+          "type": "inventory_select",
+          "label": "Inventory Item"
+        },
+        {
+          "key": "description",
+          "type": "text",
+          "label": "Description",
+          "required": true
+        },
+        {
+          "key": "quantity",
+          "type": "number",
+          "label": "Quantity",
+          "required": true
+        },
+        {
+          "key": "price",
+          "type": "currency",
+          "label": "Unit Price",
+          "required": true
+        },
+        {
+          "key": "amount",
+          "type": "currency",
+          "label": "Line Total",
+          "readonly": true
+        }
+      ]
+    },
+    {
+      "key": "subtotal",
+      "type": "currency",
+      "label": "Subtotal",
+      "readonly": true
+    },
+    {
+      "key": "vat",
+      "type": "currency",
+      "label": "VAT",
+      "readonly": true
+    },
+    {
+      "key": "total",
+      "type": "currency",
+      "label": "Total",
+      "readonly": true
+    },
+    {
+      "key": "number",
+      "type": "text",
+      "label": "Invoice Number",
+      "readonly": true
+    },
+    {
+      "key": "notes",
+      "type": "repeat",
+      "label": "Notes",
+      "fields": [
+        { "key": "text", "type": "textarea", "label": "Note" },
+        { "key": "created_by", "type": "user", "label": "Written By" },
+        { "key": "created_at", "type": "datetime", "label": "Date" }
+      ]
+    }
+  ],
+
+  "default_sort": {
+    "field": "date",
+    "direction": "desc"
+  },
+
+  "page_size": 25
+},
+
+"manual_journals": {
+  "name": "Manual Journals",
+  "icon": "📒",
+  "page_size": 25,
+  "default_sort": {
+    "field": "date",
+    "direction": "desc"
+  },
+  "table_columns": [
+    "journal_number",
+    "date",
+    "currency",
+    "status",
+    "total_debits",
+    "total_credits",
+    "is_balanced"
+  ],
+  "form_fields": [
+    "date",
+    "currency",
+    "notes",
+    "entries",
+    "status"
+  ],
+  "fields": [
+    { "key": "date", "type": "date", "label": "Date", "required": true },
+    { "key": "journal_number", "type": "string", "label": "Journal Number" },
+    {
+      "key": "currency",
+      "type": "select",
+      "label": "Currency",
+      "options": [
+        { "label": "USD", "value": "USD" },
+        { "label": "EUR", "value": "EUR" },
+        { "label": "GBP", "value": "GBP" },
+        { "label": "AED", "value": "AED" },
+        { "label": "CAD", "value": "CAD" }
+      ]
+    },
+    { "key": "notes", "type": "textarea", "label": "Notes" },
+    { "key": "status", "type": "select", "label": "Status",
+      "options": [
+        { "label": "Draft", "value": "Draft" },
+        { "label": "Posted", "value": "Posted" },
+        { "label": "Approved", "value": "Approved" },
+        { "label": "Rejected", "value": "Rejected" }
+      ]
+    }
+  ]
+},
+
+"expense_invoices": {
+  "name": "Expense Invoices",
+  "icon": "🧾",
+  "page_size": 10,
+  "default_sort": {
+    "field": "date",
+    "direction": "desc"
+  },
+  "table_columns": [
+    "invoice_number",
+    "vendor_name",
+    "date",
+    "due_date",
+    "status",
+    "total_amount"
+  ],
+  "form_fields": [
+    "invoice_number",
+    "vendor",
+    "date",
+    "due_date",
+    "status",
+    "invoice_type",
+    "amount",
+    "vat_amount",
+    "total_amount"
+  ],
+  "fields": [
+    { "key": "invoice_number", "label": "Invoice Number", "type": "text" },
+    { "key": "vendor", "label": "Vendor", "type": "vendor_select" },
+    { "key": "date", "label": "Invoice Date", "type": "date" },
+    { "key": "due_date", "label": "Due Date", "type": "date" },
+    { "key": "status", "label": "Status", "type": "select", "options": [
+      { "label": "Pending", "value": "Pending" },
+      { "label": "Paid", "value": "Paid" }
+    ]},
+    {
+        "key": "invoice_type",
+        "label": "Invoice Type",
+        "type": "select",
+        "options": [
+          { "label": "Expense", "value": "EXPENSE" },
+          { "label": "Inventory", "value": "INVENTORY" },
+          { "label": "Fixed Asset", "value": "FIXED_ASSET" }
+        ]
+      },
+    { "key": "amount", "label": "Subtotal", "type": "currency" },
+    { "key": "vat_amount", "label": "VAT (5%)", "type": "currency" },
+    { "key": "total_amount", "label": "Total", "type": "currency" }
+  ]
+},
+
+"inventory_invoices": {
+    "name": "Purchase Invoices",
+    "icon": "📦🧾",
+
+    "table_columns": [
+      "number",
+      "vendor",
+      "date",
+      "due_date",
+      "status",
+      "total"
+    ],
+
+    "form_fields": [
+      "vendor",
+      "date",
+      "due_date",
+      "status",
+      "items",
+      "notes"
+    ],
+
+    "fields": [
+      {
+        "key": "vendor",
+        "type": "vendor_select",
+        "label": "Vendor",
+        "required": true
+      },
+      {
+        "key": "date",
+        "type": "date",
+        "label": "Invoice Date",
+        "required": true
+      },
+      {
+        "key": "due_date",
+        "type": "date",
+        "label": "Due Date"
+      },
+      {
+        "key": "status",
+        "type": "select",
+        "label": "Status",
+        "options": [
+          { "value": "draft", "label": "Draft" },
+          { "value": "received", "label": "Received" }
+        ]
+      },
+      {
+        "key": "items",
+        "type": "repeat",
+        "label": "Items",
+        "fields": [
+          {
+            "key": "inventory_item",
+            "type": "inventory_select",
+            "label": "Inventory Item",
+            "required": true
+          },
+          {
+            "key": "quantity",
+            "type": "number",
+            "label": "Quantity",
+            "required": true
+          },
+          {
+            "key": "price",
+            "type": "currency",
+            "label": "Unit Cost",
+            "required": true
+          },
+          {
+            "key": "vat_applicable",
+            "type": "select",
+            "label": "VAT",
+            "options": [
+              { "value": true, "label": "VAT 5%" },
+              { "value": false, "label": "No VAT" }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "notes",
+        "type": "textarea",
+        "label": "Notes"
+      }
+    ]
+  },
+
+
+  "inventory_sales_invoices": {
+  "name": "Inventory Sales Invoices",
+  "icon": "📦💰",
+
+  "table_columns": [
+    "number",
+    "customer",
+    "date",
+    "due_date",
+    "status",
+    "subtotal",
+    "vat",
+    "total"
+  ],
+
+  "form_fields": [
+    "customer",
+    "date",
+    "due_date",
+    "status",
+    "items",
+    "notes"
+  ],
+
+  "fields": [
+    {
+      "key": "customer",
+      "type": "customer_select",
+      "label": "Customer",
+      "required": true
+    },
+    {
+      "key": "date",
+      "type": "date",
+      "label": "Invoice Date",
+      "required": true
+    },
+    {
+      "key": "due_date",
+      "type": "date",
+      "label": "Due Date"
+    },
+    {
+      "key": "status",
+      "type": "select",
+      "label": "Status",
+      "options": [
+        { "value": "draft", "label": "Draft" },
+        { "value": "posted", "label": "Posted" }
+      ]
+    },
+    {
+      "key": "items",
+      "type": "repeat",
+      "label": "Items",
+      "fields": [
+        {
+          "key": "inventory_item",
+          "type": "inventory_select",
+          "label": "Inventory Item",
+          "required": true
+        },
+        {
+          "key": "quantity",
+          "type": "number",
+          "label": "Quantity",
+          "required": true
+        },
+        {
+          "key": "price",
+          "type": "currency",
+          "label": "Unit Price",
+          "required": true
+        },
+        {
+          "key": "vat_applicable",
+          "type": "boolean",
+          "label": "VAT 5%"
+        }
+      ]
+    }
+  ],
+
+  "page_size": 10,
+  "default_sort": "-date"
+},
+
+
+"company_profile": {
+  "name": "Company Profile",
+  "icon": "🏢",
+  "page_size": 1,
+  "default_sort": {
+    "field": "created_at",
+    "direction": "desc"
+  },
+  "table_columns": [
+    "company_name",
+    "email",
+    "phone_number",
+    "country",
+    "is_vat_registered"
+  ],
+  "form_fields": [
+    "company_name",
+    "company_logo",
+    "company_address",
+    "city",
+    "state",
+    "country",
+    "postal_code",
+    "phone_number",
+    "email",
+    "website",
+    "vat_number",
+    "corporate_registration_number",
+    "is_vat_registered",
+    "signature_image",
+    "company_stamp",
+    "custom_footer_notes"
+  ],
+  "fields": [
+    { "key": "company_name", "label": "Company Name", "type": "text", "required": true },
+
+    { "key": "company_logo", "label": "Company Logo", "type": "file" },
+
+    { "key": "company_address", "label": "Address", "type": "textarea", "required": true },
+    { "key": "city", "label": "City", "type": "text" },
+    { "key": "state", "label": "State / Emirate", "type": "text" },
+    { "key": "country", "label": "Country", "type": "select", "options": [
+      { "label": "United Arab Emirates", "value": "United Arab Emirates" },
+      { "label": "Saudi Arabia", "value": "Saudi Arabia" },
+      { "label": "Qatar", "value": "Qatar" },
+      { "label": "Oman", "value": "Oman" },
+      { "label": "Kuwait", "value": "Kuwait" },
+      { "label": "Bahrain", "value": "Bahrain" },
+      { "label": "Other", "value": "Other" }
+    ]},
+
+    { "key": "postal_code", "label": "Postal Code", "type": "text" },
+
+    { "key": "phone_number", "label": "Phone Number", "type": "text", "required": true },
+    { "key": "email", "label": "Email", "type": "email", "required": true },
+    { "key": "website", "label": "Website", "type": "text" },
+
+    { "key": "is_vat_registered", "label": "VAT Registered", "type": "checkbox" },
+    { "key": "vat_number", "label": "VAT Number", "type": "text" },
+    { "key": "corporate_registration_number", "label": "CR Number", "type": "text" },
+
+    { "key": "signature_image", "label": "Signature", "type": "file", "required": true },
+    { "key": "company_stamp", "label": "Company Stamp", "type": "file" },
+
+    { "key": "custom_footer_notes", "label": "Footer Notes", "type": "textarea" }
+  ]
+}
+
+
+
+
+
+
+}
+
+
+  
+

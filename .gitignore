@@ -1,0 +1,27 @@
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# Database
+db.sqlite3
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Zip files
+*.zip

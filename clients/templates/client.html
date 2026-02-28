@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{request.tenant}}</title>
+</head>
+<body>
+
+    <h1>{{request.tenant}}</h1>
+
+    <ul>
+        {% for i in employees %}
+        <li>{{i.name}}</li>
+        {% endfor %}
+    </ul>
+
+    <form method="post" action="/create_employee">
+
+        {% csrf_token %}
+        <input type="text" name ="name" placeholder="Add New Employee">
+        <button >Submit</button>
+    </form>
+    
+</body>
+</html>
