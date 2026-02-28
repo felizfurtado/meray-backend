@@ -28,22 +28,27 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG") == "True"
 
 
-tenant_file_path = BASE_DIR / "configs" / "tenant_config.json"
+if DEBUG:
+    # Local development
+    tenant_file_path = BASE_DIR / "configs" / "tenant_config.json"
 
+    if tenant_file_path.exists():
+        with open(tenant_file_path) as f:
+            tenant_config = json.load(f)
+    else:
+        tenant_config = {"base_domain": "localhost", "subdomains": []}
 
-if tenant_file_path.exists():
-    with open(tenant_file_path) as f:
-        tenant_config = json.load(f)
+    BASE_DOMAIN = tenant_config["base_domain"]
+    SUBDOMAINS = tenant_config["subdomains"]
+
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+    for sub in SUBDOMAINS:
+        ALLOWED_HOSTS.append(f"{sub}.{BASE_DOMAIN}")
+
 else:
-    tenant_config = {"base_domain": "localhost", "subdomains": []}
-
-BASE_DOMAIN = tenant_config["base_domain"]
-SUBDOMAINS = tenant_config["subdomains"]
-
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
-for sub in SUBDOMAINS:
-    ALLOWED_HOSTS.append(f"{sub}.{BASE_DOMAIN}")
+    # Production
+    ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 DATABASES = {
     'default': {
