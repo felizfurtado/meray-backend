@@ -32,6 +32,9 @@ class NavigationView(APIView):
             "operations": operations
         })
 
+
+
+
 class SchemaView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -2,88 +2,92 @@
 
   
   "navigation": {
-    "operations": {
-      "label": "Operations",
-      "icon": "fas fa-briefcase",
-      "sections": {
+  "operations": {
+    "label": "Operations",
+    "icon": "fas fa-briefcase",
+    "sections": {
 
-        "revenue": {
-          "label": "Revenue",
-          "items": [
-            {
-              "name": "Customers",
-              "path": "/customers",
-              "icon": "fas fa-users"
-            },
-            {
-              "name": "Invoicing",
-              "path": "/invoices",
-              "icon": "fas fa-file-invoice"
-            }
-          ]
-        },
+      "revenue": {
+        "label": "Revenue",
+        "icon": "fas fa-chart-line",
+        "items": [
+          {
+            "key": "customers",
+            "label": "Customers",
+            "icon": "fas fa-users"
+          },
+          {
+            "key": "invoices",
+            "label": "Invoicing",
+            "icon": "fas fa-file-invoice"
+          }
+        ]
+      },
 
-        "expenses": {
-          "label": "Expenses",
-          "items": [
-            {
-              "name": "Vendors",
-              "path": "/vendors",
-              "icon": "fas fa-truck"
-            },
-            {
-              "name": "Expense Input",
-              "path": "/expenses",
-              "icon": "fas fa-receipt"
-            },
-            {
-              "name": "Expense Invoicing",
-              "path": "/expense-invoices",
-              "icon": "fas fa-file-invoice-dollar"
-            }
-          ]
-        },
+      "expenses": {
+        "label": "Expenses",
+        "icon": "fas fa-arrow-trend-down",
+        "items": [
+          {
+            "key": "vendor",
+            "label": "Vendors",
+            "icon": "fas fa-truck"
+          },
+          {
+            "key": "expense",
+            "label": "Expense Input",
+            "icon": "fas fa-receipt"
+          },
+          {
+            "key": "expensesinvoicing",
+            "label": "Expense Invoicing",
+            "icon": "fas fa-file-invoice-dollar"
+          }
+        ]
+      },
 
-        "accounting": {
-          "label": "Accounting",
-          "items": [
-            {
-              "name": "Chart of Accounts",
-              "path": "/chart-of-accounts",
-              "icon": "fas fa-book"
-            },
-            {
-              "name": "Manual Journals",
-              "path": "/manual-journals",
-              "icon": "fas fa-pen"
-            }
-          ]
-        },
+      "accounting": {
+        "label": "Accounting",
+        "icon": "fas fa-calculator",
+        "items": [
+          {
+            "key": "chartsofaccounts",
+            "label": "Chart of Accounts",
+            "icon": "fas fa-book"
+          },
+          {
+            "key": "manualjournal",
+            "label": "Manual Journals",
+            "icon": "fas fa-pen"
+          }
+        ]
+      },
 
-        "inventory": {
-          "label": "Inventory",
-          "items": [
-            {
-              "name": "Inventory",
-              "path": "/inventory",
-              "icon": "fas fa-box"
-            },
-            {
-              "name": "Sales Invoices",
-              "path": "/inventory-sales-invoices",
-              "icon": "fas fa-file-invoice"
-            },
-            {
-              "name": "Purchase Invoices",
-              "path": "/inventory-invoices",
-              "icon": "fas fa-file-invoice-dollar"
-            }
-          ]
-        }
-
+      "inventory": {
+        "label": "Inventory",
+        "icon": "fas fa-boxes",
+        "items": [
+          {
+            "key": "inventory",
+            "label": "Inventory",
+            "icon": "fas fa-box"
+          },
+          {
+            "key": "inventorysalesinvoice",
+            "label": "Sales Invoices",
+            "icon": "fas fa-file-invoice"
+          },
+          {
+            "key": "inventoryinvoice",
+            "label": "Purchase Invoices",
+            "icon": "fas fa-file-invoice-dollar"
+          }
+        ]
       }
+
     }
-  },
+  }
+},
 
   "leads": {
     "name": "Leads",

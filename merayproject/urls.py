@@ -22,4 +22,7 @@ urlpatterns = [
     path('', include("clients.urls")),
     path("", include("crm.urls")),
 
+    # path('api/', include("clients.urls")),
+    # path("api/", include("crm.urls")),
+
 ]
