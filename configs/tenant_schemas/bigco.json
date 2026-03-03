@@ -265,7 +265,7 @@
       "direction": "desc"
     },
 
-    "page_size": 25
+    "page_size": 10
   },
 
   "customers": {
@@ -818,7 +818,7 @@
     "direction": "desc"
   },
 
-  "page_size": 25
+  "page_size": 10
 },
 
 "manual_journals": {

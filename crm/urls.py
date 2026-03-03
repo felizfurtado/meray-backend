@@ -19,6 +19,10 @@ urlpatterns = [
     path("inventory-invoices/schema/",InventoryInvoiceSchemaView.as_view()),
 
     
+    #Dashboard
+    path("dashboard/", DashboardView.as_view()),
+
+
     #leads
     path("leads/", LeadCreateView.as_view()), 
     path("leads/list/", LeadListView.as_view()), 
@@ -86,6 +90,8 @@ urlpatterns = [
     path("invoices/<int:pk>/delete/", InvoiceDeleteView.as_view()),
     path("invoices/<int:pk>/notes/add/", InvoiceAddNoteView.as_view()),
     path("invoices/<int:pk>/notes/<str:note_id>/delete/", InvoiceDeleteNoteView.as_view()),
+    path("invoices/<int:pk>/post/", InvoicePostView.as_view()),
+    path("invoices/<int:pk>/mark-paid/", InvoiceMarkPaidView.as_view()),
 
 
     # Invoice Adjustments

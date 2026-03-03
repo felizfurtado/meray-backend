@@ -494,6 +494,7 @@ class Invoice(models.Model):
 
     def calculate_totals(self):
         subtotal = Decimal("0.00")
+        vat_total = Decimal("0.00")
 
         for item in self.items:
             qty = Decimal(str(item.get("quantity", 0)))
@@ -504,8 +505,13 @@ class Invoice(models.Model):
             )
             item["amount"] = float(amount)
             subtotal += amount
+            
+            # Only add VAT if the item has vat_included = True
+            if item.get("vat_included", False):
+                vat_total += amount * Decimal("0.05")
 
-        vat = (subtotal * Decimal("0.05")).quantize(
+        # Round VAT to 2 decimal places
+        vat = vat_total.quantize(
             Decimal("0.01"),
             rounding=ROUND_HALF_UP
         )
@@ -518,8 +524,9 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs):
         self.generate_number()
-        self.calculate_totals()
+        self.calculate_totals()  # Now respects vat_included flag
         super().save(*args, **kwargs)
+
 
     class Meta:
         ordering = ["-date"]

@@ -8,8 +8,9 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
-
+from django.db.models import Sum, Count
 import uuid
+
 
 
 User = get_user_model()
@@ -47,6 +48,55 @@ class SchemaView(APIView):
 
 
 
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        total_leads = Lead.objects.count()
+        total_customers = Customer.objects.count()
+        total_invoices = Invoice.objects.count()
+        total_inventory = InventoryItem.objects.count()  # ✅ FIXED
+
+        total_revenue = Invoice.objects.filter(
+            status__iexact="paid"
+        ).aggregate(total=Sum("total"))["total"] or 0
+
+        outstanding = Invoice.objects.filter(
+            status__in=["sent", "overdue"]
+        ).aggregate(total=Sum("total"))["total"] or 0
+
+        recent_invoices = Invoice.objects.order_by("-created_at")[:5]
+        recent_leads = Lead.objects.order_by("-created_at")[:5]
+
+        return Response({
+            "summary": {
+                "total_leads": total_leads,
+                "total_customers": total_customers,
+                "total_invoices": total_invoices,
+                "total_inventory": total_inventory,
+                "total_revenue": float(total_revenue),
+                "outstanding": float(outstanding),
+            },
+            "recent_invoices": [
+                {
+                    "id": i.id,
+                    "number": i.number,
+                    "customer": i.customer.company if i.customer else "Custom",
+                    "total": float(i.total),
+                    "status": i.status
+                }
+                for i in recent_invoices
+            ],
+            "recent_leads": [
+                {
+                    "id": l.id,
+                    "name": l.name,
+                    "company": l.company
+                }
+                for l in recent_leads
+            ]
+        })
 
 
 class LeadListView(APIView):
@@ -1913,6 +1963,31 @@ class InvoiceCreateView(APIView):
         try:
             payload = request.data
             items = payload.get("items", [])
+            
+            # 🔥 ADD THESE PRINT STATEMENTS
+            print("\n" + "="*50)
+            print("RECEIVED PAYLOAD:")
+            print("="*50)
+            print(f"Status: {payload.get('status')}")
+            print(f"Items count: {len(items)}")
+            print("\nItems with vat_included:")
+            for i, item in enumerate(items):
+                vat_included = item.get('vat_included', False)
+                line_total = float(item.get('quantity', 0)) * float(item.get('price', 0))
+                vat_amount = line_total * 0.05 if vat_included else 0
+                print(f"  Item {i+1}:")
+                print(f"    Description: {item.get('description')}")
+                print(f"    Price: {item.get('price')}")
+                print(f"    Quantity: {item.get('quantity')}")
+                print(f"    vat_included: {vat_included}")
+                print(f"    Line Total: {line_total}")
+                print(f"    VAT Amount: {vat_amount}")
+            
+            print("\nCalculated totals from frontend:")
+            print(f"  subtotal: {payload.get('subtotal')}")
+            print(f"  vat: {payload.get('vat')}")
+            print(f"  total: {payload.get('total')}")
+            print("="*50 + "\n")
 
             if not items:
                 return Response({"error": "At least one item required"}, status=400)
@@ -1941,7 +2016,7 @@ class InvoiceCreateView(APIView):
                     created_by=request.user
                 )
 
-            # 🔥 Create Invoice (totals auto calculated in model)
+            # 🔥 Create Invoice with the values from the frontend
             invoice = Invoice.objects.create(
                 customer=customer,
                 custom_details=custom_details if not customer else {},
@@ -1950,69 +2025,236 @@ class InvoiceCreateView(APIView):
                 due_date=payload.get("due_date"),
                 status=payload.get("status", "draft"),
                 items=items,
+                # Use the values calculated in the frontend
+                subtotal=payload.get("subtotal", 0),
+                vat=payload.get("vat", 0),
+                total=payload.get("total", 0),
                 extra_data=payload.get("extra_data", {}),
                 notes=payload.get("notes", []),
                 created_by=request.user
             )
+            
+            # 🔥 PRINT WHAT WAS SAVED
+            print("\n" + "="*50)
+            print("SAVED TO DATABASE:")
+            print("="*50)
+            print(f"Invoice ID: {invoice.id}")
+            print(f"Status: {invoice.status}")
+            print(f"Subtotal: {invoice.subtotal}")
+            print(f"VAT: {invoice.vat}")
+            print(f"Total: {invoice.total}")
+            print("="*50 + "\n")
 
             # ==========================================
-            # 🔥 CREATE JOURNAL ENTRY
+            # 🔥 CREATE JOURNAL ENTRY ONLY IF STATUS IS "Posted"
             # ==========================================
+            
+            journal = None
+            if invoice.status.lower() == "posted":
+                # Fetch Accounts properly
+                receivable_account = get_object_or_404(Account, code="1100")
+                revenue_account = get_object_or_404(Account, code="4000")
+                vat_account = get_object_or_404(Account, code="2200")
 
-            # Fetch Accounts properly (DO NOT HARDCODE IDs)
-            receivable_account = get_object_or_404(Account, code="1100")
-            revenue_account = get_object_or_404(Account, code="4000")
-            vat_account = get_object_or_404(Account, code="2200")
+                entries = []
 
-            entries = []
-
-            # DR Accounts Receivable (Full Invoice Total)
-            entries.append({
-    "account": receivable_account.id,
-    "debit": float(invoice.total),
-    "credit": 0
-})
-
-            # CR Sales Revenue (Subtotal)
-            entries.append({
-    "account": revenue_account.id,
-    "debit": 0,
-    "credit": float(invoice.subtotal)
-})
-
-            # CR VAT Payable (If any)
-            if invoice.vat > 0:
+                # DR Accounts Receivable (Full Invoice Total)
                 entries.append({
-                    "account": vat_account.id,
-                    "debit": 0,
-                    "credit": float(invoice.vat)
+                    "account": receivable_account.id,
+                    "debit": float(invoice.total),
+                    "credit": 0
                 })
 
-            journal = ManualJournal.objects.create(
-                date=invoice.date,
-                currency="AED",
-                status="Posted",
-                notes=f"Sales Invoice - {invoice.number}",
-                entries=entries,
-                created_by=request.user
-            )
+                # CR Sales Revenue (Subtotal)
+                entries.append({
+                    "account": revenue_account.id,
+                    "debit": 0,
+                    "credit": float(invoice.subtotal)
+                })
 
-            if not journal.is_balanced:
-                raise Exception("Journal not balanced")
+                # CR VAT Payable ONLY IF there is VAT
+                if invoice.vat > 0:
+                    entries.append({
+                        "account": vat_account.id,
+                        "debit": 0,
+                        "credit": float(invoice.vat)
+                    })
 
-            # Optional: store journal entries in invoice
-            invoice.journal_entries = entries
-            invoice.save()
+                # Only create journal if we have entries
+                if entries:
+                    journal = ManualJournal.objects.create(
+                        date=invoice.date,
+                        currency="AED",
+                        status="posted",
+                        notes=f"Sales Invoice - {invoice.number}",
+                        entries=entries,
+                        created_by=request.user
+                    )
+
+                    if not journal.is_balanced:
+                        raise Exception("Journal not balanced")
+
+                    # Store journal entries in invoice
+                    invoice.journal_entries = entries
+                    invoice.save()
+                    
+                    print("\n" + "="*50)
+                    print("JOURNAL CREATED:")
+                    print("="*50)
+                    print(f"Journal ID: {journal.id}")
+                    print(f"Entries: {entries}")
+                    print("="*50 + "\n")
 
             return Response({
                 "success": True,
                 "invoice_id": invoice.id,
-                "journal_id": journal.id,
-                "number": invoice.number
+                "journal_id": journal.id if journal else None,
+                "number": invoice.number,
+                "status": invoice.status,
+                "subtotal": invoice.subtotal,
+                "vat": invoice.vat,
+                "total": invoice.total
             }, status=201)
 
         except Exception as e:
+            print(f"\n❌ ERROR: {str(e)}\n")
             return Response({"error": str(e)}, status=400)
+
+
+
+class InvoicePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request, pk):
+
+        invoice = get_object_or_404(Invoice, pk=pk)
+
+        if invoice.status.lower() != "draft":
+            return Response(
+                {"error": "Only draft invoices can be posted"},
+                status=400
+            )
+
+        receivable_account = get_object_or_404(Account, code="1100")
+        revenue_account = get_object_or_404(Account, code="4000")
+        vat_account = get_object_or_404(Account, code="2200")
+
+        entries = [
+            {
+                "account": receivable_account.id,
+                "debit": float(invoice.total),
+                "credit": 0
+            },
+            {
+                "account": revenue_account.id,
+                "debit": 0,
+                "credit": float(invoice.subtotal)
+            }
+        ]
+
+        if invoice.vat > 0:
+            entries.append({
+                "account": vat_account.id,
+                "debit": 0,
+                "credit": float(invoice.vat)
+            })
+
+        journal = ManualJournal.objects.create(
+            date=invoice.date,
+            currency="AED",
+            status="Posted",
+            notes=f"Sales Invoice - {invoice.number}",
+            entries=entries,
+            created_by=request.user
+        )
+
+        if not journal.is_balanced:
+            raise Exception("Journal not balanced")
+
+        invoice.status = "posted"
+        invoice.journal_entries = entries
+        invoice.save()
+
+        return Response({
+            "success": True,
+            "journal_id": journal.id
+        })
+
+
+class InvoiceMarkPaidView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request, pk):
+
+        invoice = get_object_or_404(Invoice, pk=pk)
+        print(f"Marking invoice {pk} as paid. Current status: {invoice.status}")
+
+        if invoice.status.lower() not in ["posted", "overdue"]:
+            return Response(
+                {"error": "Only posted or overdue invoices can be marked as paid"},
+                status=400
+            )
+
+        payment_account_id = request.data.get("payment_account")
+        print(f"Payment account ID: {payment_account_id}")
+
+        if not payment_account_id:
+            return Response(
+                {"error": "Payment account required"},
+                status=400
+            )
+
+        payment_account = get_object_or_404(Account, id=payment_account_id)
+        receivable_account = get_object_or_404(Account, code="1100")
+        
+        print(f"Payment account: {payment_account.name} ({payment_account.code})")
+        print(f"Receivable account: {receivable_account.name} ({receivable_account.code})")
+        print(f"Invoice total: {invoice.total}")
+
+        entries = [
+            {
+                "account": payment_account.id,
+                "debit": float(invoice.total),
+                "credit": 0
+            },
+            {
+                "account": receivable_account.id,
+                "debit": 0,
+                "credit": float(invoice.total)
+            }
+        ]
+        
+        print(f"Entries: {entries}")
+
+        # Try to create journal and catch any errors
+        try:
+            journal = ManualJournal.objects.create(
+                date=invoice.date,
+                currency="AED",
+                status="paid",  # Changed from "posted" to "paid"
+                notes=f"Payment for Invoice - {invoice.number}",
+                entries=entries,
+                created_by=request.user
+            )
+            print(f"Journal created with ID: {journal.id}")
+        except Exception as e:
+            print(f"Error creating journal: {str(e)}")
+            return Response(
+                {"error": f"Failed to create journal: {str(e)}"},
+                status=500
+            )
+
+        invoice.status = "paid"
+        invoice.save()
+        print(f"Invoice status updated to: {invoice.status}")
+
+        return Response({
+            "success": True,
+            "journal_id": journal.id
+        })
+
 
 
 class InvoiceListView(APIView):
