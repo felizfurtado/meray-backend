@@ -3475,69 +3475,31 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
     @transaction.atomic
     def post(self, request, pk):
-
         try:
             invoice = get_object_or_404(ExpenseInvoice, pk=pk)
 
-            print("====== MARK PAID REQUEST ======")
-            print("Invoice ID:", pk)
-            print("Invoice Status:", invoice.status)
-
-            # =============================
-            # VALIDATION
-            # =============================
-
+            # Validate invoice status
             if invoice.status == "Paid":
-                return Response({
-                    "error": "Invoice already paid"
-                }, status=400)
+                return Response({"error": "Invoice already paid"}, status=400)
 
             if invoice.status != "Posted":
-                return Response({
-                    "error": "Only posted invoices can be paid"
-                }, status=400)
+                return Response({"error": "Only posted invoices can be paid"}, status=400)
 
             bank_account_code = request.data.get("bank_account")
 
-            print("Received bank_account_code:", bank_account_code)
-
             if not bank_account_code:
-                return Response({
-                    "error": "Bank or Cash account required"
-                }, status=400)
+                return Response({"error": "Bank or Cash account required"}, status=400)
 
-            # =============================
-            # FETCH BANK OR CASH ACCOUNT
-            # =============================
+            # Fetch payment account (Cash or Bank)
+            bank_account = get_object_or_404(Account, code=str(bank_account_code))
 
-            bank_account = get_object_or_404(
-                Account,
-                code=str(bank_account_code)
-            )
-
-            print("Matched Account:", bank_account.code, bank_account.name, bank_account.type)
-
-            # Allow only Bank (1020) or Cash (1010)
             if bank_account.code not in ["1010", "1020"]:
-                return Response({
-                    "error": "Invalid payment account"
-                }, status=400)
+                return Response({"error": "Invalid payment account"}, status=400)
 
-            # =============================
-            # FETCH ACCOUNTS PAYABLE
-            # =============================
+            # Fetch Accounts Payable
+            accounts_payable = get_object_or_404(Account, code="2010")
 
-            accounts_payable = get_object_or_404(
-                Account,
-                code="2010"
-            )
-
-            print("Accounts Payable:", accounts_payable.code, accounts_payable.name)
-
-            # =============================
-            # CREATE PAYMENT JOURNAL
-            # =============================
-
+            # Create journal entries
             entries = [
                 {
                     "account": accounts_payable.id,
@@ -3551,8 +3513,6 @@ class ExpenseInvoiceMarkPaidView(APIView):
                 }
             ]
 
-            print("Journal Entries:", entries)
-
             journal = ManualJournal.objects.create(
                 date=timezone.now().date(),
                 currency="AED",
@@ -3565,14 +3525,9 @@ class ExpenseInvoiceMarkPaidView(APIView):
             if not journal.is_balanced:
                 raise Exception("Payment journal not balanced")
 
-            # =============================
-            # UPDATE INVOICE STATUS
-            # =============================
-
+            # Update invoice
             invoice.status = "Paid"
             invoice.save()
-
-            print("Invoice marked as Paid")
 
             return Response({
                 "success": True,
@@ -3580,12 +3535,10 @@ class ExpenseInvoiceMarkPaidView(APIView):
             })
 
         except Exception as e:
-            print("ERROR:", str(e))
-            return Response({
-                "error": str(e)
-            }, status=400)
+            return Response({"error": str(e)}, status=400)
 
-            
+
+
 
 class ExpenseInvoiceListView(APIView):
     permission_classes = [IsAuthenticated]
