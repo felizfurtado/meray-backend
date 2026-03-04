@@ -3475,7 +3475,6 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
     @transaction.atomic
     def post(self, request, pk):
-
         try:
             invoice = get_object_or_404(ExpenseInvoice, pk=pk)
 
@@ -3491,18 +3490,22 @@ class ExpenseInvoiceMarkPaidView(APIView):
             if not bank_account_code:
                 return Response({"error": "Bank or Cash account required"}, status=400)
 
-            # 🔥 Hardcoded payment accounts
-            if bank_account_code == "1010":
-                bank_account = get_object_or_404(Account, code="1010")
-
-            elif bank_account_code == "1020":
-                bank_account = get_object_or_404(Account, code="1020")
-
-            else:
-                return Response({"error": "Invalid payment account"}, status=400)
+            # SIMPLIFIED: Just get the account directly from the code
+            try:
+                bank_account = Account.objects.get(code=bank_account_code)
+            except Account.DoesNotExist:
+                return Response({
+                    "error": f"Account with code '{bank_account_code}' not found",
+                    "available_codes": list(Account.objects.filter(
+                        code__in=["1010", "1020"]
+                    ).values_list('code', flat=True))
+                }, status=400)
 
             # Accounts Payable
-            accounts_payable = get_object_or_404(Account, code="2010")
+            try:
+                accounts_payable = Account.objects.get(code="2010")
+            except Account.DoesNotExist:
+                return Response({"error": "Accounts Payable account (2010) not found"}, status=400)
 
             # Journal entries
             entries = [
@@ -3541,6 +3544,7 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=400)
+
 
 
 class ExpenseInvoiceListView(APIView):
@@ -3634,91 +3638,6 @@ class ExpenseInvoiceDeleteView(APIView):
         return Response({"success": True})
 
 
-
-class ExpenseInvoiceMarkPaidView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    @transaction.atomic
-    def post(self, request, pk):
-
-        try:
-            invoice = get_object_or_404(ExpenseInvoice, pk=pk)
-
-            # =============================
-            # VALIDATION
-            # =============================
-
-            if invoice.status == "Paid":
-                return Response({
-                    "error": "Invoice already paid"
-                }, status=400)
-
-            if invoice.status != "Posted":
-                return Response({
-                    "error": "Only posted invoices can be paid"
-                }, status=400)
-
-            bank_account_id = request.data.get("bank_account")
-
-            if bank_account_id in [None, "", 0]:
-                return Response({
-                    "error": "Bank account required"
-                }, status=400)
-
-            bank_account = get_object_or_404(
-                Account,
-                id=bank_account_id,
-                type="Asset"
-            )
-
-            accounts_payable = get_object_or_404(
-                Account,
-                id=12,
-                type="Liability"
-            )
-
-            from decimal import Decimal
-            amount = Decimal(str(invoice.total_amount))
-
-            entries = [
-                {
-                    "account": accounts_payable.id,
-                    "debit": str(amount),
-                    "credit": "0.00"
-                },
-                {
-                    "account": bank_account.id,
-                    "debit": "0.00",
-                    "credit": str(amount)
-                }
-            ]
-
-            journal = ManualJournal.objects.create(
-                date=timezone.now().date(),
-                currency="AED",
-                status="Posted",
-                notes=f"Payment - Invoice {invoice.invoice_number}",
-                entries=entries,
-                created_by=request.user
-            )
-
-            if not journal.is_balanced:
-                raise Exception(
-                    f"Payment journal not balanced. Difference: {journal.difference}"
-                )
-
-            invoice.status = "Paid"
-            invoice.save()
-
-            return Response({
-                "success": True,
-                "journal_id": journal.id
-            })
-
-        except Exception as e:
-            return Response({
-                "error": str(e)
-            }, status=400)
 
 
 

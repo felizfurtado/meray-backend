@@ -117,7 +117,6 @@ urlpatterns = [
     path("expense-invoices/<int:pk>/delete/", ExpenseInvoiceDeleteView.as_view()),
     path("expense-invoices/<int:pk>/mark-paid/", ExpenseInvoiceMarkPaidView.as_view()),
 
-    path("expense-invoices/<int:pk>/mark-paid/",ExpenseInvoiceMarkPaidView.as_view(),name="expense-invoice-mark-paid"),
 
     # Company Profile
     path("company-profile/", CompanyProfileDetailView.as_view()),
