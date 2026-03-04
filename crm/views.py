@@ -2357,7 +2357,10 @@ from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from io import BytesIO
 
 class InvoicePDFView(APIView):
     permission_classes = [IsAuthenticated]
@@ -2365,129 +2368,64 @@ class InvoicePDFView(APIView):
     def get(self, request, pk):
         invoice = get_object_or_404(Invoice, pk=pk)
         company = CompanyProfile.objects.first()
-
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename=Invoice-{invoice.number}.pdf'
-
-        doc = SimpleDocTemplate(response, pagesize=A4)
-        elements = []
-        styles = getSampleStyleSheet()
-
-        # ================= HEADER =================
-
-        header_data = []
-
-        # Logo
-        if company and company.company_logo:
-            logo_data = base64.b64decode(company.company_logo.split(",")[1])
-            logo_image = Image(BytesIO(logo_data), width=1.5*inch, height=1.5*inch)
-            header_data.append([logo_image, Paragraph(f"<b>{company.company_name}</b>", styles["Title"])])
-        else:
-            header_data.append(["", Paragraph(f"<b>{company.company_name}</b>", styles["Title"])])
-
-        header_table = Table(header_data, colWidths=[2*inch, 4*inch])
-        elements.append(header_table)
-        elements.append(Spacer(1, 0.3 * inch))
-
-        # ================= COMPANY INFO =================
-
-        company_info = f"""
-        {company.company_address}<br/>
-        {company.city or ''} {company.state or ''}<br/>
-        {company.country} {company.postal_code or ''}<br/>
-        Phone: {company.phone_number}<br/>
-        Email: {company.email}<br/>
-        VAT: {company.vat_number if company.is_vat_registered else "Not Registered"}
-        """
-
-        elements.append(Paragraph(company_info, styles["Normal"]))
-        elements.append(Spacer(1, 0.5 * inch))
-
-        # ================= INVOICE INFO =================
-
-        invoice_info = f"""
-        <b>Invoice Number:</b> {invoice.number}<br/>
-        <b>Date:</b> {invoice.date}<br/>
-        <b>Due Date:</b> {invoice.due_date}<br/>
-        <b>Status:</b> {invoice.status.upper()}
-        """
-
-        elements.append(Paragraph(invoice_info, styles["Normal"]))
-        elements.append(Spacer(1, 0.4 * inch))
-
-        # ================= CUSTOMER =================
-
+        
+        # Prepare customer data
         if invoice.customer:
-            customer_name = invoice.customer.company
+            customer = {
+                "company": invoice.customer.company,
+                "contact_name": invoice.customer.contact_name,
+                "email": invoice.customer.email,
+                "address": invoice.customer.extra_data.get("address", "")
+            }
         else:
-            customer_name = invoice.custom_details.get("companyName", "")
-
-        elements.append(Paragraph(f"<b>Bill To:</b> {customer_name}", styles["Heading3"]))
-        elements.append(Spacer(1, 0.3 * inch))
-
-        # ================= ITEMS TABLE =================
-
-        data = [["Description", "Qty", "Price (AED)", "Amount (AED)"]]
-
+            customer = {
+                "company": invoice.custom_details.get("companyName", ""),
+                "contact_name": invoice.custom_details.get("contactPerson", ""),
+                "email": invoice.custom_details.get("email", ""),
+                "address": invoice.custom_details.get("address", "")
+            }
+        
+        # Prepare items
+        items = []
         for item in invoice.items:
-            data.append([
-                item.get("description"),
-                str(item.get("quantity")),
-                f"{Decimal(str(item.get('price', 0))):,.2f}",
-                f"{Decimal(str(item.get('amount', 0))):,.2f}",
-            ])
-
-        # Totals
-        data.append(["", "", "Subtotal", f"{invoice.subtotal:,.2f}"])
-        data.append(["", "", "VAT (5%)", f"{invoice.vat:,.2f}"])
-        data.append(["", "", "Total", f"{invoice.total:,.2f}"])
-
-        table = Table(data, colWidths=[2.5*inch, 0.8*inch, 1.2*inch, 1.2*inch])
-
-        table.setStyle(TableStyle([
-            ("BACKGROUND", (0,0), (-1,0), colors.lightgrey),
-            ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
-            ("ALIGN", (1,1), (-1,-1), "RIGHT"),
-            ("FONTNAME", (0,0), (-1,-1), "Helvetica"),
-        ]))
-
-        elements.append(table)
-        elements.append(Spacer(1, 0.8 * inch))
-
-        # ================= SIGNATURE & STAMP =================
-
-        footer_data = []
-
-        # Signature
-        if company.signature_image:
-            sig_data = base64.b64decode(company.signature_image.split(",")[1])
-            signature = Image(BytesIO(sig_data), width=1.5*inch, height=1*inch)
-        else:
-            signature = ""
-
-        # Stamp
-        if company.company_stamp:
-            stamp_data = base64.b64decode(company.company_stamp.split(",")[1])
-            stamp = Image(BytesIO(stamp_data), width=1.5*inch, height=1.5*inch)
-        else:
-            stamp = ""
-
-        footer_data.append([
-            Paragraph("<b>Authorized Signature</b>", styles["Normal"]),
-            Paragraph("<b>Company Stamp</b>", styles["Normal"]),
-        ])
-        footer_data.append([signature, stamp])
-
-        footer_table = Table(footer_data, colWidths=[3*inch, 3*inch])
-        elements.append(footer_table)
-
-        # ================= BUILD PDF =================
-
-        doc.build(elements)
-
-        return response
-
-
+            items.append({
+                "description": item.get("description", ""),
+                "quantity": item.get("quantity", 0),
+                "price": f"{Decimal(str(item.get('price', 0))):,.2f}",
+                "amount": f"{Decimal(str(item.get('amount', 0))):,.2f}"
+            })
+        
+        # Prepare context
+        context = {
+            "company": company,
+            "invoice": {
+                "number": invoice.number,
+                "date": invoice.date.strftime("%d %b %Y"),
+                "due_date": invoice.due_date.strftime("%d %b %Y") if invoice.due_date else "N/A",
+                "status": invoice.status,
+            },
+            "customer": customer,
+            "items": items,
+            "subtotal": f"{invoice.subtotal:,.2f}",
+            "vat": f"{invoice.vat:,.2f}",
+            "total": f"{invoice.total:,.2f}",
+            "generation_date": timezone.now().strftime("%d %b %Y, %I:%M %p"),
+        }
+        
+        # Render HTML
+        template = get_template("pdf/invoice.html")
+        html = template.render(context)
+        
+        # Create PDF
+        result = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+        
+        if not pdf.err:
+            response = HttpResponse(result.getvalue(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename=Invoice-{invoice.number}.pdf'
+            return response
+        
+        return HttpResponse("Error generating PDF", status=500)
 
 
 class InvoiceDeleteView(APIView):
@@ -2564,63 +2502,101 @@ from django.db.models import Sum
 from decimal import Decimal, ROUND_HALF_UP
 
 
+class OriginalInvoiceListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        invoices = Invoice.objects.filter(
+            document_type="INVOICE"
+        )
+
+        data = [
+            {
+                "id": inv.id,
+                "number": inv.number,
+                "total": inv.total,
+                "customer_name": inv.customer.company if inv.customer else None
+            }
+            for inv in invoices
+        ]
+
+        return Response({
+            "success": True,
+            "rows": data
+        })
+
+
+
 class InvoiceAdjustmentCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     @transaction.atomic
     def post(self, request):
 
-        payload = request.data
+        data = request.data
 
-        original_invoice_id = payload.get("invoice_id")
-        document_type = payload.get("document_type")
-        items = payload.get("items", [])
+        invoice_id = data.get("invoice_id")
+        document_type = data.get("document_type")
+        items = data.get("items", [])
+        date = data.get("date")
+
+        # ================= BASIC VALIDATION =================
 
         if document_type not in ["CREDIT_NOTE", "DEBIT_NOTE"]:
-            return Response({
-                "success": False,
-                "error": "Invalid document type"
-            }, status=400)
+            return Response({"error": "Invalid document type"}, status=400)
 
-        if not original_invoice_id:
-            return Response({
-                "success": False,
-                "error": "invoice_id required"
-            }, status=400)
-
-        original_invoice = get_object_or_404(
-            Invoice,
-            id=original_invoice_id
-        )
-
-        if original_invoice.document_type != "INVOICE":
-            return Response({
-                "success": False,
-                "error": "Cannot adjust a credit/debit note"
-            }, status=400)
+        if not invoice_id:
+            return Response({"error": "Invoice required"}, status=400)
 
         if not items:
-            return Response({
-                "success": False,
-                "error": "Items required"
-            }, status=400)
+            return Response({"error": "At least one item required"}, status=400)
 
-        # ================= CALCULATE TOTAL =================
+        # ================= GET ORIGINAL INVOICE =================
 
-        adjustment_subtotal = Decimal("0.00")
+        original_invoice = get_object_or_404(Invoice, id=invoice_id)
+
+        if original_invoice.document_type in ["CREDIT_NOTE", "DEBIT_NOTE"]:
+            return Response(
+                {"error": "Cannot adjust a credit/debit note"},
+                status=400
+            )
+
+        # ================= CALCULATE TOTALS =================
+
+        subtotal = Decimal("0.00")
+        vat_total = Decimal("0.00")
+        inventory_items = []
 
         for item in items:
+
             qty = Decimal(str(item.get("quantity", 0)))
             price = Decimal(str(item.get("price", 0)))
-            adjustment_subtotal += (qty * price)
+            vat_included = item.get("vat_included", False)
 
-        adjustment_vat = (
-            adjustment_subtotal * Decimal("0.05")
-        ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            if qty <= 0 or price <= 0:
+                return Response(
+                    {"error": "Invalid quantity or price"},
+                    status=400
+                )
 
-        adjustment_total = adjustment_subtotal + adjustment_vat
+            line_total = qty * price
+            subtotal += line_total
 
-        # ================= CREDIT VALIDATION =================
+            if vat_included:
+                vat_total += line_total * Decimal("0.05")
+
+            if item.get("type") == "inventory" and item.get("inventory_id"):
+                inventory_items.append({
+                    "id": item["inventory_id"],
+                    "quantity": qty,
+                    "price": price,
+                    "line_total": line_total
+                })
+
+        vat_total = vat_total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total = subtotal + vat_total
+
+        # ================= CREDIT LIMIT CHECK =================
 
         if document_type == "CREDIT_NOTE":
 
@@ -2631,13 +2607,13 @@ class InvoiceAdjustmentCreateView(APIView):
                 total_sum=Sum("total")
             )["total_sum"] or Decimal("0.00")
 
-            remaining_amount = original_invoice.total - previous_credits
+            remaining = original_invoice.total - previous_credits
 
-            if adjustment_total > remaining_amount:
-                return Response({
-                    "success": False,
-                    "error": "Credit exceeds remaining invoice balance"
-                }, status=400)
+            if total > remaining:
+                return Response(
+                    {"error": "Credit exceeds remaining invoice balance"},
+                    status=400
+                )
 
         # ================= CREATE ADJUSTMENT =================
 
@@ -2646,78 +2622,145 @@ class InvoiceAdjustmentCreateView(APIView):
             custom_details=original_invoice.custom_details,
             document_type=document_type,
             related_invoice=original_invoice,
-            date=payload.get("date"),
-            due_date=payload.get("due_date"),
-            status="posted",   # 🔥 directly post
+            date=date,
+            status="posted",
             items=items,
-            subtotal=adjustment_subtotal,
-            vat=adjustment_vat,
-            total=adjustment_total,
+            subtotal=subtotal,
+            vat=vat_total,
+            total=total,
             created_by=request.user
         )
 
-        # ================= JOURNAL ENTRY =================
+        # ================= UPDATE INVENTORY =================
+
+        if document_type == "CREDIT_NOTE" and inventory_items:
+
+            for inv_item in inventory_items:
+                try:
+                    inventory = InventoryItem.objects.get(id=inv_item["id"])
+
+                    inventory.current_quantity += inv_item["quantity"]
+                    inventory.save()
+
+                except InventoryItem.DoesNotExist:
+                    print(f"Inventory item {inv_item['id']} not found")
+
+        # ================= JOURNAL ENTRIES =================
+
+        revenue = get_object_or_404(Account, code="4000")
+        output_vat = get_object_or_404(Account, code="2200")
+        receivable = get_object_or_404(Account, code="1100")
+
+        inventory_account = get_object_or_404(Account, code="1800")
+        cogs_account = get_object_or_404(Account, code="5000")
+
+        expense = get_object_or_404(Account, code="5040")
+        input_vat = get_object_or_404(Account, code="2100")
+        payable = get_object_or_404(Account, code="2010")
 
         entries = []
 
-        revenue_account = get_object_or_404(Account, code="4000")
-        output_vat_account = get_object_or_404(Account, code="2200")
-        receivable_account = get_object_or_404(Account, code="1100")
-
-        expense_account = get_object_or_404(Account, code="5040")
-        input_vat_account = get_object_or_404(Account, code="2100")
-        payable_account = get_object_or_404(Account, code="2010")
+        # ================= CREDIT NOTE =================
 
         if document_type == "CREDIT_NOTE":
 
-            # DR Revenue
+            # Reverse sales revenue
             entries.append({
-                "account": revenue_account.id,
-                "debit": float(adjustment_subtotal),
+                "account": revenue.id,
+                "debit": float(subtotal),
                 "credit": 0
             })
 
-            # DR Output VAT
-            if adjustment_vat > 0:
+            # Reverse VAT
+            if vat_total > 0:
                 entries.append({
-                    "account": output_vat_account.id,
-                    "debit": float(adjustment_vat),
+                    "account": output_vat.id,
+                    "debit": float(vat_total),
                     "credit": 0
                 })
 
-            # CR Accounts Receivable
+            # Reduce receivable
             entries.append({
-                "account": receivable_account.id,
+                "account": receivable.id,
                 "debit": 0,
-                "credit": float(adjustment_total)
+                "credit": float(total)
             })
 
-        elif document_type == "DEBIT_NOTE":
+            # Handle inventory returns
+            for inv_item in inventory_items:
 
-            # CR Expense
+                try:
+                    inventory = InventoryItem.objects.get(id=inv_item["id"])
+
+                    cogs_amount = inv_item["quantity"] * inventory.cost_price
+
+                    # DR Inventory
+                    entries.append({
+                        "account": inventory_account.id,
+                        "debit": float(cogs_amount),
+                        "credit": 0
+                    })
+
+                    # CR COGS
+                    entries.append({
+                        "account": cogs_account.id,
+                        "debit": 0,
+                        "credit": float(cogs_amount)
+                    })
+
+                except InventoryItem.DoesNotExist:
+
+                    fallback = inv_item["line_total"]
+
+                    entries.append({
+                        "account": inventory_account.id,
+                        "debit": float(fallback),
+                        "credit": 0
+                    })
+
+                    entries.append({
+                        "account": cogs_account.id,
+                        "debit": 0,
+                        "credit": float(fallback)
+                    })
+
+        # ================= DEBIT NOTE =================
+
+        else:
+
             entries.append({
-                "account": expense_account.id,
+                "account": expense.id,
                 "debit": 0,
-                "credit": float(adjustment_subtotal)
+                "credit": float(subtotal)
             })
 
-            # CR Input VAT
-            if adjustment_vat > 0:
+            if vat_total > 0:
                 entries.append({
-                    "account": input_vat_account.id,
+                    "account": input_vat.id,
                     "debit": 0,
-                    "credit": float(adjustment_vat)
+                    "credit": float(vat_total)
                 })
 
-            # DR Accounts Payable
             entries.append({
-                "account": payable_account.id,
-                "debit": float(adjustment_total),
+                "account": payable.id,
+                "debit": float(total),
                 "credit": 0
             })
 
+        # ================= VERIFY BALANCE =================
+
+        total_debit = sum(e["debit"] for e in entries)
+        total_credit = sum(e["credit"] for e in entries)
+
+        if round(total_debit, 2) != round(total_credit, 2):
+            raise Exception(
+                f"Journal not balanced: Debits {total_debit} != Credits {total_credit}"
+            )
+
+        # ================= CREATE JOURNAL =================
+
         journal = ManualJournal.objects.create(
-            date=adjustment.date,
+            date=date,
             currency="AED",
             status="Posted",
             notes=f"{document_type} - {adjustment.number}",
@@ -2725,19 +2768,118 @@ class InvoiceAdjustmentCreateView(APIView):
             created_by=request.user
         )
 
-        if not journal.is_balanced:
-            raise Exception("Journal not balanced")
-
         return Response({
             "success": True,
-            "adjustment_id": adjustment.id,
+            "id": adjustment.id,
             "number": adjustment.number,
-            "document_type": document_type,
-            "total": adjustment.total
+            "total": adjustment.total,
+            "inventory_updated": len(inventory_items) if document_type == "CREDIT_NOTE" else 0
         }, status=201)
 
 
 
+
+class InvoiceAdjustmentMarkPaidView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request, adjustment_id):
+
+        payment_account_id = request.data.get("payment_account")
+
+        if not payment_account_id:
+            return Response({"error": "Payment account required"}, status=400)
+
+        payment_account = get_object_or_404(Account, id=payment_account_id)
+
+        # Optional: Validate that it's a cash/bank account
+        if payment_account.code not in ["1010", "1020"]:
+            return Response(
+                {"error": "Payment account must be Cash (1010) or Bank (1020)"},
+                status=400
+            )
+
+        adjustment = get_object_or_404(
+            Invoice,
+            id=adjustment_id,
+            document_type__in=["CREDIT_NOTE", "DEBIT_NOTE"]
+        )
+
+        if adjustment.status.lower() == "paid":
+            return Response({"error": "Already paid"}, status=400)
+
+        amount = adjustment.total
+
+        # Accounts
+        receivable = get_object_or_404(Account, code="1100")
+        payable = get_object_or_404(Account, code="2010")
+
+        entries = []
+
+        if adjustment.document_type == "CREDIT_NOTE":
+            # Refund customer
+            entries.append({
+                "account": receivable.id,
+                "debit": float(amount),
+                "credit": 0
+            })
+            entries.append({
+                "account": payment_account.id,
+                "debit": 0,
+                "credit": float(amount)
+            })
+
+        else:  # DEBIT_NOTE
+            # Pay supplier
+            entries.append({
+                "account": payable.id,
+                "debit": float(amount),
+                "credit": 0
+            })
+            entries.append({
+                "account": payment_account.id,
+                "debit": 0,
+                "credit": float(amount)
+            })
+
+        journal = ManualJournal.objects.create(
+            date=adjustment.date,
+            currency="AED",
+            status="Posted",
+            notes=f"Payment - {adjustment.number}",
+            entries=entries,
+            created_by=request.user
+        )
+
+        if not journal.is_balanced:
+            raise Exception("Journal not balanced")
+
+        # Mark paid
+        adjustment.status = "paid"
+        adjustment.save()
+
+        # ================= INVENTORY UPDATE =================
+        for item in adjustment.items:
+            product_id = item.get("product_id")
+            qty = Decimal(str(item.get("quantity", 0)))
+
+            if product_id:
+                product = Product.objects.filter(id=product_id).first()
+                if product:
+                    if adjustment.document_type == "CREDIT_NOTE":
+                        product.stock += qty   # Returned from customer
+                    else:
+                        product.stock -= qty   # Returned to supplier
+                    product.save()
+
+        return Response({
+            "success": True,
+            "message": "Adjustment marked as paid",
+            "journal_id": journal.id
+        })
+
+
+        
 class InvoiceAdjustmentListPageView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -2779,20 +2921,31 @@ class InvoiceAdjustmentDetailView(APIView):
 
         original_invoice = adjustment.related_invoice
 
-        # 🔥 Calculate totals safely
+        # ================= CORRECT TOTAL CALCULATION =================
+
         subtotal = Decimal("0.00")
+        vat_total = Decimal("0.00")
+
         for item in adjustment.items or []:
             qty = Decimal(str(item.get("quantity", 0)))
             price = Decimal(str(item.get("price", 0)))
-            subtotal += qty * price
+            vat_included = item.get("vat_included", False)
 
-        vat = (subtotal * Decimal("0.05")).quantize(Decimal("0.01"))
-        total = subtotal + vat
+            line_total = qty * price
+            subtotal += line_total
 
-        # 🔥 Remaining balance (for credit notes)
+            if vat_included:
+                vat_total += line_total * Decimal("0.05")
+
+        vat_total = vat_total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        total = subtotal + vat_total
+
+        # ================= REMAINING BALANCE =================
+
         remaining_balance = None
 
         if adjustment.document_type == "CREDIT_NOTE" and original_invoice:
+
             previous_credits = Invoice.objects.filter(
                 related_invoice=original_invoice,
                 document_type="CREDIT_NOTE"
@@ -2803,6 +2956,8 @@ class InvoiceAdjustmentDetailView(APIView):
             remaining_balance = (
                 original_invoice.total - previous_credits - total
             )
+
+        # ================= RESPONSE =================
 
         data = {
             "id": adjustment.id,
@@ -2826,10 +2981,14 @@ class InvoiceAdjustmentDetailView(APIView):
             "items": adjustment.items,
 
             "subtotal": float(subtotal),
-            "vat": float(vat),
+            "vat": float(vat_total),
             "total": float(total),
 
-            "remaining_balance": float(remaining_balance) if remaining_balance is not None else None,
+            "remaining_balance": (
+                float(remaining_balance)
+                if remaining_balance is not None
+                else None
+            ),
 
             "created_at": adjustment.created_at,
             "updated_at": adjustment.updated_at,
@@ -2839,8 +2998,6 @@ class InvoiceAdjustmentDetailView(APIView):
             "success": True,
             "adjustment": data
         })
-
-
 
 class InvoiceAdjustmentPDFView(APIView):
     permission_classes = [IsAuthenticated]

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Invoice {{ invoice.number }}</title>
+
+<style>
+
+@page{
+    size:A4;
+    margin:2cm;
+}
+
+body{
+    font-family: Helvetica, Arial, sans-serif;
+    color:#333;
+    font-size:11px;
+}
+
+h1{
+    font-size:28px;
+    margin:0;
+    letter-spacing:1px;
+}
+
+h3{
+    margin:0 0 5px 0;
+    font-size:12px;
+    color:#666;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.header td{
+    vertical-align:top;
+}
+
+.logo img{
+    height:45px;
+}
+
+.company-info{
+    color:#666;
+    font-size:10px;
+}
+
+.invoice-box{
+    background:#f7f7f7;
+    padding:15px;
+    border-radius:4px;
+}
+
+.customer-box{
+    background:#fafafa;
+    border:1px solid #eee;
+    padding:15px;
+}
+
+.items th{
+    text-align:left;
+    padding:10px;
+    border-bottom:2px solid #e5e5e5;
+    color:#444;
+    font-weight:bold;
+}
+
+.items td{
+    padding:10px;
+    border-bottom:1px solid #eee;
+}
+
+.text-right{
+    text-align:right;
+}
+
+.text-center{
+    text-align:center;
+}
+
+.totals{
+    width:280px;
+    margin-left:auto;
+}
+
+.totals td{
+    padding:6px;
+}
+
+.total-row{
+    font-weight:bold;
+    font-size:13px;
+    border-top:2px solid #ddd;
+}
+
+.signature img{
+    height:35px;
+}
+
+.stamp img{
+    height:45px;
+}
+
+.footer{
+    text-align:center;
+    font-size:9px;
+    color:#888;
+    margin-top:40px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<table class="header">
+<tr>
+
+<td width="60%">
+
+{% if company.company_logo %}
+<div class="logo">
+<img src="{{ company.company_logo }}">
+</div>
+{% else %}
+<h1>{{ company.company_name }}</h1>
+{% endif %}
+
+<div class="company-info">
+
+{{ company.company_address }}<br>
+{{ company.city }}, {{ company.country }}<br>
+Tel: {{ company.phone_number }}<br>
+Email: {{ company.email }}
+
+{% if company.is_vat_registered %}
+<br>VAT: {{ company.vat_number }}
+{% endif %}
+
+</div>
+
+</td>
+
+<td width="40%" align="right">
+
+<h1>INVOICE</h1>
+
+<div class="invoice-box">
+
+<strong>No:</strong> {{ invoice.number }}<br>
+<strong>Date:</strong> {{ invoice.date }}<br>
+<strong>Due:</strong> {{ invoice.due_date|default:"N/A" }}<br>
+<strong>Status:</strong> {{ invoice.status|upper }}
+
+</div>
+
+</td>
+
+</tr>
+</table>
+
+<br><br>
+
+<!-- CUSTOMER -->
+
+<div class="customer-box">
+
+<h3>BILL TO</h3>
+
+<strong>{{ customer.company }}</strong><br>
+
+{{ customer.contact_name }}<br>
+{{ customer.email }}<br>
+
+{% if customer.address %}
+{{ customer.address }}
+{% endif %}
+
+</div>
+
+<br><br>
+
+<!-- ITEMS -->
+
+<table class="items">
+
+<thead>
+
+<tr>
+<th width="50%">Description</th>
+<th width="10%" class="text-center">Qty</th>
+<th width="20%" class="text-right">Price (AED)</th>
+<th width="20%" class="text-right">Amount (AED)</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for item in items %}
+
+<tr>
+<td>{{ item.description }}</td>
+<td class="text-center">{{ item.quantity }}</td>
+<td class="text-right">{{ item.price }}</td>
+<td class="text-right">{{ item.amount }}</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<br>
+
+<!-- TOTALS -->
+
+<table class="totals">
+
+<tr>
+<td>Subtotal</td>
+<td class="text-right">AED {{ subtotal }}</td>
+</tr>
+
+<tr>
+<td>VAT (5%)</td>
+<td class="text-right">AED {{ vat }}</td>
+</tr>
+
+<tr class="total-row">
+<td>Total</td>
+<td class="text-right">AED {{ total }}</td>
+</tr>
+
+</table>
+
+<br><br>
+
+<!-- SIGNATURE -->
+
+<table width="100%">
+
+<tr>
+
+<td class="signature">
+
+{% if company.signature_image %}
+
+Authorized Signature<br>
+<img src="{{ company.signature_image }}">
+
+{% endif %}
+
+</td>
+
+<td class="stamp" align="right">
+
+{% if company.company_stamp %}
+
+Company Stamp<br>
+<img src="{{ company.company_stamp }}">
+
+{% endif %}
+
+</td>
+
+</tr>
+
+</table>
+
+<!-- FOOTER -->
+
+<div class="footer">
+
+{{ company.custom_footer_notes|default:"Thank you for your business!" }}
+
+<br>
+Generated: {{ generation_date }}
+
+</div>
+
+</body>
+</html>

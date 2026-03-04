@@ -95,9 +95,11 @@ urlpatterns = [
 
 
     # Invoice Adjustments
+    path("invoices/originals/", OriginalInvoiceListView.as_view()),
     path("invoices/adjustment/", InvoiceAdjustmentCreateView.as_view()),
     path("invoices/adjustments/list/", InvoiceAdjustmentListPageView.as_view()),
     path("invoice-adjustments/<int:adjustment_id>/", InvoiceAdjustmentDetailView.as_view()),
+    path("invoice-adjustments/<int:adjustment_id>/mark-paid/",InvoiceAdjustmentMarkPaidView.as_view()),
 
     # Manual Journal
     path("manual-journals/", ManualJournalCreateView.as_view()),
