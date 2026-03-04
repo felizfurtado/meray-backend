@@ -3479,6 +3479,10 @@ class ExpenseInvoiceMarkPaidView(APIView):
         try:
             invoice = get_object_or_404(ExpenseInvoice, pk=pk)
 
+            print("====== MARK PAID REQUEST ======")
+            print("Invoice ID:", pk)
+            print("Invoice Status:", invoice.status)
+
             # =============================
             # VALIDATION
             # =============================
@@ -3495,6 +3499,8 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
             bank_account_code = request.data.get("bank_account")
 
+            print("Received bank_account_code:", bank_account_code)
+
             if not bank_account_code:
                 return Response({
                     "error": "Bank or Cash account required"
@@ -3506,9 +3512,10 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
             bank_account = get_object_or_404(
                 Account,
-                code=str(bank_account_code),
-                type="Asset"
+                code=str(bank_account_code)
             )
+
+            print("Matched Account:", bank_account.code, bank_account.name, bank_account.type)
 
             # Allow only Bank (1020) or Cash (1010)
             if bank_account.code not in ["1010", "1020"]:
@@ -3522,9 +3529,10 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
             accounts_payable = get_object_or_404(
                 Account,
-                code="2010",
-                type="Liability"
+                code="2010"
             )
+
+            print("Accounts Payable:", accounts_payable.code, accounts_payable.name)
 
             # =============================
             # CREATE PAYMENT JOURNAL
@@ -3542,6 +3550,8 @@ class ExpenseInvoiceMarkPaidView(APIView):
                     "credit": float(invoice.total_amount)
                 }
             ]
+
+            print("Journal Entries:", entries)
 
             journal = ManualJournal.objects.create(
                 date=timezone.now().date(),
@@ -3562,17 +3572,20 @@ class ExpenseInvoiceMarkPaidView(APIView):
             invoice.status = "Paid"
             invoice.save()
 
+            print("Invoice marked as Paid")
+
             return Response({
                 "success": True,
                 "journal_id": journal.id
             })
 
         except Exception as e:
+            print("ERROR:", str(e))
             return Response({
                 "error": str(e)
             }, status=400)
 
-
+            
 
 class ExpenseInvoiceListView(APIView):
     permission_classes = [IsAuthenticated]
