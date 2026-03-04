@@ -3415,7 +3415,7 @@ class ExpenseInvoiceCreateView(APIView):
                 created_by=request.user
             )
 
-            accounts_payable = Account.objects.get(id=12)  # fixed AP
+            accounts_payable = get_object_or_404(Account, code="2010")  # fixed AP
 
             entries = [
                 {
