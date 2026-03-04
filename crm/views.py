@@ -3491,7 +3491,7 @@ class ExpenseInvoiceMarkPaidView(APIView):
                 return Response({"error": "Bank or Cash account required"}, status=400)
 
             # Fetch payment account (Cash or Bank)
-            bank_account = get_object_or_404(Account, code=str(bank_account_code))
+            bank_account = get_object_or_404(Account, code=bank_account_code)
 
             if bank_account.code not in ["1010", "1020"]:
                 return Response({"error": "Invalid payment account"}, status=400)
