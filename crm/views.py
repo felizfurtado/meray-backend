@@ -3483,31 +3483,43 @@ class ExpenseInvoiceMarkPaidView(APIView):
             # VALIDATION
             # =============================
 
-            if invoice.status != "Posted":
-                return Response({
-                    "error": "Only posted invoices can be paid"
-                }, status=400)
-
             if invoice.status == "Paid":
                 return Response({
                     "error": "Invoice already paid"
                 }, status=400)
 
-            bank_account_id = request.data.get("bank_account")
-
-            if bank_account_id in [None, "", 0]:
+            if invoice.status != "Posted":
                 return Response({
-                    "error": "Bank account required"
+                    "error": "Only posted invoices can be paid"
                 }, status=400)
 
-            # Fetch bank account (must be Asset)
+            bank_account_code = request.data.get("bank_account")
+
+            if not bank_account_code:
+                return Response({
+                    "error": "Bank or Cash account required"
+                }, status=400)
+
+            # =============================
+            # FETCH BANK OR CASH ACCOUNT
+            # =============================
+
             bank_account = get_object_or_404(
                 Account,
-                id=bank_account_id,
+                code=str(bank_account_code),
                 type="Asset"
             )
 
-            # Fixed Accounts Payable (id = 12)
+            # Allow only Bank (1020) or Cash (1010)
+            if bank_account.code not in ["1010", "1020"]:
+                return Response({
+                    "error": "Invalid payment account"
+                }, status=400)
+
+            # =============================
+            # FETCH ACCOUNTS PAYABLE
+            # =============================
+
             accounts_payable = get_object_or_404(
                 Account,
                 code="2010",
@@ -3559,8 +3571,6 @@ class ExpenseInvoiceMarkPaidView(APIView):
             return Response({
                 "error": str(e)
             }, status=400)
-
-
 
 
 
