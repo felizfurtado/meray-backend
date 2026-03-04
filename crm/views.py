@@ -3510,7 +3510,7 @@ class ExpenseInvoiceMarkPaidView(APIView):
             # Fixed Accounts Payable (id = 12)
             accounts_payable = get_object_or_404(
                 Account,
-                id=12,
+                code="2010",
                 type="Liability"
             )
 
