@@ -3475,10 +3475,11 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
     @transaction.atomic
     def post(self, request, pk):
+
         try:
             invoice = get_object_or_404(ExpenseInvoice, pk=pk)
 
-            # Validate invoice status
+            # Validate invoice
             if invoice.status == "Paid":
                 return Response({"error": "Invoice already paid"}, status=400)
 
@@ -3490,16 +3491,20 @@ class ExpenseInvoiceMarkPaidView(APIView):
             if not bank_account_code:
                 return Response({"error": "Bank or Cash account required"}, status=400)
 
-            # Fetch payment account (Cash or Bank)
-            bank_account = get_object_or_404(Account, code=bank_account_code)
+            # 🔥 Hardcoded payment accounts
+            if bank_account_code == "1010":
+                bank_account = get_object_or_404(Account, code="1010")
 
-            if bank_account.code not in ["1010", "1020"]:
+            elif bank_account_code == "1020":
+                bank_account = get_object_or_404(Account, code="1020")
+
+            else:
                 return Response({"error": "Invalid payment account"}, status=400)
 
-            # Fetch Accounts Payable
+            # Accounts Payable
             accounts_payable = get_object_or_404(Account, code="2010")
 
-            # Create journal entries
+            # Journal entries
             entries = [
                 {
                     "account": accounts_payable.id,
@@ -3536,8 +3541,6 @@ class ExpenseInvoiceMarkPaidView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=400)
-
-
 
 
 class ExpenseInvoiceListView(APIView):
