@@ -9,6 +9,8 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
 from django.db.models import Sum, Count
+from decimal import Decimal
+
 import uuid
 
 
@@ -48,36 +50,308 @@ class SchemaView(APIView):
 
 
 
+from decimal import Decimal
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+
+# class DashboardView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+
+#         total_leads = Lead.objects.count()
+#         total_customers = Customer.objects.count()
+#         total_invoices = Invoice.objects.count()
+#         total_inventory = InventoryItem.objects.count()
+
+
+#         invoice_revenue = Invoice.objects.filter(
+#             status__iexact="paid"
+#         ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+#         inventory_revenue = InventorySalesInvoice.objects.filter(
+#             status__iexact="paid"
+#         ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+#         total_revenue = invoice_revenue + inventory_revenue
+
+
+#         outstanding = Invoice.objects.filter(
+#             status__in=["sent", "overdue"]
+#         ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+
+#         cogs = Decimal("0.00")
+
+#         inventory_sales = InventorySalesInvoice.objects.filter(
+#             status__iexact="paid"
+#         )
+
+#         for sale in inventory_sales:
+#             for item in sale.items:
+
+#                 qty = Decimal(str(item.get("quantity", 0)))
+#                 cost = Decimal(str(item.get("cost_price", 0)))
+
+#                 cogs += qty * cost
+
+
+#         gross_profit = total_revenue - cogs
+
+
+#         total_expenses = Expense.objects.filter(
+#             status="POSTED"
+#         ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+
+#         net_profit = gross_profit - total_expenses
+
+#         recent_invoices = Invoice.objects.order_by("-created_at")[:5]
+#         recent_leads = Lead.objects.order_by("-created_at")[:5]
+
+#         return Response({
+#             "summary": {
+#                 "total_leads": total_leads,
+#                 "total_customers": total_customers,
+#                 "total_invoices": total_invoices,
+#                 "total_inventory": total_inventory,
+
+#                 "total_revenue": float(total_revenue),
+#                 "outstanding": float(outstanding),
+
+#                 "gross_profit": float(gross_profit),
+#                 "net_profit": float(net_profit),
+#                 "total_expenses": float(total_expenses),
+#             },
+
+#             "recent_invoices": [
+#                 {
+#                     "id": i.id,
+#                     "number": i.number,
+#                     "customer": i.customer.company if i.customer else "Custom",
+#                     "total": float(i.total),
+#                     "status": i.status
+#                 }
+#                 for i in recent_invoices
+#             ],
+
+#             "recent_leads": [
+#                 {
+#                     "id": l.id,
+#                     "name": l.name,
+#                     "company": l.company
+#                 }
+#                 for l in recent_leads
+#             ]
+#         })
+
+
+
+
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
 
+        today = timezone.now().date()
+
+        # ===============================
+        # BASIC COUNTS
+        # ===============================
+
         total_leads = Lead.objects.count()
         total_customers = Customer.objects.count()
-        total_invoices = Invoice.objects.count()
-        total_inventory = InventoryItem.objects.count()  # ✅ FIXED
+        total_invoices = Invoice.objects.count() + InventorySalesInvoice.objects.count()
+        total_inventory = InventoryItem.objects.count()
 
-        total_revenue = Invoice.objects.filter(
+        # ===============================
+        # REVENUE
+        # ===============================
+
+        invoice_revenue = Invoice.objects.filter(
             status__iexact="paid"
-        ).aggregate(total=Sum("total"))["total"] or 0
+        ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
 
-        outstanding = Invoice.objects.filter(
-            status__in=["sent", "overdue"]
-        ).aggregate(total=Sum("total"))["total"] or 0
+        inventory_revenue = InventorySalesInvoice.objects.filter(
+            status__iexact="paid"
+        ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+        total_revenue = invoice_revenue + inventory_revenue
+
+        # ===============================
+        # OUTSTANDING
+        # ===============================
+
+        outstanding_invoice = Invoice.objects.filter(
+            status__in=["sent", "posted"]
+        ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+        outstanding_inventory = InventorySalesInvoice.objects.filter(
+            status__in=["sent", "posted"]
+        ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+        outstanding = outstanding_invoice + outstanding_inventory
+
+        # ===============================
+        # COGS (INVENTORY SALES ONLY)
+        # ===============================
+
+        cogs = Decimal("0.00")
+
+        inventory_sales = InventorySalesInvoice.objects.filter(
+            status__iexact="paid"
+        )
+
+        for sale in inventory_sales:
+            for item in sale.items:
+
+                qty = Decimal(str(item.get("quantity", 0)))
+                cost = Decimal(str(item.get("cost_price", 0)))
+
+                cogs += qty * cost
+
+        # ===============================
+        # GROSS PROFIT
+        # ===============================
+
+        gross_profit = total_revenue - cogs
+
+        # ===============================
+        # EXPENSES
+        # ===============================
+
+        total_expenses = Expense.objects.filter(
+            status="POSTED"
+        ).aggregate(total=Sum("total"))["total"] or Decimal("0.00")
+
+        # ===============================
+        # NET PROFIT
+        # ===============================
+
+        net_profit = gross_profit - total_expenses
+
+        # ===============================
+        # RECEIVABLES
+        # ===============================
+
+        # ---------- DRAFT ----------
+
+        draft_invoices = Invoice.objects.filter(status="draft")
+        draft_inventory = InventorySalesInvoice.objects.filter(status="draft")
+
+        draft_count = draft_invoices.count() + draft_inventory.count()
+
+        draft_total = (
+            (draft_invoices.aggregate(total=Sum("total"))["total"] or Decimal("0.00"))
+            +
+            (draft_inventory.aggregate(total=Sum("total"))["total"] or Decimal("0.00"))
+        )
+
+        # ---------- AWAITING ----------
+
+        awaiting_invoices = Invoice.objects.filter(
+            status__in=["sent", "posted"]
+        ).filter(
+            Q(due_date__gte=today) | Q(due_date__isnull=True)
+        )
+
+        awaiting_inventory = InventorySalesInvoice.objects.filter(
+            status__in=["sent", "posted"]
+        ).filter(
+            Q(due_date__gte=today) | Q(due_date__isnull=True)
+        )
+
+        awaiting_count = awaiting_invoices.count() + awaiting_inventory.count()
+
+        awaiting_total = (
+            (awaiting_invoices.aggregate(total=Sum("total"))["total"] or Decimal("0.00"))
+            +
+            (awaiting_inventory.aggregate(total=Sum("total"))["total"] or Decimal("0.00"))
+        )
+
+        # ---------- OVERDUE ----------
+
+        overdue_invoices = Invoice.objects.filter(
+            status__in=["sent", "posted"],
+            due_date__lt=today
+        )
+
+        overdue_inventory = InventorySalesInvoice.objects.filter(
+            status__in=["sent", "posted"],
+            due_date__lt=today
+        )
+
+        overdue_count = overdue_invoices.count() + overdue_inventory.count()
+
+        overdue_total = (
+            (overdue_invoices.aggregate(total=Sum("total"))["total"] or Decimal("0.00"))
+            +
+            (overdue_inventory.aggregate(total=Sum("total"))["total"] or Decimal("0.00"))
+        )
+
+        # ===============================
+        # MONTHLY CHART
+        # ===============================
+
+        monthly_invoices = (
+            Invoice.objects
+            .annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(total=Sum("total"))
+            .order_by("month")
+        )
+
+        invoice_chart = [
+            {
+                "month": m["month"].strftime("%b"),
+                "total": float(m["total"] or 0)
+            }
+            for m in monthly_invoices
+        ]
+
+        # ===============================
+        # RECENT DATA
+        # ===============================
 
         recent_invoices = Invoice.objects.order_by("-created_at")[:5]
         recent_leads = Lead.objects.order_by("-created_at")[:5]
 
+        # ===============================
+        # RESPONSE
+        # ===============================
+
         return Response({
+
             "summary": {
                 "total_leads": total_leads,
                 "total_customers": total_customers,
                 "total_invoices": total_invoices,
                 "total_inventory": total_inventory,
+
                 "total_revenue": float(total_revenue),
                 "outstanding": float(outstanding),
+
+                "gross_profit": float(gross_profit),
+                "net_profit": float(net_profit),
+                "total_expenses": float(total_expenses),
             },
+
+            "receivables": {
+                "drafts": {
+                    "count": draft_count,
+                    "total": float(draft_total)
+                },
+                "awaiting": {
+                    "count": awaiting_count,
+                    "total": float(awaiting_total)
+                },
+                "overdue": {
+                    "count": overdue_count,
+                    "total": float(overdue_total)
+                },
+                "chart": invoice_chart
+            },
+
             "recent_invoices": [
                 {
                     "id": i.id,
@@ -88,6 +362,7 @@ class DashboardView(APIView):
                 }
                 for i in recent_invoices
             ],
+
             "recent_leads": [
                 {
                     "id": l.id,
@@ -97,6 +372,8 @@ class DashboardView(APIView):
                 for l in recent_leads
             ]
         })
+
+
 
 
 class LeadListView(APIView):
