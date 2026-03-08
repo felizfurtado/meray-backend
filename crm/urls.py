@@ -142,6 +142,14 @@ urlpatterns = [
     path("inventory-sales-invoices/<int:pk>/post/",InventorySalesInvoicePostView.as_view()),
     path("inventory-sales-invoices/<int:pk>/mark-paid/",InventorySalesInvoiceMarkPaidView.as_view()),
     path("inventory-sales-invoices/<int:pk>/pdf/",InventorySalesInvoicePDFView.as_view()),
+
+
+    #reports
+    path("reports/profit-loss/", ProfitLossReportView.as_view()),
+    path("reports/balance-sheet/", BalanceSheetView.as_view()),
+    path("reports/statement-of-account/", StatementOfAccountView.as_view()),
+    path("reports/vendor-statement/", VendorStatementView.as_view()),
+    path("reports/cash-flow/", CashFlowReportView.as_view()),
     
 
 

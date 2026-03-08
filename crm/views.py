@@ -6,7 +6,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Sum , Q
 from django.utils.timezone import now
 from django.db.models import Sum, Count
 from decimal import Decimal
@@ -5398,3 +5398,663 @@ class InventorySalesInvoicePDFView(APIView):
         doc.build(elements)
 
         return response
+
+
+
+
+
+
+
+
+
+
+
+class ProfitLossReportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        start_date = request.query_params.get("start_date")
+        end_date = request.query_params.get("end_date")
+
+        if not start_date or not end_date:
+            return Response({
+                "success": False,
+                "error": "start_date and end_date required"
+            }, status=400)
+
+        journals = ManualJournal.objects.filter(
+            date__gte=start_date,
+            date__lte=end_date,
+            status="Posted"
+        )
+
+        revenue_accounts = {}
+        cogs_total = Decimal("0.00")
+        expense_accounts = {}
+
+        total_revenue = Decimal("0.00")
+        total_expenses = Decimal("0.00")
+
+        for journal in journals:
+
+            for entry in journal.entries:
+
+                account_id = entry.get("account")
+                debit = Decimal(str(entry.get("debit", 0)))
+                credit = Decimal(str(entry.get("credit", 0)))
+
+                try:
+                    account = Account.objects.get(id=account_id)
+                except Account.DoesNotExist:
+                    continue
+
+                # =========================
+                # REVENUE
+                # =========================
+
+                if account.type == "Revenue":
+
+                    revenue_accounts.setdefault(account.id, {
+                        "name": account.name,
+                        "code": account.code,
+                        "total": Decimal("0.00")
+                    })
+
+                    revenue_accounts[account.id]["total"] += credit
+                    total_revenue += credit
+
+                # =========================
+                # COGS (5000)
+                # =========================
+
+                elif account.code == "5000":
+
+                    cogs_total += debit
+
+                # =========================
+                # OTHER EXPENSES
+                # =========================
+
+                elif account.type == "Expense":
+
+                    expense_accounts.setdefault(account.id, {
+                        "name": account.name,
+                        "code": account.code,
+                        "total": Decimal("0.00")
+                    })
+
+                    expense_accounts[account.id]["total"] += debit
+                    total_expenses += debit
+
+
+        gross_profit = total_revenue - cogs_total
+        net_profit = gross_profit - total_expenses
+
+
+        return Response({
+
+            "operating_income": [
+                {
+                    "account": v["name"],
+                    "code": v["code"],
+                    "total": float(v["total"])
+                }
+                for v in revenue_accounts.values()
+            ],
+
+            "total_operating_income": float(total_revenue),
+
+            "cogs": float(cogs_total),
+
+            "gross_profit": float(gross_profit),
+
+            "operating_expenses": [
+                {
+                    "account": v["name"],
+                    "code": v["code"],
+                    "total": float(v["total"])
+                }
+                for v in expense_accounts.values()
+            ],
+
+            "total_operating_expenses": float(total_expenses),
+
+            "net_profit": float(net_profit)
+
+        })
+
+
+
+
+# class BalanceSheetView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+
+#         report_date = request.query_params.get("date")
+
+#         if not report_date:
+#             return Response({"error": "date is required"}, status=400)
+
+#         journals = ManualJournal.objects.filter(
+#             date__lte=report_date,
+#             status="Posted"
+#         )
+
+#         assets = {}
+#         liabilities = {}
+#         equity = {}
+
+#         total_assets = Decimal("0")
+#         total_liabilities = Decimal("0")
+#         total_equity = Decimal("0")
+
+
+#         accounts = {a.id: a for a in Account.objects.all()}
+
+#         for journal in journals:
+
+#             for entry in journal.entries:
+
+#                 account = accounts.get(entry["account"])
+
+#                 if not account:
+#                     continue
+
+#                 debit = Decimal(str(entry.get("debit", 0)))
+#                 credit = Decimal(str(entry.get("credit", 0)))
+
+#                 if account.type == "Asset":
+
+#                     balance = debit - credit
+
+#                     assets.setdefault(account.id, {
+#                         "name": account.name,
+#                         "code": account.code,
+#                         "balance": Decimal("0")
+#                     })
+
+#                     assets[account.id]["balance"] += balance
+#                     total_assets += balance
+
+#                 elif account.type == "Liability":
+
+#                     balance = credit - debit
+
+#                     liabilities.setdefault(account.id, {
+#                         "name": account.name,
+#                         "code": account.code,
+#                         "balance": Decimal("0")
+#                     })
+
+#                     liabilities[account.id]["balance"] += balance
+#                     total_liabilities += balance
+
+#                 elif account.type == "Equity":
+
+#                     balance = credit - debit
+
+#                     equity.setdefault(account.id, {
+#                         "name": account.name,
+#                         "code": account.code,
+#                         "balance": Decimal("0")
+#                     })
+
+#                     equity[account.id]["balance"] += balance
+#                     total_equity += balance
+
+#         return Response({
+
+#             "assets": list(assets.values()),
+#             "total_assets": float(total_assets),
+
+#             "liabilities": list(liabilities.values()),
+#             "total_liabilities": float(total_liabilities),
+
+#             "equity": list(equity.values()),
+#             "total_equity": float(total_equity),
+
+#             "balance_check": float(total_assets - (total_liabilities + total_equity))
+
+#         })
+
+
+
+
+from decimal import Decimal
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from crm.models import ManualJournal, Account
+
+
+class BalanceSheetView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        report_date = request.query_params.get("date")
+
+        if not report_date:
+            return Response({"error": "date is required"}, status=400)
+
+        journals = ManualJournal.objects.filter(
+            date__lte=report_date,
+            status="Posted"
+        )
+
+        assets = {}
+        liabilities = {}
+        equity = {}
+
+        total_assets = Decimal("0")
+        total_liabilities = Decimal("0")
+        total_equity = Decimal("0")
+
+        total_revenue = Decimal("0")
+        total_expenses = Decimal("0")
+
+        accounts = {a.id: a for a in Account.objects.all()}
+
+        for journal in journals:
+
+            for entry in journal.entries:
+
+                account = accounts.get(entry["account"])
+                if not account:
+                    continue
+
+                debit = Decimal(str(entry.get("debit", 0)))
+                credit = Decimal(str(entry.get("credit", 0)))
+
+                # Assets
+                if account.type == "Asset":
+
+                    balance = debit - credit
+
+                    assets.setdefault(account.id, {
+                        "name": account.name,
+                        "code": account.code,
+                        "balance": Decimal("0")
+                    })
+
+                    assets[account.id]["balance"] += balance
+                    total_assets += balance
+
+                # Liabilities
+                elif account.type == "Liability":
+
+                    balance = credit - debit
+
+                    liabilities.setdefault(account.id, {
+                        "name": account.name,
+                        "code": account.code,
+                        "balance": Decimal("0")
+                    })
+
+                    liabilities[account.id]["balance"] += balance
+                    total_liabilities += balance
+
+                # Equity
+                elif account.type == "Equity":
+
+                    balance = credit - debit
+
+                    equity.setdefault(account.id, {
+                        "name": account.name,
+                        "code": account.code,
+                        "balance": Decimal("0")
+                    })
+
+                    equity[account.id]["balance"] += balance
+                    total_equity += balance
+
+                # Revenue
+                elif account.type == "Revenue":
+
+                    total_revenue += credit - debit
+
+                # Expense
+                elif account.type == "Expense":
+
+                    total_expenses += debit - credit
+
+
+        # Calculate retained earnings
+        retained_earnings = total_revenue - total_expenses
+
+        equity["retained"] = {
+            "name": "Retained Earnings",
+            "code": "RE",
+            "balance": retained_earnings
+        }
+
+        total_equity += retained_earnings
+
+
+        return Response({
+
+            "assets": list(assets.values()),
+            "total_assets": float(total_assets),
+
+            "liabilities": list(liabilities.values()),
+            "total_liabilities": float(total_liabilities),
+
+            "equity": list(equity.values()),
+            "total_equity": float(total_equity),
+
+            "balance_check": float(total_assets - (total_liabilities + total_equity))
+
+        })
+
+
+
+class StatementOfAccountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        customer_id = request.query_params.get("customer")
+
+        if not customer_id:
+            return Response({"error": "customer id required"}, status=400)
+
+        transactions = []
+
+        balance = Decimal("0")
+
+        # Get invoices
+        invoices = Invoice.objects.filter(customer_id=customer_id)
+
+        for inv in invoices:
+
+            amount = Decimal(str(inv.total))
+
+            balance += amount
+
+            transactions.append({
+                "date": inv.date,
+                "invoice": inv.number,
+                "description": "Invoice",
+                "debit": float(amount),
+                "credit": 0,
+                "balance": float(balance)
+            })
+
+
+        # Get Accounts Receivable account
+        ar_account = Account.objects.filter(name__icontains="receivable").first()
+
+        # Get payments (journal entries affecting AR)
+        journals = ManualJournal.objects.all()
+
+        for j in journals:
+
+            for e in j.entries:
+
+                if e["account"] == ar_account.id:
+
+                    credit = Decimal(str(e.get("credit", 0)))
+
+                    if credit > 0:
+
+                        balance -= credit
+
+                        transactions.append({
+                            "date": j.date,
+                            "invoice": j.journal_number,
+                            "description": "Payment",
+                            "debit": 0,
+                            "credit": float(credit),
+                            "balance": float(balance)
+                        })
+
+
+        # Sort transactions by date
+        transactions = sorted(transactions, key=lambda x: x["date"])
+
+
+        return Response({
+            "customer": customer_id,
+            "transactions": transactions,
+            "total_balance": float(balance)
+        })
+
+
+
+
+class VendorStatementView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        vendor_id = request.query_params.get("vendor")
+
+        if not vendor_id:
+            return Response({"error": "vendor id required"}, status=400)
+
+        vendor_id = int(vendor_id)
+
+        transactions = []
+        balance = Decimal("0")
+
+        # ---------------------------
+        # Vendor Bills
+        # ---------------------------
+
+        bills = ExpenseInvoice.objects.filter(vendor_id=vendor_id)
+
+        for bill in bills:
+
+            amount = Decimal(str(bill.total_amount))
+
+            balance += amount
+
+            transactions.append({
+                "date": bill.date,
+                "reference": bill.invoice_number,
+                "description": "Vendor Bill",
+                "debit": 0,
+                "credit": float(amount),
+                "balance": float(balance)
+            })
+
+        # ---------------------------
+        # Vendor Payments
+        # ---------------------------
+
+        ap_account = Account.objects.filter(code="2010").first()
+
+        journals = ManualJournal.objects.all()
+
+        for j in journals:
+
+            for e in j.entries:
+
+                if e["account"] == ap_account.id:
+
+                    debit = Decimal(str(e.get("debit", 0)))
+
+                    if debit > 0:
+
+                        balance -= debit
+
+                        transactions.append({
+                            "date": j.date,
+                            "reference": j.journal_number,
+                            "description": "Payment",
+                            "debit": float(debit),
+                            "credit": 0,
+                            "balance": float(balance)
+                        })
+
+        transactions = sorted(transactions, key=lambda x: x["date"])
+
+        return Response({
+            "vendor": vendor_id,
+            "transactions": transactions,
+            "total_balance": float(balance)
+        })
+
+
+
+class CashFlowReportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        start = request.query_params.get("start")
+        end = request.query_params.get("end")
+
+        journals = ManualJournal.objects.filter(
+            date__gte=start,
+            date__lte=end
+        )
+
+        # ----------------------------------
+        # Variables
+        # ----------------------------------
+
+        revenue = Decimal("0")
+        expenses = Decimal("0")
+        cogs = Decimal("0")
+
+        ar_change = Decimal("0")
+        ap_change = Decimal("0")
+        inventory_change = Decimal("0")
+
+        cash_in = Decimal("0")
+        cash_out = Decimal("0")
+
+        # ----------------------------------
+        # Cash Accounts
+        # ----------------------------------
+
+        cash_accounts = Account.objects.filter(code__in=["1010","1020"])
+        cash_ids = [a.id for a in cash_accounts]
+
+        # ----------------------------------
+        # Calculate Beginning Cash
+        # ----------------------------------
+
+        beginning_cash = Decimal("0")
+
+        past_journals = ManualJournal.objects.filter(date__lt=start)
+
+        for j in past_journals:
+
+            for e in j.entries:
+
+                if e["account"] in cash_ids:
+
+                    debit = Decimal(str(e.get("debit",0)))
+                    credit = Decimal(str(e.get("credit",0)))
+
+                    beginning_cash += debit
+                    beginning_cash -= credit
+
+
+        # ----------------------------------
+        # Process Journals in Period
+        # ----------------------------------
+
+        for j in journals:
+
+            for e in j.entries:
+
+                acc = Account.objects.get(id=e["account"])
+
+                debit = Decimal(str(e.get("debit",0)))
+                credit = Decimal(str(e.get("credit",0)))
+
+                # Revenue
+                if acc.type == "Revenue":
+                    revenue += credit
+
+                # Expense
+                elif acc.type == "Expense":
+                    expenses += debit
+
+                # COGS
+                elif acc.code == "5000":
+                    cogs += debit
+
+                # Accounts Receivable
+                elif acc.code == "1100":
+                    ar_change += debit - credit
+
+                # Accounts Payable
+                elif acc.code == "2010":
+                    ap_change += credit - debit
+
+                # Inventory
+                elif acc.code == "1800":
+                    inventory_change += debit - credit
+
+                # Cash movements
+                if e["account"] in cash_ids:
+
+                    cash_in += debit
+                    cash_out += credit
+
+
+        # ----------------------------------
+        # Net Income
+        # ----------------------------------
+
+        net_income = revenue - cogs - expenses
+
+
+        # ----------------------------------
+        # Operating Cash Flow
+        # ----------------------------------
+
+        operating_cash_flow = (
+            net_income
+            - ar_change
+            + ap_change
+            - inventory_change
+        )
+
+
+        # ----------------------------------
+        # Net Cash Change
+        # ----------------------------------
+
+        net_change = cash_in - cash_out
+
+        ending_cash = beginning_cash + net_change
+
+
+        # ----------------------------------
+        # Response
+        # ----------------------------------
+
+        return Response({
+
+            "operating": {
+                "net_income": float(net_income),
+                "change_ar": float(ar_change),
+                "change_inventory": float(inventory_change),
+                "change_ap": float(ap_change),
+                "operating_cash_flow": float(operating_cash_flow)
+            },
+
+            "investing": {
+                "cash_flow": 0
+            },
+
+            "financing": {
+                "cash_flow": 0
+            },
+
+            "cash_summary": {
+                "beginning_cash": float(beginning_cash),
+                "cash_in": float(cash_in),
+                "cash_out": float(cash_out),
+                "net_change": float(net_change),
+                "ending_cash": float(ending_cash)
+            }
+
+        })
