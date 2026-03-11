@@ -150,6 +150,14 @@ urlpatterns = [
     path("reports/statement-of-account/", StatementOfAccountView.as_view()),
     path("reports/vendor-statement/", VendorStatementView.as_view()),
     path("reports/cash-flow/", CashFlowReportView.as_view()),
+
+
+
+    #tasks
+    path("tasks/", TaskListView.as_view()),
+    path("tasks/create/", TaskCreateView.as_view()),
+    path("tasks/<int:pk>/update/", TaskUpdateView.as_view()),
+    path("tasks/<int:pk>/delete/", TaskDeleteView.as_view()),
     
 
 

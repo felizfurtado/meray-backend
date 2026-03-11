@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+
+body{
+    font-family: Helvetica;
+    font-size:12px;
+    color:#333;
+}
+
+.header-table{
+    width:100%;
+    border-bottom:2px solid #3D5D6D;
+    margin-bottom:20px;
+}
+
+.logo{
+    height:70px;
+}
+
+.company-name{
+    font-size:22px;
+    font-weight:bold;
+    color:#3D5D6D;
+}
+
+.invoice-box{
+    text-align:right;
+}
+
+.invoice-title{
+    font-size:26px;
+    font-weight:bold;
+}
+
+.info-table{
+    width:100%;
+    margin-top:10px;
+    margin-bottom:20px;
+}
+
+.items-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.items-table th{
+    background:#3D5D6D;
+    color:white;
+    padding:8px;
+    text-align:left;
+}
+
+.items-table td{
+    padding-top:8px;
+    padding-bottom:8px;
+    border-bottom:1px solid #ddd;
+}
+
+.total-table{
+    margin-top:20px;
+    width:250px;
+    float:right;
+}
+
+.total-table td{
+    padding:6px;
+}
+
+.total-final{
+    font-weight:bold;
+    font-size:14px;
+    border-top:2px solid #000;
+}
+
+.signature{
+    margin-top:80px;
+    text-align:right;
+}
+
+.signature img{
+    height:60px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- HEADER -->
+
+<table class="header-table">
+<tr>
+
+<td width="60%">
+
+{% if company.company_logo %}
+<img src="{{ company.company_logo }}" class="logo">
+{% endif %}
+
+<div class="company-name">
+{{ company.company_name }}
+</div>
+
+<div>
+{{ company.company_address }}
+</div>
+
+<div>
+{{ company.city }} {{ company.state }}
+</div>
+
+<div>
+{{ company.country }} {{ company.postal_code }}
+</div>
+
+<div>
+Phone: {{ company.phone_number }}
+</div>
+
+<div>
+Email: {{ company.email }}
+</div>
+
+</td>
+
+<td class="invoice-box">
+
+<div class="invoice-title">
+{{ invoice_title|upper }}
+</div>
+
+<div>
+<strong>#{{ invoice.number }}</strong>
+</div>
+
+<div>
+Date: {{ invoice.date }}
+</div>
+
+<div>
+Status: {{ invoice.status|upper }}
+</div>
+
+</td>
+
+</tr>
+</table>
+
+
+<!-- CUSTOMER -->
+
+<table class="info-table">
+<tr>
+
+<td>
+
+<strong>Bill To</strong><br>
+
+{{ invoice.customer.company|default:"Walk-in Customer" }}
+
+</td>
+
+<td align="right">
+
+<strong>Due Date</strong><br>
+
+{{ invoice.due_date|default:"-" }}
+
+</td>
+
+</tr>
+</table>
+
+
+<!-- ITEMS -->
+
+<table class="items-table">
+
+<tr>
+<th>Item</th>
+<th width="80">Qty</th>
+<th width="120">Unit Price</th>
+<th width="100">VAT</th>
+<th width="120">Total</th>
+</tr>
+
+{% for item in items %}
+
+<tr>
+
+<td>{{ item.item_name }}</td>
+
+<td>{{ item.quantity }}</td>
+
+<td>{{ item.price }}</td>
+
+<td>{{ item.vat_amount }}</td>
+
+<td>{{ item.price|add:item.vat_amount }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+
+<!-- TOTALS -->
+
+<table class="total-table">
+
+<tr>
+<td>Subtotal</td>
+<td align="right">{{ invoice.subtotal }}</td>
+</tr>
+
+<tr>
+<td>VAT</td>
+<td align="right">{{ invoice.vat }}</td>
+</tr>
+
+<tr class="total-final">
+<td>Total</td>
+<td align="right">{{ invoice.total }}</td>
+</tr>
+
+</table>
+
+
+<!-- SIGNATURE -->
+
+<div class="signature">
+
+{% if company.signature_image %}
+<img src="{{ company.signature_image }}">
+{% endif %}
+
+<br>
+
+Authorized Signature
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+
+body{
+    font-family: Helvetica;
+    font-size:12px;
+    color:#333;
+}
+
+/* HEADER */
+
+.header-table{
+    width:100%;
+    border-bottom:2px solid #3D5D6D;
+    margin-bottom:20px;
+}
+
+.logo{
+    height:70px;
+}
+
+.company-name{
+    font-size:22px;
+    font-weight:bold;
+    color:#3D5D6D;
+}
+
+.note-title{
+    font-size:26px;
+    font-weight:bold;
+    color:#3D5D6D;
+    text-align:right;
+}
+
+/* INFO */
+
+.info-table{
+    width:100%;
+    margin-top:10px;
+    margin-bottom:20px;
+}
+
+/* ITEMS */
+
+.items-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.items-table th{
+    background:#3D5D6D;
+    color:white;
+    padding:8px;
+    text-align:left;
+}
+
+.items-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+}
+
+/* TOTALS */
+
+.total-table{
+    margin-top:20px;
+    width:250px;
+    float:right;
+}
+
+.total-table td{
+    padding:6px;
+}
+
+.total-final{
+    font-weight:bold;
+    font-size:14px;
+    border-top:2px solid #000;
+}
+
+.balance{
+    margin-top:40px;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<table class="header-table">
+<tr>
+
+<td width="60%">
+
+{% if company.company_logo %}
+<img src="{{ company.company_logo.url }}" class="logo">
+{% endif %}
+
+<div class="company-name">
+{{ company.company_name }}
+</div>
+
+<div>
+{{ company.company_address }}
+</div>
+
+<div>
+{{ company.city }} {{ company.state }}
+</div>
+
+<div>
+{{ company.country }}
+</div>
+
+<div>
+VAT: {{ company.vat_number }}
+</div>
+
+</td>
+
+<td width="40%">
+
+<div class="note-title">
+{{ title|upper }}
+</div>
+
+<div style="text-align:right">
+
+<strong>#{{ adjustment.number }}</strong><br>
+Date: {{ adjustment.date }}<br>
+Status: {{ adjustment.status|upper }}
+
+{% if original_invoice %}
+<br>Related Invoice: {{ original_invoice.number }}
+{% endif %}
+
+</div>
+
+</td>
+
+</tr>
+</table>
+
+<!-- CUSTOMER -->
+
+<table class="info-table">
+<tr>
+
+<td>
+
+<strong>Customer</strong><br>
+
+{{ customer_name }}
+
+</td>
+
+</tr>
+</table>
+
+<!-- ITEMS -->
+
+<table class="items-table">
+
+<tr>
+<th>Description</th>
+<th width="80">Qty</th>
+<th width="120">Price</th>
+<th width="120">Amount</th>
+</tr>
+
+{% for item in items %}
+
+<tr>
+
+<td>{{ item.description }}</td>
+<td>{{ item.quantity }}</td>
+<td>{{ item.price }}</td>
+<td>{{ item.amount }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<!-- TOTALS -->
+
+<table class="total-table">
+
+<tr>
+<td>Subtotal</td>
+<td align="right">{{ subtotal }}</td>
+</tr>
+
+<tr>
+<td>VAT (5%)</td>
+<td align="right">{{ vat }}</td>
+</tr>
+
+<tr class="total-final">
+<td>Total</td>
+<td align="right">{{ total }}</td>
+</tr>
+
+</table>
+
+<br><br>
+
+{% if remaining_balance %}
+
+<div class="balance">
+
+Remaining Invoice Balance: {{ remaining_balance }}
+
+</div>
+
+{% endif %}
+
+</body>
+</html>

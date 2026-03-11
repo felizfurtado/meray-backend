@@ -2643,10 +2643,12 @@ class InvoicePDFView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
+
         invoice = get_object_or_404(Invoice, pk=pk)
         company = CompanyProfile.objects.first()
-        
-        # Prepare customer data
+
+        # ================= CUSTOMER =================
+
         if invoice.customer:
             customer = {
                 "company": invoice.customer.company,
@@ -2661,47 +2663,79 @@ class InvoicePDFView(APIView):
                 "email": invoice.custom_details.get("email", ""),
                 "address": invoice.custom_details.get("address", "")
             }
-        
-        # Prepare items
-        items = []
+
+        # ================= ITEMS =================
+
+        prepared_items = []
+
         for item in invoice.items:
-            items.append({
+
+            qty = Decimal(str(item.get("quantity", 0)))
+            price = Decimal(str(item.get("price", 0)))
+            amount = Decimal(str(item.get("amount", 0)))
+
+            prepared_items.append({
                 "description": item.get("description", ""),
-                "quantity": item.get("quantity", 0),
-                "price": f"{Decimal(str(item.get('price', 0))):,.2f}",
-                "amount": f"{Decimal(str(item.get('amount', 0))):,.2f}"
+                "quantity": qty,
+                "price": f"{price:,.2f}",
+                "amount": f"{amount:,.2f}"
             })
-        
-        # Prepare context
+
+        # ================= TITLE =================
+
+        invoice_title = "Tax Invoice" if invoice.vat and invoice.vat > 0 else "Invoice"
+
+        # ================= CONTEXT =================
+
         context = {
+
             "company": company,
+
             "invoice": {
                 "number": invoice.number,
                 "date": invoice.date.strftime("%d %b %Y"),
                 "due_date": invoice.due_date.strftime("%d %b %Y") if invoice.due_date else "N/A",
                 "status": invoice.status,
             },
+
+            "invoice_title": invoice_title,
+
             "customer": customer,
-            "items": items,
+
+            "items": prepared_items,
+
             "subtotal": f"{invoice.subtotal:,.2f}",
             "vat": f"{invoice.vat:,.2f}",
             "total": f"{invoice.total:,.2f}",
+
             "generation_date": timezone.now().strftime("%d %b %Y, %I:%M %p"),
         }
-        
-        # Render HTML
+
+        # ================= TEMPLATE =================
+
         template = get_template("pdf/invoice.html")
         html = template.render(context)
-        
-        # Create PDF
+
+        # ================= PDF =================
+
         result = BytesIO()
-        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
-        
+
+        pdf = pisa.pisaDocument(
+            BytesIO(html.encode("UTF-8")),
+            result
+        )
+
         if not pdf.err:
-            response = HttpResponse(result.getvalue(), content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename=Invoice-{invoice.number}.pdf'
+
+            response = HttpResponse(
+                result.getvalue(),
+                content_type="application/pdf"
+            )
+
+            response["Content-Disposition"] = f'attachment; filename=Invoice-{invoice.number}.pdf'
+
             return response
-        
+
         return HttpResponse("Error generating PDF", status=500)
 
 
@@ -3276,6 +3310,140 @@ class InvoiceAdjustmentDetailView(APIView):
             "adjustment": data
         })
 
+# class InvoiceAdjustmentPDFView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, pk):
+
+#         adjustment = get_object_or_404(
+#             Invoice,
+#             pk=pk,
+#             document_type__in=["CREDIT_NOTE", "DEBIT_NOTE"]
+#         )
+
+#         company = CompanyProfile.objects.first()
+#         original_invoice = adjustment.related_invoice
+
+#         response = HttpResponse(content_type="application/pdf")
+#         response["Content-Disposition"] = (
+#             f'attachment; filename={adjustment.document_type}-{adjustment.number}.pdf'
+#         )
+
+#         doc = SimpleDocTemplate(response, pagesize=A4)
+#         elements = []
+#         styles = getSampleStyleSheet()
+
+
+#         title_text = "CREDIT NOTE" if adjustment.document_type == "CREDIT_NOTE" else "DEBIT NOTE"
+
+#         elements.append(Paragraph(f"<b>{title_text}</b>", styles["Title"]))
+#         elements.append(Spacer(1, 0.3 * inch))
+
+
+#         if company:
+#             company_info = f"""
+#             <b>{company.company_name}</b><br/>
+#             {company.company_address}<br/>
+#             {company.city or ''} {company.state or ''}<br/>
+#             {company.country}<br/>
+#             VAT: {company.vat_number if company.is_vat_registered else "Not Registered"}
+#             """
+
+#             elements.append(Paragraph(company_info, styles["Normal"]))
+#             elements.append(Spacer(1, 0.4 * inch))
+
+
+#         info_text = f"""
+#         <b>Number:</b> {adjustment.number}<br/>
+#         <b>Date:</b> {adjustment.date}<br/>
+#         <b>Status:</b> {adjustment.status.upper()}
+#         """
+
+#         if original_invoice:
+#             info_text += f"<br/><b>Related Invoice:</b> {original_invoice.number}"
+
+#         elements.append(Paragraph(info_text, styles["Normal"]))
+#         elements.append(Spacer(1, 0.4 * inch))
+
+
+#         customer_name = adjustment.customer.company if adjustment.customer else ""
+#         elements.append(Paragraph(f"<b>Customer:</b> {customer_name}", styles["Heading3"]))
+#         elements.append(Spacer(1, 0.3 * inch))
+
+
+#         data = [["Description", "Qty", "Price", "Amount"]]
+
+#         subtotal = Decimal("0.00")
+
+#         for item in adjustment.items:
+#             qty = Decimal(str(item.get("quantity", 0)))
+#             price = Decimal(str(item.get("price", 0)))
+#             amount = qty * price
+#             subtotal += amount
+
+#             data.append([
+#                 item.get("description"),
+#                 str(qty),
+#                 f"{price:,.2f}",
+#                 f"{amount:,.2f}",
+#             ])
+
+#         vat = (subtotal * Decimal("0.05")).quantize(Decimal("0.01"))
+#         total = subtotal + vat
+
+#         data.append(["", "", "Subtotal", f"{subtotal:,.2f}"])
+#         data.append(["", "", "VAT (5%)", f"{vat:,.2f}"])
+#         data.append(["", "", "Total", f"{total:,.2f}"])
+
+#         table = Table(data, colWidths=[2.5*inch, 0.8*inch, 1.2*inch, 1.2*inch])
+
+#         table.setStyle(TableStyle([
+#             ("BACKGROUND", (0,0), (-1,0), colors.lightgrey),
+#             ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
+#             ("ALIGN", (1,1), (-1,-1), "RIGHT"),
+#         ]))
+
+#         elements.append(table)
+#         elements.append(Spacer(1, 0.5 * inch))
+
+
+#         if adjustment.document_type == "CREDIT_NOTE" and original_invoice:
+
+#             previous_credits = Invoice.objects.filter(
+#                 related_invoice=original_invoice,
+#                 document_type="CREDIT_NOTE"
+#             ).exclude(id=adjustment.id).aggregate(
+#                 total_sum=Sum("total")
+#             )["total_sum"] or Decimal("0.00")
+
+#             remaining_balance = (
+#                 original_invoice.total - previous_credits - total
+#             )
+
+#             elements.append(
+#                 Paragraph(
+#                     f"<b>Remaining Invoice Balance:</b> {remaining_balance:,.2f}",
+#                     styles["Normal"]
+#                 )
+#             )
+
+#         doc.build(elements)
+
+#         return response
+    
+
+    
+
+from django.template.loader import get_template
+from django.http import HttpResponse
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from decimal import Decimal
+from io import BytesIO
+from xhtml2pdf import pisa
+from django.db.models import Sum
+
+
 class InvoiceAdjustmentPDFView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -3290,94 +3458,38 @@ class InvoiceAdjustmentPDFView(APIView):
         company = CompanyProfile.objects.first()
         original_invoice = adjustment.related_invoice
 
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = (
-            f'attachment; filename={adjustment.document_type}-{adjustment.number}.pdf'
-        )
-
-        doc = SimpleDocTemplate(response, pagesize=A4)
-        elements = []
-        styles = getSampleStyleSheet()
-
-        # ================= HEADER =================
-
-        title_text = "CREDIT NOTE" if adjustment.document_type == "CREDIT_NOTE" else "DEBIT NOTE"
-
-        elements.append(Paragraph(f"<b>{title_text}</b>", styles["Title"]))
-        elements.append(Spacer(1, 0.3 * inch))
-
-        # ================= COMPANY INFO =================
-
-        if company:
-            company_info = f"""
-            <b>{company.company_name}</b><br/>
-            {company.company_address}<br/>
-            {company.city or ''} {company.state or ''}<br/>
-            {company.country}<br/>
-            VAT: {company.vat_number if company.is_vat_registered else "Not Registered"}
-            """
-
-            elements.append(Paragraph(company_info, styles["Normal"]))
-            elements.append(Spacer(1, 0.4 * inch))
-
-        # ================= ADJUSTMENT INFO =================
-
-        info_text = f"""
-        <b>Number:</b> {adjustment.number}<br/>
-        <b>Date:</b> {adjustment.date}<br/>
-        <b>Status:</b> {adjustment.status.upper()}
-        """
-
-        if original_invoice:
-            info_text += f"<br/><b>Related Invoice:</b> {original_invoice.number}"
-
-        elements.append(Paragraph(info_text, styles["Normal"]))
-        elements.append(Spacer(1, 0.4 * inch))
+        title = "Credit Note" if adjustment.document_type == "CREDIT_NOTE" else "Debit Note"
 
         # ================= CUSTOMER =================
 
         customer_name = adjustment.customer.company if adjustment.customer else ""
-        elements.append(Paragraph(f"<b>Customer:</b> {customer_name}", styles["Heading3"]))
-        elements.append(Spacer(1, 0.3 * inch))
 
-        # ================= ITEMS TABLE =================
+        # ================= ITEMS =================
 
-        data = [["Description", "Qty", "Price", "Amount"]]
-
+        prepared_items = []
         subtotal = Decimal("0.00")
 
         for item in adjustment.items:
+
             qty = Decimal(str(item.get("quantity", 0)))
             price = Decimal(str(item.get("price", 0)))
             amount = qty * price
+
             subtotal += amount
 
-            data.append([
-                item.get("description"),
-                str(qty),
-                f"{price:,.2f}",
-                f"{amount:,.2f}",
-            ])
+            prepared_items.append({
+                "description": item.get("description", ""),
+                "quantity": qty,
+                "price": f"{price:,.2f}",
+                "amount": f"{amount:,.2f}",
+            })
 
         vat = (subtotal * Decimal("0.05")).quantize(Decimal("0.01"))
         total = subtotal + vat
 
-        data.append(["", "", "Subtotal", f"{subtotal:,.2f}"])
-        data.append(["", "", "VAT (5%)", f"{vat:,.2f}"])
-        data.append(["", "", "Total", f"{total:,.2f}"])
-
-        table = Table(data, colWidths=[2.5*inch, 0.8*inch, 1.2*inch, 1.2*inch])
-
-        table.setStyle(TableStyle([
-            ("BACKGROUND", (0,0), (-1,0), colors.lightgrey),
-            ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
-            ("ALIGN", (1,1), (-1,-1), "RIGHT"),
-        ]))
-
-        elements.append(table)
-        elements.append(Spacer(1, 0.5 * inch))
-
         # ================= REMAINING BALANCE =================
+
+        remaining_balance = None
 
         if adjustment.document_type == "CREDIT_NOTE" and original_invoice:
 
@@ -3388,23 +3500,47 @@ class InvoiceAdjustmentPDFView(APIView):
                 total_sum=Sum("total")
             )["total_sum"] or Decimal("0.00")
 
-            remaining_balance = (
-                original_invoice.total - previous_credits - total
+            remaining_balance = original_invoice.total - previous_credits - total
+
+        # ================= CONTEXT =================
+
+        context = {
+            "company": company,
+            "adjustment": adjustment,
+            "title": title,
+            "customer_name": customer_name,
+            "items": prepared_items,
+            "subtotal": f"{subtotal:,.2f}",
+            "vat": f"{vat:,.2f}",
+            "total": f"{total:,.2f}",
+            "remaining_balance": remaining_balance,
+            "original_invoice": original_invoice
+        }
+
+        template = get_template("pdf/adjustment_note.html")
+        html = template.render(context)
+
+        result = BytesIO()
+
+        pdf = pisa.pisaDocument(
+            BytesIO(html.encode("UTF-8")),
+            result
+        )
+
+        if not pdf.err:
+
+            response = HttpResponse(
+                result.getvalue(),
+                content_type="application/pdf"
             )
 
-            elements.append(
-                Paragraph(
-                    f"<b>Remaining Invoice Balance:</b> {remaining_balance:,.2f}",
-                    styles["Normal"]
-                )
-            )
+            response["Content-Disposition"] = f'attachment; filename={adjustment.document_type}-{adjustment.number}.pdf'
 
-        doc.build(elements)
+            return response
 
-        return response
-    
+        return HttpResponse("Error generating PDF", status=500)
 
-    
+
 
 class ManualJournalSchemaView(APIView):
     permission_classes = [IsAuthenticated]
@@ -5216,115 +5352,207 @@ from io import BytesIO
 import base64
 
 
+# class InventorySalesInvoicePDFView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, pk):
+
+#         invoice = get_object_or_404(
+#             InventorySalesInvoice,
+#             pk=pk
+#         )
+
+#         company = CompanyProfile.objects.first()
+
+#         response = HttpResponse(content_type="application/pdf")
+#         response["Content-Disposition"] = (
+#             f'attachment; filename=SalesInvoice-{invoice.number}.pdf'
+#         )
+
+#         doc = SimpleDocTemplate(response, pagesize=A4)
+#         elements = []
+#         styles = getSampleStyleSheet()
+
+
+#         header_data = []
+
+#         if company and company.company_logo:
+#             logo_data = base64.b64decode(
+#                 company.company_logo.split(",")[1]
+#             )
+#             logo_image = Image(
+#                 BytesIO(logo_data),
+#                 width=1.5 * inch,
+#                 height=1.5 * inch
+#             )
+
+#             header_data.append([
+#                 logo_image,
+#                 Paragraph(
+#                     f"<b>{company.company_name}</b>",
+#                     styles["Title"]
+#                 )
+#             ])
+#         else:
+#             header_data.append([
+#                 "",
+#                 Paragraph(
+#                     f"<b>{company.company_name}</b>",
+#                     styles["Title"]
+#                 )
+#             ])
+
+#         header_table = Table(
+#             header_data,
+#             colWidths=[2 * inch, 4 * inch]
+#         )
+
+#         elements.append(header_table)
+#         elements.append(Spacer(1, 0.3 * inch))
+
+
+#         company_info = f"""
+#         {company.company_address}<br/>
+#         {company.city or ''} {company.state or ''}<br/>
+#         {company.country} {company.postal_code or ''}<br/>
+#         Phone: {company.phone_number}<br/>
+#         Email: {company.email}<br/>
+#         VAT: {company.vat_number if company.is_vat_registered else "Not Registered"}
+#         """
+
+#         elements.append(
+#             Paragraph(company_info, styles["Normal"])
+#         )
+#         elements.append(Spacer(1, 0.5 * inch))
+
+
+#         invoice_info = f"""
+#         <b>Sales Invoice:</b> {invoice.number}<br/>
+#         <b>Date:</b> {invoice.date}<br/>
+#         <b>Due Date:</b> {invoice.due_date or '-'}<br/>
+#         <b>Status:</b> {invoice.status.upper()}
+#         """
+
+#         elements.append(
+#             Paragraph(invoice_info, styles["Normal"])
+#         )
+#         elements.append(Spacer(1, 0.4 * inch))
+
+#         customer_name = (
+#             invoice.customer.company
+#             if invoice.customer else "Walk-in Customer"
+#         )
+
+#         elements.append(
+#             Paragraph(
+#                 f"<b>Customer:</b> {customer_name}",
+#                 styles["Heading3"]
+#             )
+#         )
+#         elements.append(Spacer(1, 0.3 * inch))
+
+
+#         data = [["Item", "Qty", "Unit Price", "VAT", "Amount"]]
+
+#         for item in invoice.items:
+
+#             qty = Decimal(str(item.get("quantity", 0)))
+#             price = Decimal(str(item.get("price", 0)))
+#             vat_amount = Decimal(str(item.get("vat_amount", 0)))
+#             line_amount = Decimal(str(item.get("line_amount", 0)))
+
+#             total_line = line_amount + vat_amount
+
+#             data.append([
+#                 item.get("item_name"),
+#                 str(qty),
+#                 f"{price:,.2f}",
+#                 f"{vat_amount:,.2f}",
+#                 f"{total_line:,.2f}",
+#             ])
+
+#         # ================= TOTALS =================
+
+#         data.append(["", "", "", "Subtotal", f"{invoice.subtotal:,.2f}"])
+#         data.append(["", "", "", "VAT", f"{invoice.vat:,.2f}"])
+#         data.append(["", "", "", "Total", f"{invoice.total:,.2f}"])
+
+#         table = Table(
+#             data,
+#             colWidths=[2 * inch, 0.8 * inch, 1.2 * inch, 1 * inch, 1.2 * inch]
+#         )
+
+#         table.setStyle(TableStyle([
+#             ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+#             ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+#             ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
+#             ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+#         ]))
+
+#         elements.append(table)
+#         elements.append(Spacer(1, 0.8 * inch))
+
+#         # ================= SIGNATURE =================
+
+#         footer_data = []
+
+#         if company.signature_image:
+#             sig_data = base64.b64decode(
+#                 company.signature_image.split(",")[1]
+#             )
+#             signature = Image(
+#                 BytesIO(sig_data),
+#                 width=1.5 * inch,
+#                 height=1 * inch
+#             )
+#         else:
+#             signature = ""
+
+#         footer_data.append([
+#             Paragraph(
+#                 "<b>Authorized Signature</b>",
+#                 styles["Normal"]
+#             ),
+#             ""
+#         ])
+
+#         footer_data.append([signature, ""])
+
+#         footer_table = Table(
+#             footer_data,
+#             colWidths=[3 * inch, 3 * inch]
+#         )
+
+#         elements.append(footer_table)
+
+#         doc.build(elements)
+
+#         return response
+
+
+
+
+
+
 class InventorySalesInvoicePDFView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
 
-        invoice = get_object_or_404(
-            InventorySalesInvoice,
-            pk=pk
-        )
-
+        invoice = get_object_or_404(InventorySalesInvoice, pk=pk)
         company = CompanyProfile.objects.first()
 
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = (
-            f'attachment; filename=SalesInvoice-{invoice.number}.pdf'
-        )
-
-        doc = SimpleDocTemplate(response, pagesize=A4)
-        elements = []
-        styles = getSampleStyleSheet()
-
-        # ================= HEADER =================
-
-        header_data = []
-
-        if company and company.company_logo:
-            logo_data = base64.b64decode(
-                company.company_logo.split(",")[1]
-            )
-            logo_image = Image(
-                BytesIO(logo_data),
-                width=1.5 * inch,
-                height=1.5 * inch
-            )
-
-            header_data.append([
-                logo_image,
-                Paragraph(
-                    f"<b>{company.company_name}</b>",
-                    styles["Title"]
-                )
-            ])
-        else:
-            header_data.append([
-                "",
-                Paragraph(
-                    f"<b>{company.company_name}</b>",
-                    styles["Title"]
-                )
-            ])
-
-        header_table = Table(
-            header_data,
-            colWidths=[2 * inch, 4 * inch]
-        )
-
-        elements.append(header_table)
-        elements.append(Spacer(1, 0.3 * inch))
-
-        # ================= COMPANY INFO =================
-
-        company_info = f"""
-        {company.company_address}<br/>
-        {company.city or ''} {company.state or ''}<br/>
-        {company.country} {company.postal_code or ''}<br/>
-        Phone: {company.phone_number}<br/>
-        Email: {company.email}<br/>
-        VAT: {company.vat_number if company.is_vat_registered else "Not Registered"}
-        """
-
-        elements.append(
-            Paragraph(company_info, styles["Normal"])
-        )
-        elements.append(Spacer(1, 0.5 * inch))
-
-        # ================= SALES INFO =================
-
-        invoice_info = f"""
-        <b>Sales Invoice:</b> {invoice.number}<br/>
-        <b>Date:</b> {invoice.date}<br/>
-        <b>Due Date:</b> {invoice.due_date or '-'}<br/>
-        <b>Status:</b> {invoice.status.upper()}
-        """
-
-        elements.append(
-            Paragraph(invoice_info, styles["Normal"])
-        )
-        elements.append(Spacer(1, 0.4 * inch))
-
-        # ================= CUSTOMER =================
-
-        customer_name = (
-            invoice.customer.company
-            if invoice.customer else "Walk-in Customer"
-        )
-
-        elements.append(
-            Paragraph(
-                f"<b>Customer:</b> {customer_name}",
-                styles["Heading3"]
-            )
-        )
-        elements.append(Spacer(1, 0.3 * inch))
-
-        # ================= ITEMS TABLE =================
-
-        data = [["Item", "Qty", "Unit Price", "VAT", "Amount"]]
+        prepared_items = []
 
         for item in invoice.items:
+
+            item_id = item.get("inventory_item")
+
+            try:
+                inventory = InventoryItem.objects.get(id=item_id)
+                item_name = inventory.item_name
+            except InventoryItem.DoesNotExist:
+                item_name = "Unknown Item"
 
             qty = Decimal(str(item.get("quantity", 0)))
             price = Decimal(str(item.get("price", 0)))
@@ -5333,80 +5561,37 @@ class InventorySalesInvoicePDFView(APIView):
 
             total_line = line_amount + vat_amount
 
-            data.append([
-                item.get("item_name"),
-                str(qty),
-                f"{price:,.2f}",
-                f"{vat_amount:,.2f}",
-                f"{total_line:,.2f}",
-            ])
+            prepared_items.append({
+                "item_name": item_name,
+                "quantity": qty,
+                "price": price,
+                "vat_amount": vat_amount,
+                "total": total_line
+            })
 
-        # ================= TOTALS =================
+        template = get_template("pdf/inventorysalesinvoice.html")
+        invoice_title = "Tax Invoice" if invoice.vat and invoice.vat > 0 else "Invoice"
+        context = {
+            "invoice": invoice,
+            "company": company,
+            "items": prepared_items,
+            "invoice_title": invoice_title
+        }
 
-        data.append(["", "", "", "Subtotal", f"{invoice.subtotal:,.2f}"])
-        data.append(["", "", "", "VAT", f"{invoice.vat:,.2f}"])
-        data.append(["", "", "", "Total", f"{invoice.total:,.2f}"])
+        html = template.render(context)
 
-        table = Table(
-            data,
-            colWidths=[2 * inch, 0.8 * inch, 1.2 * inch, 1 * inch, 1.2 * inch]
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename=SalesInvoice-{invoice.number}.pdf'
+
+        pisa_status = pisa.CreatePDF(
+            html,
+            dest=response
         )
 
-        table.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-            ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
-            ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-        ]))
-
-        elements.append(table)
-        elements.append(Spacer(1, 0.8 * inch))
-
-        # ================= SIGNATURE =================
-
-        footer_data = []
-
-        if company.signature_image:
-            sig_data = base64.b64decode(
-                company.signature_image.split(",")[1]
-            )
-            signature = Image(
-                BytesIO(sig_data),
-                width=1.5 * inch,
-                height=1 * inch
-            )
-        else:
-            signature = ""
-
-        footer_data.append([
-            Paragraph(
-                "<b>Authorized Signature</b>",
-                styles["Normal"]
-            ),
-            ""
-        ])
-
-        footer_data.append([signature, ""])
-
-        footer_table = Table(
-            footer_data,
-            colWidths=[3 * inch, 3 * inch]
-        )
-
-        elements.append(footer_table)
-
-        doc.build(elements)
+        if pisa_status.err:
+            return HttpResponse("PDF generation error")
 
         return response
-
-
-
-
-
-
-
-
-
 
 
 class ProfitLossReportView(APIView):
@@ -6057,4 +6242,203 @@ class CashFlowReportView(APIView):
                 "ending_cash": float(ending_cash)
             }
 
+        })
+
+
+
+class TaskCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        payload = request.data
+
+        # =========================
+        # VALIDATION
+        # =========================
+
+        if not payload.get("title"):
+            return Response({
+                "error": "Task title is required"
+            }, status=400)
+
+        if not payload.get("due_date"):
+            return Response({
+                "error": "Due date is required"
+            }, status=400)
+
+        # =========================
+        # ASSIGNED USER
+        # =========================
+
+        assigned_user = None
+        if payload.get("assigned_to"):
+            try:
+                assigned_user = User.objects.get(
+                    username=payload.get("assigned_to")
+                )
+            except User.DoesNotExist:
+                assigned_user = None
+
+        # =========================
+        # CREATE TASK
+        # =========================
+
+        task = Task.objects.create(
+            title=payload.get("title"),
+            description=payload.get("description"),
+
+            due_date=payload.get("due_date"),
+
+            priority=payload.get("priority", "medium"),
+            status=payload.get("status", "todo"),
+
+            assigned_to=assigned_user,
+            created_by=request.user,
+
+            related_type=payload.get("related_type", "none"),
+            related_lead_id=payload.get("related_lead_id"),
+            related_customer_id=payload.get("related_customer_id"),
+            related_vendor_id=payload.get("related_vendor_id"),
+
+            recurring=payload.get("recurring", False),
+            recurrence_pattern=payload.get("recurrence_pattern"),
+            next_due_date=payload.get("next_due_date"),
+
+            tags=payload.get("tags", []),
+        )
+
+        return Response({
+            "success": True,
+            "task_id": task.id
+        }, status=status.HTTP_201_CREATED)
+
+
+
+class TaskListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        tasks = Task.objects.select_related("assigned_to")
+
+        data = []
+
+        for task in tasks:
+
+            data.append({
+                "id": task.id,
+                "title": task.title,
+                "description": task.description,
+
+                "status": task.status,
+                "priority": task.priority,
+
+                "due_date": task.due_date,
+
+                "assigned_to": (
+                    task.assigned_to.username
+                    if task.assigned_to else None
+                ),
+
+                "related_type": task.related_type,
+                "related_lead_id": task.related_lead_id,
+                "related_customer_id": task.related_customer_id,
+                "related_vendor_id": task.related_vendor_id,
+
+                "recurring": task.recurring,
+                "recurrence_pattern": task.recurrence_pattern,
+
+                "tags": task.tags,
+
+                "created_at": task.created_at,
+                "updated_at": task.updated_at
+            })
+
+        return Response({
+            "success": True,
+            "tasks": data
+        })
+
+
+
+
+class TaskUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk):
+
+        task = get_object_or_404(Task, pk=pk)
+
+        payload = request.data
+
+        if "title" in payload:
+            task.title = payload["title"]
+
+        if "description" in payload:
+            task.description = payload["description"]
+
+        if "due_date" in payload:
+            task.due_date = payload["due_date"]
+
+        if "priority" in payload:
+            task.priority = payload["priority"]
+
+        if "status" in payload:
+            task.status = payload["status"]
+
+        if "tags" in payload:
+            task.tags = payload["tags"]
+
+        if "recurring" in payload:
+            task.recurring = payload["recurring"]
+
+        if "recurrence_pattern" in payload:
+            task.recurrence_pattern = payload["recurrence_pattern"]
+
+        if "next_due_date" in payload:
+            task.next_due_date = payload["next_due_date"]
+
+        # assigned user
+        if "assigned_to" in payload:
+
+            try:
+                user = User.objects.get(username=payload["assigned_to"])
+                task.assigned_to = user
+            except User.DoesNotExist:
+                task.assigned_to = None
+
+        # related entity
+        if "related_type" in payload:
+            task.related_type = payload["related_type"]
+
+        if "related_lead_id" in payload:
+            task.related_lead_id = payload["related_lead_id"]
+
+        if "related_customer_id" in payload:
+            task.related_customer_id = payload["related_customer_id"]
+
+        if "related_vendor_id" in payload:
+            task.related_vendor_id = payload["related_vendor_id"]
+
+        task.save()
+
+        return Response({
+            "success": True,
+            "message": "Task updated"
+        })
+
+
+class TaskDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+
+        task = get_object_or_404(Task, pk=pk)
+
+        task.delete()
+
+        return Response({
+            "success": True,
+            "message": "Task deleted"
         })

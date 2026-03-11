@@ -812,3 +812,132 @@ class CompanyProfile(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+
+
+class Task(models.Model):
+
+    STATUS_CHOICES = [
+        ("todo", "To Do"),
+        ("in_progress", "In Progress"),
+        ("blocked", "Blocked"),
+        ("done", "Done"),
+    ]
+
+    PRIORITY_CHOICES = [
+        ("high", "High"),
+        ("medium", "Medium"),
+        ("low", "Low"),
+    ]
+
+    RECURRENCE_CHOICES = [
+        ("daily", "Daily"),
+        ("weekly", "Weekly"),
+        ("monthly", "Monthly"),
+        ("quarterly", "Quarterly"),
+        ("yearly", "Yearly"),
+    ]
+
+    RELATED_TYPE_CHOICES = [
+        ("none", "None"),
+        ("lead", "Lead"),
+        ("customer", "Customer"),
+        ("vendor", "Vendor"),
+    ]
+
+    # =============================
+    # BASIC INFO
+    # =============================
+
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+
+    due_date = models.DateField()
+
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default="medium"
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="todo"
+    )
+
+    # =============================
+    # ASSIGNMENT
+    # =============================
+
+    assigned_to = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="assigned_tasks"
+    )
+
+    created_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="created_tasks"
+    )
+
+    # =============================
+    # RELATIONS
+    # =============================
+
+    related_type = models.CharField(
+        max_length=20,
+        choices=RELATED_TYPE_CHOICES,
+        default="none"
+    )
+
+    related_lead_id = models.IntegerField(null=True, blank=True)
+    related_customer_id = models.IntegerField(null=True, blank=True)
+    related_vendor_id = models.IntegerField(null=True, blank=True)
+
+    # =============================
+    # RECURRING TASK
+    # =============================
+
+    recurring = models.BooleanField(default=False)
+
+    recurrence_pattern = models.CharField(
+        max_length=20,
+        choices=RECURRENCE_CHOICES,
+        blank=True,
+        null=True
+    )
+
+    next_due_date = models.DateField(null=True, blank=True)
+
+    # =============================
+    # TAGS
+    # =============================
+
+    tags = models.JSONField(default=list, blank=True)
+
+    # =============================
+    # SYSTEM FIELDS
+    # =============================
+
+    completed_date = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["due_date", "-created_at"]
+
+    def save(self, *args, **kwargs):
+        if self.status == "done" and not self.completed_date:
+            self.completed_date = timezone.now()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title

@@ -17,21 +17,12 @@ body{
     font-size:11px;
 }
 
-h1{
-    font-size:28px;
-    margin:0;
-    letter-spacing:1px;
-}
+/* HEADER */
 
-h3{
-    margin:0 0 5px 0;
-    font-size:12px;
-    color:#666;
-}
-
-table{
+.header{
     width:100%;
-    border-collapse:collapse;
+    border-bottom:2px solid #3D5D6D;
+    margin-bottom:20px;
 }
 
 .header td{
@@ -39,37 +30,51 @@ table{
 }
 
 .logo img{
-    height:45px;
+    height:60px;
 }
 
 .company-info{
-    color:#666;
     font-size:10px;
+    color:#666;
+}
+
+.invoice-title{
+    font-size:26px;
+    font-weight:bold;
+    color:#3D5D6D;
 }
 
 .invoice-box{
-    background:#f7f7f7;
-    padding:15px;
-    border-radius:4px;
+    margin-top:10px;
+    font-size:11px;
 }
 
+/* CUSTOMER */
+
 .customer-box{
-    background:#fafafa;
     border:1px solid #eee;
     padding:15px;
+    background:#fafafa;
+}
+
+/* ITEMS TABLE */
+
+.items{
+    width:100%;
+    border-collapse:collapse;
 }
 
 .items th{
+    background:#3D5D6D;
+    color:white;
+    padding:8px;
     text-align:left;
-    padding:10px;
-    border-bottom:2px solid #e5e5e5;
-    color:#444;
     font-weight:bold;
 }
 
 .items td{
-    padding:10px;
-    border-bottom:1px solid #eee;
+    padding:8px;
+    border-bottom:1px solid #ddd;
 }
 
 .text-right{
@@ -80,9 +85,12 @@ table{
     text-align:center;
 }
 
+/* TOTALS */
+
 .totals{
-    width:280px;
+    width:100%;
     margin-left:auto;
+    margin-top:15px;
 }
 
 .totals td{
@@ -92,16 +100,20 @@ table{
 .total-row{
     font-weight:bold;
     font-size:13px;
-    border-top:2px solid #ddd;
+    border-top:2px solid #000;
 }
 
+/* SIGNATURE */
+
 .signature img{
-    height:35px;
+    height:40px;
 }
 
 .stamp img{
-    height:45px;
+    height:50px;
 }
+
+/* FOOTER */
 
 .footer{
     text-align:center;
@@ -127,7 +139,7 @@ table{
 <img src="{{ company.company_logo }}">
 </div>
 {% else %}
-<h1>{{ company.company_name }}</h1>
+<div class="invoice-title">{{ company.company_name }}</div>
 {% endif %}
 
 <div class="company-info">
@@ -147,7 +159,9 @@ Email: {{ company.email }}
 
 <td width="40%" align="right">
 
-<h1>INVOICE</h1>
+<div class="invoice-title">
+INVOICE
+</div>
 
 <div class="invoice-box">
 
@@ -163,13 +177,13 @@ Email: {{ company.email }}
 </tr>
 </table>
 
-<br><br>
+<br>
 
 <!-- CUSTOMER -->
 
 <div class="customer-box">
 
-<h3>BILL TO</h3>
+<strong>BILL TO</strong><br><br>
 
 <strong>{{ customer.company }}</strong><br>
 
@@ -182,7 +196,7 @@ Email: {{ company.email }}
 
 </div>
 
-<br><br>
+<br>
 
 <!-- ITEMS -->
 

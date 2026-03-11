@@ -20,6 +20,11 @@
             "key": "invoices",
             "label": "Invoicing",
             "icon": "fas fa-file-invoice"
+          },
+          {
+            "key": "invoiceadj",
+            "label": "Credit Note & Debit Note",
+            "icon": "fas fa-file-invoice"
           }
         ]
       },
