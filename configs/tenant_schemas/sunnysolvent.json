@@ -91,33 +91,7 @@
       }
 
     }
-  },
-
-  "sales": {
-    "label": "Sales",
-    "icon": "fas fa-chart-line",
-    "sections": {
-
-      "crm": {
-        "label": "CRM",
-        "icon": "fas fa-user-tie",
-        "items": [
-          {
-            "key": "leads",
-            "label": "Leads",
-            "icon": "fas fa-user-plus"
-          },
-          {
-            "key": "tasks",
-            "label": "Tasks",
-            "icon": "fas fa-tasks"
-          }
-        ]
-      }
-
-    }
   }
-
 },
 
   "leads": {

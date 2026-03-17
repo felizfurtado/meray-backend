@@ -13,10 +13,42 @@ from decimal import Decimal
 
 import uuid
 
+import csv
+import io
+
 
 
 User = get_user_model()
 
+
+class UserListView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        users = User.objects.all()
+
+        data = []
+
+        for user in users:
+
+            data.append({
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "is_active": user.is_active,
+                "date_joined": user.date_joined
+            })
+
+        return Response({
+            "success": True,
+            "users": data
+        })
+
+        
 
 class NavigationView(APIView):
     permission_classes = [IsAuthenticated]
@@ -29,10 +61,14 @@ class NavigationView(APIView):
             schema.get("navigation", {})
                   .get("operations", {})
         )
-
+        sales = (
+            schema.get("navigation", {})
+                  .get("sales", {})
+        )
         return Response({
             "success": True,
-            "operations": operations
+            "operations": operations,
+            "sales": sales,
         })
 
 
@@ -6361,7 +6397,156 @@ class TaskListView(APIView):
         })
 
 
+class TaskDetailView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, pk):
+
+        task = get_object_or_404(
+            Task.objects.select_related("assigned_to", "created_by"),
+            pk=pk
+        )
+
+        today = timezone.now().date()
+
+        # =========================
+        # DATE CALCULATIONS
+        # =========================
+
+        days_overdue = None
+        days_until_due = None
+        is_overdue = False
+
+        if task.due_date:
+            if task.status != "done" and task.due_date < today:
+                is_overdue = True
+                days_overdue = (today - task.due_date).days
+            else:
+                days_until_due = (task.due_date - today).days
+
+        # =========================
+        # RELATED OBJECT
+        # =========================
+
+        related_info = None
+
+        if task.related_type == "lead" and task.related_lead_id:
+            try:
+                lead = Lead.objects.get(id=task.related_lead_id)
+
+                related_info = {
+                    "type": "lead",
+                    "id": lead.id,
+                    "name": lead.name,
+                    "company": lead.company
+                }
+
+            except Lead.DoesNotExist:
+                pass
+
+        if task.related_type == "customer" and task.related_customer_id:
+            try:
+                customer = Customer.objects.get(id=task.related_customer_id)
+
+                related_info = {
+                    "type": "customer",
+                    "id": customer.id,
+                    "name": customer.company_name,
+                    "customer_name": customer.customer_name
+                }
+
+            except Customer.DoesNotExist:
+                pass
+
+        if task.related_type == "vendor" and task.related_vendor_id:
+            try:
+                vendor = Vendor.objects.get(id=task.related_vendor_id)
+
+                related_info = {
+                    "type": "vendor",
+                    "id": vendor.id,
+                    "name": vendor.company_name,
+                    "contact": vendor.contact_person
+                }
+
+            except Vendor.DoesNotExist:
+                pass
+
+
+
+        # =========================
+        # RESPONSE
+        # =========================
+
+        return Response({
+
+            "id": task.id,
+            "title": task.title,
+            "description": task.description,
+
+            "status": task.status,
+            "status_display": task.get_status_display(),
+
+            "priority": task.priority,
+            "priority_display": task.get_priority_display(),
+
+            "due_date": task.due_date,
+            "next_due_date": task.next_due_date,
+
+            "recurring": task.recurring,
+            "recurrence_pattern": task.recurrence_pattern,
+
+            "assigned_to": {
+                "id": task.assigned_to.id,
+                "username": task.assigned_to.username
+            } if task.assigned_to else None,
+
+            "created_by": {
+                "id": task.created_by.id,
+                "username": task.created_by.username
+            } if task.created_by else None,
+
+            "related_type": task.related_type,
+            "related_info": related_info,
+
+            "tags": task.tags,
+
+            "completed_date": task.completed_date,
+
+            "is_overdue": is_overdue,
+            "days_overdue": days_overdue,
+            "days_until_due": days_until_due,
+
+            "created_at": task.created_at,
+            "updated_at": task.updated_at,
+
+
+        })
+
+
+class TaskMarkAsDoneView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+
+        task = get_object_or_404(Task, pk=pk)
+
+        if task.status == "done":
+            return Response({
+                "error": "Task is already marked as done"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        task.status = "done"
+        task.completed_date = timezone.now()
+        task.save()
+
+        return Response({
+            "success": True,
+            "message": "Task marked as done",
+            "task_id": task.id,
+            "status": task.status,
+            "completed_date": task.completed_date
+        })
 
 class TaskUpdateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -6442,3 +6627,710 @@ class TaskDeleteView(APIView):
             "success": True,
             "message": "Task deleted"
         })
+
+
+
+
+
+from datetime import date
+class NotificationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        today = date.today()
+
+        # Ignore completed tasks
+        tasks = Task.objects.exclude(status="done")
+
+        notifications = []
+
+        for task in tasks:
+
+            task_date = task.due_date
+
+            # TASK DUE TODAY
+            if task_date == today:
+                notifications.append({
+                    "id": f"due_{task.id}",
+                    "type": "due_today",
+                    "title": task.title,
+                    "priority": task.priority,
+                    "due_date": task.due_date,
+                    "task_id": task.id
+                })
+                continue
+
+            # OVERDUE TASK
+            if task_date < today:
+                notifications.append({
+                    "id": f"overdue_{task.id}",
+                    "type": "overdue",
+                    "title": task.title,
+                    "priority": "high",
+                    "due_date": task.due_date,
+                    "task_id": task.id
+                })
+                continue
+
+            # RECURRING TASKS
+            if task.recurring:
+
+                # WEEKLY
+                if task.recurrence_pattern == "weekly":
+                    if task_date.weekday() == today.weekday():
+
+                        notifications.append({
+                            "id": f"weekly_{task.id}",
+                            "type": "recurring_weekly",
+                            "title": task.title,
+                            "priority": task.priority,
+                            "due_date": task.due_date,
+                            "task_id": task.id
+                        })
+
+                # MONTHLY
+                if task.recurrence_pattern == "monthly":
+                    if task_date.day == today.day:
+
+                        notifications.append({
+                            "id": f"monthly_{task.id}",
+                            "type": "recurring_monthly",
+                            "title": task.title,
+                            "priority": task.priority,
+                            "due_date": task.due_date,
+                            "task_id": task.id
+                        })
+
+        return Response({
+            "success": True,
+            "count": len(notifications),
+            "notifications": notifications
+        })
+
+
+
+class CustomerCSVImportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        file = request.FILES.get("file")
+
+        if not file:
+            return Response({"error": "CSV file required"}, status=400)
+
+        decoded = file.read().decode("utf-8")
+        reader = csv.DictReader(io.StringIO(decoded))
+
+        customers = []
+
+        for row in reader:
+
+            customers.append(
+                Customer(
+                    company=row.get("company"),
+                    contact_name=row.get("contact_name"),
+                    email=row.get("email"),
+                    phone=row.get("phone"),
+                    status=row.get("status"),
+                    created_by=request.user,
+                )
+            )
+
+        Customer.objects.bulk_create(customers)
+
+        return Response({
+            "success": True,
+            "message": f"{len(customers)} customers imported"
+        })
+
+
+
+class LeadCSVImportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        file = request.FILES.get("file")
+
+        if not file:
+            return Response(
+                {"error": "CSV file required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        decoded = file.read().decode("utf-8")
+        reader = csv.DictReader(io.StringIO(decoded))
+
+        leads = []
+
+        for row in reader:
+
+            leads.append(
+                Lead(
+                    name=row.get("name"),
+                    email=row.get("email"),
+                    phone=row.get("phone"),
+                    company=row.get("company"),
+                    created_by=request.user
+                )
+            )
+
+        Lead.objects.bulk_create(leads)
+
+        return Response({
+            "success": True,
+            "message": f"{len(leads)} leads imported"
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class CompanyWPSCreateView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    # ================= GET =================
+
+    def get(self, request):
+
+        company = CompanyWPSProfile.objects.first()
+
+        if not company:
+            return Response({
+                "profile": None
+            })
+
+        return Response({
+            "profile": {
+                "employer_name": company.employer_name,
+                "employer_eid": company.employer_eid,
+                "establishment_card_number": company.establishment_card_number,
+                "mol_number": company.mol_number,
+                "bank_swift_code": company.bank_swift_code,
+                "payroll_iban": company.payroll_iban
+            }
+        })
+
+    # ================= SAVE / UPDATE =================
+
+    def post(self, request):
+
+        employer_name = request.data.get("employer_name")
+        employer_eid = request.data.get("employer_eid")
+        establishment_card_number = request.data.get("establishment_card_number")
+        mol_number = request.data.get("mol_number")
+        bank_swift_code = request.data.get("bank_swift_code")
+        payroll_iban = request.data.get("payroll_iban")
+
+        company = CompanyWPSProfile.objects.first()
+
+        if company:
+            # update existing profile
+            company.employer_name = employer_name
+            company.employer_eid = employer_eid
+            company.establishment_card_number = establishment_card_number
+            company.mol_number = mol_number
+            company.bank_swift_code = bank_swift_code
+            company.payroll_iban = payroll_iban
+            company.save()
+
+        else:
+            # create new
+            company = CompanyWPSProfile.objects.create(
+                employer_name=employer_name,
+                employer_eid=employer_eid,
+                establishment_card_number=establishment_card_number,
+                mol_number=mol_number,
+                bank_swift_code=bank_swift_code,
+                payroll_iban=payroll_iban
+            )
+
+        return Response({
+            "success": True,
+            "company_id": company.id
+        })
+
+
+class EmployeeCreateView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        employee_id = request.data.get("employee_id")
+        name = request.data.get("name")
+        labour_card_number = request.data.get("labour_card_number")
+
+        bank_swift_code = request.data.get("bank_swift_code")
+        bank_account = request.data.get("bank_account")
+
+        basic_salary = Decimal(str(request.data.get("basic_salary")))
+        allowances = Decimal(str(request.data.get("allowances", 0)))
+
+        employee = Employee.objects.create(
+            employee_id=employee_id,
+            name=name,
+            labour_card_number=labour_card_number,
+            bank_swift_code=bank_swift_code,
+            bank_account=bank_account,
+            basic_salary=basic_salary,
+            allowances=allowances
+        )
+
+        return Response({
+            "success": True,
+            "employee_id": employee.id
+        })
+
+
+
+
+
+class EmployeeListView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        employees = Employee.objects.all()
+
+        data = []
+
+        for e in employees:
+            data.append({
+                "id": e.id,
+                "employee_id": e.employee_id,
+                "name": e.name,
+                "labour_card_number": e.labour_card_number,
+                "bank_account": e.bank_account,
+                "basic_salary": e.basic_salary,
+                "allowances": e.allowances,
+                "gross_salary": e.basic_salary + e.allowances
+            })
+
+        return Response({
+            "success": True,
+            "employees": data
+        })
+
+
+
+
+
+
+class GenerateSIFView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        month = request.data.get("month")
+        year = request.data.get("year")
+        employees = request.data.get("employees")
+
+        company = CompanyWPSProfile.objects.first()
+
+        today = datetime.today().strftime("%Y%m%d")
+        period = f"{year}{month}"
+
+        lines = []
+        total_salary = 0
+
+        header = [
+            "100",
+            company.employer_eid,
+            company.employer_name,
+            company.bank_swift_code,
+            company.payroll_iban,
+            period,
+            today,
+            "REF001",
+            str(len(employees)),
+            "0"
+        ]
+
+        lines.append(",".join(header))
+
+        for emp in employees:
+
+            net = emp["basic_salary"] + emp["allowances"] - emp["deductions"]
+
+            total_salary += net
+
+            row = [
+                "200",
+                emp["labour_card_number"],
+                emp["name"],
+                emp["bank_swift_code"],
+                emp["bank_account"],
+                "M",
+                "30",
+                str(emp["basic_salary"]),
+                str(emp["allowances"]),
+                str(emp["deductions"]),
+                str(net),
+                today
+            ]
+
+            lines.append(",".join(row))
+
+        trailer = [
+            "300",
+            str(len(employees)),
+            str(total_salary),
+            today
+        ]
+
+        lines.append(",".join(trailer))
+
+        sif_content = "\n".join(lines)
+
+        response = HttpResponse(sif_content, content_type="text/plain")
+
+        response["Content-Disposition"] = f'attachment; filename="wps_{period}.sif"'
+
+        return response
+
+
+
+class EmployeeDeleteView(APIView):
+
+    permission_classes=[IsAuthenticated]
+
+    def delete(self,request,id):
+
+        employee=Employee.objects.get(id=id)
+
+        employee.delete()
+
+        return Response({"success":True})
+
+
+class PayrollRunView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        month = request.data.get("month")
+        year = request.data.get("year")
+
+        employees = Employee.objects.all()
+
+        data = []
+
+        for emp in employees:
+
+            gross = emp.basic_salary + emp.allowances
+
+            data.append({
+                "id": emp.id,
+                "employee_id": emp.employee_id,
+                "name": emp.name,
+                "labour_card_number": emp.labour_card_number,
+                "bank_account": emp.bank_account,
+                "bank_swift_code": emp.bank_swift_code,
+                "basic_salary": emp.basic_salary,
+                "allowances": emp.allowances,
+                "deductions": 0,
+                "gross_salary": gross,
+                "net_salary": gross
+            })
+
+        return Response({
+            "employees": data
+        })
+
+class GenerateSIFView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        month = request.data.get("month")
+        year = request.data.get("year")
+        employees = request.data.get("employees")
+
+        company = CompanyWPSProfile.objects.first()
+
+        today = datetime.today().strftime("%Y%m%d")
+        period = f"{year}{month}"
+
+        lines = []
+        total_salary = 0
+
+        header = [
+            "100",
+            company.employer_eid,
+            company.employer_name,
+            company.bank_swift_code,
+            company.payroll_iban,
+            period,
+            today,
+            "REF001",
+            str(len(employees)),
+            "0"
+        ]
+
+        lines.append(",".join(header))
+
+        for emp in employees:
+
+            net = emp["basic_salary"] + emp["allowances"] - emp["deductions"]
+
+            total_salary += net
+
+            row = [
+                "200",
+                emp["labour_card_number"],
+                emp["name"],
+                emp["bank_swift_code"],
+                emp["bank_account"],
+                "M",
+                "30",
+                str(emp["basic_salary"]),
+                str(emp["allowances"]),
+                str(emp["deductions"]),
+                str(net),
+                today
+            ]
+
+            lines.append(",".join(row))
+
+        trailer = [
+            "300",
+            str(len(employees)),
+            str(total_salary),
+            today
+        ]
+
+        lines.append(",".join(trailer))
+
+        sif_content = "\n".join(lines)
+
+        response = HttpResponse(sif_content, content_type="text/plain")
+
+        response["Content-Disposition"] = f'attachment; filename="wps_{period}.sif"'
+
+        return response
+    
+
+
+
+
+
+
+
+
+
+
+class BankAccountCreateView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        account = BankAccount.objects.create(
+            account_name=request.data.get("account_name"),
+            bank_name=request.data.get("bank_name"),
+            account_number=request.data.get("account_number"),
+            iban=request.data.get("iban"),
+            opening_balance=request.data.get("opening_balance")
+        )
+
+        return Response({
+            "success": True,
+            "id": account.id
+        })
+    
+
+
+
+class BankAccountListView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        accounts = BankAccount.objects.all()
+
+        data = []
+
+        for acc in accounts:
+            data.append({
+                "id": acc.id,
+                "account_name": acc.account_name,
+                "bank_name": acc.bank_name,
+                "account_number": acc.account_number,
+                "opening_balance": acc.opening_balance
+            })
+
+        return Response({
+            "accounts": data
+        })
+
+
+
+import csv
+
+class UploadBankStatementView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        bank_account_id = request.data.get("bank_account_id")
+
+        file = request.FILES.get("file")
+
+        bank_account = BankAccount.objects.get(id=bank_account_id)
+
+        decoded = file.read().decode("utf-8").splitlines()
+
+        reader = csv.DictReader(decoded)
+
+        count = 0
+
+        for row in reader:
+
+            BankStatementTransaction.objects.create(
+                bank_account=bank_account,
+                date=row["date"],
+                description=row["description"],
+                amount=row["amount"]
+            )
+
+            count += 1
+
+        return Response({
+            "success": True,
+            "transactions_created": count
+        })
+
+
+class BankStatementTransactionsView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        bank_account_id = request.query_params.get("bank_account_id")
+
+        transactions = BankStatementTransaction.objects.filter(
+            bank_account_id=bank_account_id
+        )
+
+        data = []
+
+        for tx in transactions:
+            data.append({
+                "id": tx.id,
+                "date": tx.date,
+                "description": tx.description,
+                "amount": tx.amount,
+                "status": tx.status
+            })
+
+        return Response({
+            "transactions": data
+        })
+
+
+
+from decimal import Decimal
+
+class RunBankReconciliationView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        bank_account_id = request.data.get("bank_account_id")
+
+        bank_transactions = BankStatementTransaction.objects.filter(
+            bank_account_id=bank_account_id
+        )
+
+        # extract ledger entries from manual journals
+
+        ledger_entries = []
+
+        journals = ManualJournal.objects.all()
+
+        for journal in journals:
+
+            for entry in journal.entries:
+
+                debit = Decimal(str(entry.get("debit", 0)))
+                credit = Decimal(str(entry.get("credit", 0)))
+
+                amount = debit - credit
+
+                ledger_entries.append(amount)
+
+        matched = 0
+        potential = 0
+
+        for tx in bank_transactions:
+
+            if tx.amount in ledger_entries:
+                tx.status = "matched"
+                matched += 1
+            else:
+                tx.status = "unmatched"
+
+            tx.save()
+
+        return Response({
+            "success": True,
+            "matched": matched,
+            "total_transactions": bank_transactions.count()
+        })
+    
+
+
+class BankReconciliationSummaryView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        bank_account_id = request.query_params.get("bank_account_id")
+
+        transactions = BankStatementTransaction.objects.filter(
+            bank_account_id=bank_account_id
+        )
+
+        statement_total = 0
+
+        for tx in transactions:
+            statement_total += tx.amount
+
+        return Response({
+            "statement_total": statement_total,
+            "transactions": transactions.count()
+        })
+

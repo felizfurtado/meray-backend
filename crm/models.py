@@ -941,3 +941,204 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class CompanyWPSProfile(models.Model):
+
+    employer_name = models.CharField(max_length=200)
+    employer_eid = models.CharField(max_length=50)
+    establishment_card_number = models.CharField(max_length=20)
+    mol_number = models.CharField(max_length=20)
+
+    bank_swift_code = models.CharField(max_length=20)
+    payroll_iban = models.CharField(max_length=34)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Employee(models.Model):
+
+    employee_id = models.CharField(max_length=50, unique=True)
+
+    name = models.CharField(max_length=200)
+
+    labour_card_number = models.CharField(max_length=50)
+
+    bank_swift_code = models.CharField(max_length=20)
+
+    bank_account = models.CharField(max_length=34)
+
+    basic_salary = models.DecimalField(max_digits=12, decimal_places=2)
+
+    allowances = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def gross_salary(self):
+        return self.basic_salary + self.allowances
+
+
+class EmployeeSalaryHistory(models.Model):
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+
+    month = models.IntegerField()
+    year = models.IntegerField()
+
+    basic_salary = models.DecimalField(max_digits=12, decimal_places=2)
+
+    allowances = models.DecimalField(max_digits=12, decimal_places=2)
+
+    deductions = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    days_worked = models.IntegerField(default=30)
+
+    gross_salary = models.DecimalField(max_digits=12, decimal_places=2)
+
+    net_salary = models.DecimalField(max_digits=12, decimal_places=2)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class WPSGenerationLog(models.Model):
+
+    month = models.IntegerField()
+    year = models.IntegerField()
+
+    file_reference = models.CharField(max_length=100)
+
+    employee_count = models.IntegerField()
+
+    total_salary = models.DecimalField(max_digits=14, decimal_places=2)
+
+    generated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class BankAccount(models.Model):
+
+    account_name = models.CharField(max_length=200)
+
+    bank_name = models.CharField(max_length=200)
+
+    account_number = models.CharField(max_length=100)
+
+    iban = models.CharField(max_length=50, blank=True, null=True)
+
+    opening_balance = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        default=0
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.account_name} - {self.bank_name}"
+
+
+
+
+
+class BankStatementTransaction(models.Model):
+
+    bank_account = models.ForeignKey(
+        BankAccount,
+        on_delete=models.CASCADE,
+        related_name="statement_transactions"
+    )
+
+    date = models.DateField()
+
+    description = models.CharField(max_length=500)
+
+    amount = models.DecimalField(
+        max_digits=15,
+        decimal_places=2
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("matched", "Matched"),
+            ("potential", "Potential Match"),
+            ("unmatched", "Unmatched"),
+        ],
+        default="unmatched"
+    )
+
+    matched_ledger_reference = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.description} {self.amount}"
+    
+
+
+class BankReconciliationLog(models.Model):
+
+    bank_account = models.ForeignKey(
+        BankAccount,
+        on_delete=models.CASCADE
+    )
+
+    reconciliation_date = models.DateField()
+
+    statement_balance = models.DecimalField(
+        max_digits=15,
+        decimal_places=2
+    )
+
+    ledger_balance = models.DecimalField(
+        max_digits=15,
+        decimal_places=2
+    )
+
+    difference = models.DecimalField(
+        max_digits=15,
+        decimal_places=2
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ("reconciled", "Reconciled"),
+            ("pending", "Pending"),
+            ("discrepancy", "Discrepancy")
+        ],
+        default="pending"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reconciliation {self.bank_account.account_name}"

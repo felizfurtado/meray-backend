@@ -5,6 +5,9 @@ urlpatterns = [
     #navigation
     path("navigation/", NavigationView.as_view()),
 
+    #users
+    path("users/", UserListView.as_view(), name="users-list"),
+
     #schema
     path("schema/leads/", SchemaView.as_view(), name="leads-schema"),
     path("schema/customers/", CustomerSchemaView.as_view()),
@@ -158,6 +161,33 @@ urlpatterns = [
     path("tasks/create/", TaskCreateView.as_view()),
     path("tasks/<int:pk>/update/", TaskUpdateView.as_view()),
     path("tasks/<int:pk>/delete/", TaskDeleteView.as_view()),
+    path("tasks/<int:pk>/", TaskDetailView.as_view()),
+    path("tasks/<int:pk>/mark-done/", TaskMarkAsDoneView.as_view()),
+
+    #notifications
+    path("notifications/", NotificationsView.as_view()),
+
+    #migrations
+    path("customers/import/", CustomerCSVImportView.as_view()),
+    path("leads/import/", LeadCSVImportView.as_view()),
+
+
+    #Payroll
+    path("payroll/company-wps/", CompanyWPSCreateView.as_view()),
+    path("payroll/employees/create/", EmployeeCreateView.as_view()),
+    path("payroll/employees/", EmployeeListView.as_view()),
+    path("payroll/run/", PayrollRunView.as_view()),
+    path("payroll/generate-sif/", GenerateSIFView.as_view()),
+    path("payroll/employees/<int:id>/delete/",EmployeeDeleteView.as_view()),
+
+
+    #bank recon
+    path("bank/accounts/create/", BankAccountCreateView.as_view()),
+    path("bank/accounts/", BankAccountListView.as_view()),    
+    path("bank/upload-statement/", UploadBankStatementView.as_view()),
+    path("bank/transactions/", BankStatementTransactionsView.as_view()),
+    path("bank/reconcile/", RunBankReconciliationView.as_view()),
+    path("bank/reconciliation-summary/", BankReconciliationSummaryView.as_view()),
     
 
 
