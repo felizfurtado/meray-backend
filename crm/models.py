@@ -1068,40 +1068,32 @@ class BankStatementTransaction(models.Model):
 
     bank_account = models.ForeignKey(
         BankAccount,
-        on_delete=models.CASCADE,
-        related_name="statement_transactions"
+        on_delete=models.CASCADE
     )
 
     date = models.DateField()
 
-    description = models.CharField(max_length=500)
+    description = models.TextField()
 
     amount = models.DecimalField(
-        max_digits=15,
+        max_digits=12,
         decimal_places=2
     )
 
+    matched = models.BooleanField(default=False)
+
     status = models.CharField(
         max_length=20,
-        choices=[
-            ("matched", "Matched"),
-            ("potential", "Potential Match"),
-            ("unmatched", "Unmatched"),
-        ],
         default="unmatched"
     )
 
-    matched_ledger_reference = models.CharField(
+    matched_reference = models.CharField(
         max_length=100,
-        blank=True,
-        null=True
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.description} {self.amount}"
-    
 
 
 class BankReconciliationLog(models.Model):

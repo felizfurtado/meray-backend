@@ -57,19 +57,22 @@ class NavigationView(APIView):
 
         schema = request.tenant.get_schema()
 
-        operations = (
-            schema.get("navigation", {})
-                  .get("operations", {})
-        )
-        sales = (
-            schema.get("navigation", {})
-                  .get("sales", {})
-        )
+        navigation = schema.get("navigation", {})
+
+        operations = navigation.get("operations", {})
+        sales = navigation.get("sales", {})
+        bank = navigation.get("bank", {})
+        wps = navigation.get("wps", {})
+
         return Response({
             "success": True,
             "operations": operations,
             "sales": sales,
+            "bank": bank,
+            "wps": wps
         })
+
+
 
 
 
@@ -7203,8 +7206,13 @@ class UploadBankStatementView(APIView):
     def post(self, request):
 
         bank_account_id = request.data.get("bank_account_id")
-
         file = request.FILES.get("file")
+
+        if not bank_account_id:
+            return Response({"error": "bank_account_id required"}, status=400)
+
+        if not file:
+            return Response({"error": "file required"}, status=400)
 
         bank_account = BankAccount.objects.get(id=bank_account_id)
 
@@ -7216,11 +7224,14 @@ class UploadBankStatementView(APIView):
 
         for row in reader:
 
+            # normalize headers (Date → date etc)
+            row = {k.strip().lower(): v.strip() for k, v in row.items()}
+
             BankStatementTransaction.objects.create(
                 bank_account=bank_account,
-                date=row["date"],
-                description=row["description"],
-                amount=row["amount"]
+                date=row.get("date"),
+                description=row.get("description"),
+                amount=row.get("amount")
             )
 
             count += 1
@@ -7229,6 +7240,8 @@ class UploadBankStatementView(APIView):
             "success": True,
             "transactions_created": count
         })
+
+        
 
 
 class BankStatementTransactionsView(APIView):
@@ -7251,7 +7264,8 @@ class BankStatementTransactionsView(APIView):
                 "date": tx.date,
                 "description": tx.description,
                 "amount": tx.amount,
-                "status": tx.status
+                "status": tx.status,
+                "matched_reference": tx.matched_reference
             })
 
         return Response({
@@ -7260,7 +7274,11 @@ class BankStatementTransactionsView(APIView):
 
 
 
+
 from decimal import Decimal
+from datetime import timedelta
+from difflib import SequenceMatcher
+
 
 class RunBankReconciliationView(APIView):
 
@@ -7274,12 +7292,11 @@ class RunBankReconciliationView(APIView):
             bank_account_id=bank_account_id
         )
 
-        # extract ledger entries from manual journals
-
         ledger_entries = []
 
         journals = ManualJournal.objects.all()
 
+        # collect ledger entries
         for journal in journals:
 
             for entry in journal.entries:
@@ -7289,18 +7306,49 @@ class RunBankReconciliationView(APIView):
 
                 amount = debit - credit
 
-                ledger_entries.append(amount)
+                ledger_entries.append({
+                    "amount": amount,
+                    "date": journal.date,
+                    "description": journal.notes or "",
+                    "reference": f"JOURNAL-{journal.journal_number}"
+                })
 
         matched = 0
-        potential = 0
 
         for tx in bank_transactions:
 
-            if tx.amount in ledger_entries:
+            tx.status = "unmatched"
+            tx.matched = False
+            tx.matched_reference = None
+
+            for ledger in ledger_entries:
+
+                # amount check
+                if abs(tx.amount) != abs(ledger["amount"]):
+                    continue
+
+                # date check (within 3 days)
+                if abs((tx.date - ledger["date"]).days) > 3:
+                    continue
+
+                # description similarity
+                similarity = SequenceMatcher(
+                    None,
+                    tx.description.lower(),
+                    ledger["description"].lower()
+                ).ratio()
+
+                if similarity < 0.6:
+                    continue
+
+                # MATCH FOUND
                 tx.status = "matched"
+                tx.matched = True
+                tx.matched_reference = ledger["reference"]
+
                 matched += 1
-            else:
-                tx.status = "unmatched"
+
+                break
 
             tx.save()
 
@@ -7309,7 +7357,10 @@ class RunBankReconciliationView(APIView):
             "matched": matched,
             "total_transactions": bank_transactions.count()
         })
-    
+
+
+
+
 
 
 class BankReconciliationSummaryView(APIView):

@@ -91,7 +91,87 @@
       }
 
     }
+  },
+
+  "sales": {
+    "label": "Sales",
+    "icon": "fas fa-chart-line",
+    "sections": {
+
+      "crm": {
+        "label": "CRM",
+        "icon": "fas fa-user-tie",
+        "items": [
+          {
+            "key": "leads",
+            "label": "Leads",
+            "icon": "fas fa-user-plus"
+          },
+          {
+            "key": "tasks",
+            "label": "Tasks",
+            "icon": "fas fa-tasks"
+          }
+        ]
+      }
+
+    }
+  },
+"bank": {
+  "label": "Bank",
+  "icon": "fas fa-building-columns",
+  "sections": {
+
+    "banking": {
+      "label": "Banking",
+      "icon": "fas fa-landmark",
+      "items": [
+        {
+          "key": "bankacc",
+          "label": "Bank Accounts",
+          "icon": "fas fa-university"
+        },
+        {
+          "key": "bankrec",
+          "label": "Bank Reconciliation",
+          "icon": "fas fa-scale-balanced"
+        }
+      ]
+    }
+
   }
+},
+"wps": {
+  "label": "WPS",
+  "icon": "fas fa-money-check-dollar",
+  "sections": {
+
+    "wps": {
+      "label": "WPS Management",
+      "icon": "fas fa-file-invoice-dollar",
+      "items": [
+        {
+          "key": "employee",
+          "label": "Employees",
+          "icon": "fas fa-users"
+        },
+        {
+          "key": "wpsgen",
+          "label": "Generate WPS",
+          "icon": "fas fa-file-export"
+        },
+        {
+          "key": "companywps",
+          "label": "Company Profile",
+          "icon": "fas fa-building"
+        }
+      ]
+    }
+
+  }
+}
+
+
 },
 
   "leads": {
