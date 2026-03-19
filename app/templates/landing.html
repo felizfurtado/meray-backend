@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,11 +9,11 @@
     <link
       rel="icon"
       type="image/png"
-      href="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png"
+      href="http://localhost:8000/static/logo_circle.png"
     />
 
-    <link rel="icon" type="image/png" href="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png">
-<link rel="apple-touch-icon" href="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png">
+    <link rel="icon" type="image/png" href="http://localhost:8000/static/logo_circle.png">
+<link rel="apple-touch-icon" href="http://localhost:8000/static/logo_circle.png">
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -1094,11 +1096,11 @@
       <div class="logo">
         <style>
           .logoimg {
-            width: 190px;
+            width: 50px;
           }
         </style>
         <img
-          src="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png"
+          src="http://localhost:8000/static/logo_circle.png"
           alt=""
           srcset=""
           class="logoimg"
@@ -1390,9 +1392,9 @@
 
         <div class="dashboard-frame">
           <img
-            src="Screenshot 2025-11-18 122922.png"
-            alt="Meray Dashboard UI"
-          />
+  src="http://localhost:8000/static/Screenshot 2025-11-18 122922.png"
+  alt="Meray Dashboard UI"
+/>
         </div>
       </div>
     </section>
@@ -2173,7 +2175,7 @@
         <div class="video-frame">
           <div class="video-container">
             <video autoplay muted loop playsinline controls>
-              <source src="Meray demo video (online-video-cutter.com).mp4" type="video/mp4" />
+              <source src="http://localhost:8000/static/Meray demo video (online-video-cutter.com).mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
@@ -4055,7 +4057,7 @@ document.getElementById("earlyBirdForm").addEventListener("submit", async functi
 
     try {
         // Send to Flask server
-        const response = await fetch('https://api.meray.cloud/api/submit', {
+        const response = await fetch('', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
