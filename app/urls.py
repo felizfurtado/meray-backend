@@ -7,7 +7,7 @@ from django.contrib import admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-     path('', landing_page, name="landing"),
+    path("home", landing_page, name="landing"),
     
 
 
