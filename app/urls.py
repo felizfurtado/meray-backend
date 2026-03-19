@@ -1,4 +1,4 @@
-from app.views import index
+from app.views import landing_page
 from django.urls import path
 from django.contrib import admin
 
@@ -7,7 +7,7 @@ from django.contrib import admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index , name="index")
+     path('', landing_page, name="landing"),
     
 
 

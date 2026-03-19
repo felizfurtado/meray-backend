@@ -1,0 +1,4555 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meray™</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png"
+    />
+
+    <link rel="icon" type="image/png" href="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png">
+<link rel="apple-touch-icon" href="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #375b6d;
+        --primary-light: #4a636e;
+        --primary-dark: #0f1823;
+        --text: #1f221f;
+        --text-light: #6b7280;
+        --background: #f6f4e8;
+        --background-alt: #ebeae1;
+        --border: #e5e7eb;
+        --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+        --gradient: #375b6d;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background-color: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* Header & Navigation */
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: #f6f4e8;
+        backdrop-filter: blur(10px);
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        height: 80px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gradient);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+        transition: color 0.3s;
+        position: relative;
+      }
+
+      .nav-links a:after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        transition: width 0.3s;
+      }
+
+      .nav-links a:hover:after {
+        width: 100%;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary);
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-outline:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .btn-primary {
+        background: var(--gradient);
+        color: white;
+        box-shadow: 0 4px 12px rgba(61, 122, 86, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(61, 122, 86, 0.4);
+      }
+
+      /* Hero Section */
+      .hero {
+        height: 100vh;
+        padding: 0 5%;
+        background: #f6f4e8;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding-top: 80px; /* Added to prevent navbar overlap */
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(
+          circle,
+          rgba(61, 122, 86, 0.1) 0%,
+          rgba(61, 122, 86, 0) 70%
+        );
+        border-radius: 50%;
+      }
+
+      .hero {
+        position: relative;
+        z-index: 0;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 3;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(
+            rgba(55, 91, 109, 0.1) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(55, 91, 109, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        width: 100%;
+      }
+
+      .hero-text h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .hero-text p {
+        font-size: 1.25rem;
+        color: var(--text-light);
+        margin-bottom: 2.5rem;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .hero-image {
+        position: relative;
+      }
+
+      /* 3D Dashboard */
+      .dashboard-container {
+        perspective: 1000px;
+        transform-style: preserve-3d;
+      }
+
+      .dashboard-preview {
+        background: #f6f4e8;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 25px 50px rgba(15, 24, 35, 0.25),
+          0 15px 30px rgba(15, 24, 35, 0.15), 0 10px 20px rgba(15, 24, 35, 0.1),
+          0 5px 10px rgba(15, 24, 35, 0.05),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        position: relative;
+        overflow: hidden;
+        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+        transform-style: preserve-3d;
+        animation: float3d 6s ease-in-out infinite;
+      }
+
+      @keyframes float3d {
+        0%,
+        100% {
+          transform: perspective(1000px) rotateY(-5deg) rotateX(5deg)
+            translateY(0);
+          box-shadow: 0 25px 50px rgba(15, 24, 35, 0.25),
+            0 15px 30px rgba(15, 24, 35, 0.15),
+            0 10px 20px rgba(15, 24, 35, 0.1);
+        }
+        50% {
+          transform: perspective(1000px) rotateY(-5deg) rotateX(5deg)
+            translateY(-10px);
+          box-shadow: 0 35px 70px rgba(15, 24, 35, 0.15),
+            0 25px 45px rgba(15, 24, 35, 0.2),
+            0 15px 25px rgba(15, 24, 35, 0.15);
+        }
+      }
+
+      .dashboard-preview:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--gradient);
+      }
+
+      .dashboard-preview::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 20px;
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8),
+          inset 0 -2px 4px rgba(15, 24, 35, 0.1);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+        transform: translateZ(30px);
+      }
+
+      .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .stat-card {
+        background: var(--background-alt);
+        padding: 1rem;
+        border-radius: 12px;
+        text-align: center;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease-out forwards;
+        opacity: 0;
+        position: relative;
+        overflow: hidden;
+        cursor: default;
+        z-index: 1;
+        transform: translateZ(20px);
+      }
+
+      .stat-card:nth-child(1) {
+        animation-delay: 0.2s;
+      }
+      .stat-card:nth-child(2) {
+        animation-delay: 0.4s;
+      }
+      .stat-card:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+      .stat-card:nth-child(4) {
+        animation-delay: 0.8s;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px) translateZ(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) translateZ(20px);
+        }
+      }
+
+      .stat-card:hover {
+        transform: translateY(0) scale(1) translateZ(20px) !important;
+        box-shadow: none !important;
+        z-index: 1 !important;
+      }
+
+      .stat-card:hover::before {
+        opacity: 0 !important;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover .stat-value {
+        transform: scale(1) !important;
+        color: var(--primary) !important;
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        transition: all 0.3s ease;
+      }
+
+      /* .stat-card:hover .stat-label {
+        color: var(--text-light) !important;
+        font-weight: normal !important;
+      } */
+
+      /* Improved Bar Graph */
+      .dashboard-graph {
+        height: 180px;
+        background: var(--background-alt);
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        padding: 1rem;
+        transform: translateZ(15px);
+      }
+
+      .graph-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      .graph-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: calc(100% - 30px);
+        width: 100%;
+      }
+
+      .bar-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        width: 18%;
+      }
+
+      .bar {
+        width: 70%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        border-radius: 4px 4px 0 0;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 10px;
+        transform: translateZ(10px);
+        pointer-events: auto; /* Ensure hover works with 3D */
+      }
+      /* 
+      .bar:hover {
+        transform: scaleY(1.05) translateZ(15px);
+        filter: brightness(1.1);
+        box-shadow: 0 0 12px rgba(45, 90, 65, 0.3);
+      } */
+
+      .bar-label {
+        margin-top: 8px;
+        font-size: 0.7rem;
+        color: var(--text-light);
+        text-align: center;
+      }
+
+      .bar-value {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--primary);
+        background: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        white-space: nowrap;
+      }
+
+      /* .bar:hover .bar-value {
+        opacity: 1;
+      } */
+
+      .graph-lines {
+        position: absolute;
+        top: 30px;
+        left: 0;
+        width: 100%;
+        height: calc(100% - 30px);
+        pointer-events: none;
+      }
+
+      .graph-line {
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      .graph-line:nth-child(1) {
+        top: 25%;
+      }
+      .graph-line:nth-child(2) {
+        top: 50%;
+      }
+      .graph-line:nth-child(3) {
+        top: 75%;
+      }
+
+      .y-axis-label {
+        position: absolute;
+        left: 5px;
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+
+      .y-axis-label:nth-child(1) {
+        top: 25%;
+      }
+      .y-axis-label:nth-child(2) {
+        top: 50%;
+      }
+      .y-axis-label:nth-child(3) {
+        top: 75%;
+      }
+      .y-axis-label:nth-child(4) {
+        top: 95%;
+      }
+
+      .dashboard-activity {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transform: translateZ(20px);
+      }
+
+      .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-light);
+      }
+
+      .activity-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* Tooltip */
+      .tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: 1000;
+      }
+
+      /* Hero Section Responsive Styles */
+      @media (max-width: 1200px) {
+        .hero-content {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          text-align: center;
+        }
+
+        .hero-text h1 {
+          margin-top: 50px;
+          font-size: 3rem;
+        }
+
+        .hero-buttons {
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .hero {
+          padding: 0 3%;
+          height: auto;
+          min-height: 100vh;
+        }
+
+        .hero-text h1 {
+          font-size: 2.8rem;
+        }
+
+        .hero-text p {
+          font-size: 1.1rem;
+        }
+
+        .dashboard-preview {
+          max-width: 500px;
+          margin: 0 auto;
+          transform: none;
+          animation: float 6s ease-in-out infinite;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hero {
+          padding: 80px 4% 40px;
+          height: auto;
+          min-height: 100vh;
+        }
+
+        .hero-content {
+          gap: 2rem;
+        }
+
+        .hero-text {
+          padding-top: 1rem;
+        }
+
+        .hero-text h1 {
+          font-size: 2.2rem;
+          margin-bottom: 1rem;
+          line-height: 1.3;
+        }
+
+        .hero-text p {
+          font-size: 1rem;
+          margin-bottom: 2rem;
+          line-height: 1.5;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .hero-buttons .btn {
+          width: 100%;
+          max-width: 280px;
+          justify-content: center;
+        }
+
+        .dashboard-preview {
+          margin: 1rem 0;
+          padding: 1.2rem;
+          border-radius: 16px;
+          box-shadow: 0 15px 30px rgba(15, 24, 35, 0.15),
+            0 8px 20px rgba(15, 24, 35, 0.1);
+        }
+
+        .dashboard-stats {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+          padding: 1rem 0.8rem;
+          border-radius: 10px;
+        }
+
+        .dashboard-graph {
+          height: 140px;
+          padding: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .dashboard-activity {
+          padding-top: 0.5rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero {
+          padding: 70px 3% 30px;
+        }
+
+        .hero-text {
+          padding-top: 0.5rem;
+        }
+
+        .hero-text h1 {
+          font-size: 1.9rem;
+          margin-bottom: 0.8rem;
+        }
+
+        .hero-text p {
+          font-size: 0.95rem;
+          margin-bottom: 1.8rem;
+          padding: 0 0.5rem;
+        }
+
+        .dashboard-preview {
+          margin: 0.8rem 0;
+          padding: 1rem;
+          border-radius: 14px;
+        }
+
+        .dashboard-stats {
+          gap: 0.8rem;
+          margin-bottom: 1.2rem;
+        }
+
+        .stat-card {
+          padding: 0.8rem 0.6rem;
+        }
+
+        .stat-value {
+          font-size: 1.2rem;
+        }
+
+        .stat-label {
+          font-size: 0.75rem;
+        }
+
+        .dashboard-graph {
+          height: 120px;
+          padding: 0.8rem;
+          margin-bottom: 1.2rem;
+        }
+
+        .graph-title {
+          font-size: 0.75rem;
+          margin-bottom: 0.3rem;
+        }
+
+        .bar-label {
+          font-size: 0.6rem;
+          margin-top: 4px;
+        }
+
+        .dashboard-activity {
+          flex-direction: column;
+          gap: 0.6rem;
+          align-items: flex-start;
+        }
+
+        .activity-item {
+          font-size: 0.75rem;
+        }
+      }
+
+      /* Extra small devices */
+      @media (max-width: 360px) {
+        .hero {
+          padding: 60px 2% 20px;
+        }
+
+        .hero-text h1 {
+          font-size: 1.7rem;
+        }
+
+        .dashboard-preview {
+          padding: 0.8rem;
+        }
+
+        .dashboard-stats {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Remove 3D effects on mobile for better performance */
+      @media (max-width: 1024px) {
+        .dashboard-container {
+          perspective: none;
+        }
+
+        .dashboard-preview,
+        .stat-card,
+        .dashboard-header,
+        .dashboard-graph,
+        .dashboard-activity,
+        .bar {
+          transform: none !important;
+        }
+
+        .stat-card:hover,
+        .bar:hover {
+          transform: none !important;
+        }
+      }
+
+      /* Adjust hero background patterns for mobile */
+      @media (max-width: 768px) {
+        .hero::before {
+          width: 400px;
+          height: 400px;
+          top: -20%;
+          right: -30%;
+        }
+
+        .hero::after {
+          background-size: 30px 30px;
+        }
+      }
+
+      /* Add floating animation for mobile */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+          box-shadow: 0 15px 30px rgba(15, 24, 35, 0.15),
+            0 8px 20px rgba(15, 24, 35, 0.1);
+        }
+        50% {
+          transform: translateY(-10px);
+          box-shadow: 0 25px 50px rgba(15, 24, 35, 0.2),
+            0 15px 30px rgba(15, 24, 35, 0.15);
+        }
+      }
+
+      /* Mobile Menu */
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      @media (max-width: 768px) {
+        .mobile-menu-btn {
+          display: block;
+        }
+
+        .nav-links.active {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background: white;
+          padding: 2rem;
+          box-shadow: var(--shadow-lg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+
+    <style>
+      /* Mobile Navigation Styles */
+      .mobile-nav-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-nav-drawer {
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 280px;
+        height: 100%;
+        background: #f6f4e8;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      .mobile-nav-drawer.active {
+        left: 0;
+      }
+
+      .mobile-nav-overlay.active {
+        display: block;
+        opacity: 1;
+      }
+
+      .mobile-nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .mobile-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mobile-logo img {
+        width: 140px;
+      }
+
+      .mobile-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text);
+        cursor: pointer;
+        padding: 5px;
+        transition: color 0.3s;
+      }
+
+      .mobile-close-btn:hover {
+        color: var(--primary);
+      }
+
+      .mobile-nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .mobile-nav-links a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+        padding: 12px 15px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mobile-nav-links a i {
+        width: 20px;
+        text-align: center;
+      }
+
+      .mobile-nav-links a:hover {
+        background: rgba(55, 91, 109, 0.1);
+        color: var(--primary);
+      }
+
+      .mobile-auth-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .mobile-auth-buttons .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+      }
+
+      /* Hide laptop navbar on mobile */
+      @media (max-width: 768px) {
+        .nav-links,
+        .auth-buttons {
+          display: none !important;
+        }
+
+        .mobile-menu-btn {
+          display: block;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .mobile-nav-overlay,
+        .mobile-nav-drawer {
+          display: none !important;
+        }
+      }
+    </style>
+
+    <!-- Mobile Navigation HTML -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+      <div class="mobile-nav-header">
+        <div class="mobile-logo">
+          <img
+            src="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png"
+            alt="Meray"
+          />
+        </div>
+        <button class="mobile-close-btn" id="mobileCloseBtn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="mobile-nav-links">
+        <a href="#hero">
+          <i class="fas fa-home"></i>
+          Home
+        </a>
+        <a href="#product-overview">
+          <i class="fas fa-eye"></i>
+          Product
+        </a>
+        <a href="#features">
+          <i class="fas fa-rocket"></i>
+          Features
+        </a>
+        <a href="#why-meray">
+          <i class="fas fa-trophy"></i>
+          Why Meray
+        </a>
+        <a href="#pricing">
+          <i class="fas fa-tag"></i>
+          Pricing
+        </a>
+      </div>
+
+      <div class="mobile-auth-buttons">
+        <a href="dashboard.html" class="btn btn-outline">
+          <i class="fas fa-sign-in-alt"></i>
+          Sign In
+        </a>
+        <a href="#cta" class="btn btn-primary">
+          <i class="fas fa-rocket"></i>
+          Get Started
+        </a>
+      </div>
+    </div>
+
+    <script>
+      // Mobile Navigation Functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+        const mobileCloseBtn = document.getElementById("mobileCloseBtn");
+        const mobileNavOverlay = document.getElementById("mobileNavOverlay");
+        const mobileNavDrawer = document.getElementById("mobileNavDrawer");
+
+        // Open mobile menu
+        mobileMenuBtn.addEventListener("click", function () {
+          mobileNavDrawer.classList.add("active");
+          mobileNavOverlay.classList.add("active");
+          document.body.style.overflow = "hidden";
+        });
+
+        // Close mobile menu
+        function closeMobileMenu() {
+          mobileNavDrawer.classList.remove("active");
+          mobileNavOverlay.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+
+        mobileCloseBtn.addEventListener("click", closeMobileMenu);
+        mobileNavOverlay.addEventListener("click", closeMobileMenu);
+
+        // Close menu when clicking on a link
+        const mobileNavLinks = document.querySelectorAll(
+          ".mobile-nav-links a, .mobile-auth-buttons a"
+        );
+        mobileNavLinks.forEach((link) => {
+          link.addEventListener("click", closeMobileMenu);
+        });
+
+        // Close menu on escape key
+        document.addEventListener("keydown", function (e) {
+          if (
+            e.key === "Escape" &&
+            mobileNavDrawer.classList.contains("active")
+          ) {
+            closeMobileMenu();
+          }
+        });
+      });
+    </script>
+    <nav class="navbar">
+      <div class="logo">
+        <style>
+          .logoimg {
+            width: 190px;
+          }
+        </style>
+        <img
+          src="Vintage Colorful Retro Vibes Typographic Product Brand Logo(1)(1).png"
+          alt=""
+          srcset=""
+          class="logoimg"
+        />
+      </div>
+
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="nav-links">
+        <a href="#hero">Home</a>
+        <a href="#product-overview">Product</a>
+        <a href="#features">Features</a>
+        <a href="#why-meray">Why Meray</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+
+      <div class="auth-buttons">
+        <!-- <a href="dashboard.html" class="btn btn-outline">Sign In</a> -->
+        <a href="https://meray.cloud/login" class="btn btn-primary">Login</a>
+      </div>
+    </nav>
+
+    <style></style>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="hero-texture"></div>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1>Meray™ — Next Generation Accounting & CRM for UAE SMEs</h1>
+          <p>One system for your cash, customers, invoices, and follow-ups — fully automated.</p>
+          <div class="hero-buttons">
+            <a href="https://meray.cloud/login" class="btn btn-primary">
+              <i class="fas fa-rocket"></i>
+              Login 
+            </a>
+            <a href="#demo" class="btn btn-outline" style="">
+              <i class="fas fa-play-circle"></i>
+              Watch the Demo
+            </a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <div class="dashboard-container">
+            <div class="dashboard-preview">
+              <div class="dashboard-header">
+                <div style="font-weight: 600; color: var(--primary)">
+                  Meray Dashboard
+                </div>
+                <div style="display: flex; gap: 0.5rem">
+                  <div
+                    style="
+                      width: 12px;
+                      height: 12px;
+                      border-radius: 50%;
+                      background: #ef4444;
+                    "
+                  ></div>
+                  <div
+                    style="
+                      width: 12px;
+                      height: 12px;
+                      border-radius: 50%;
+                      background: #f59e0b;
+                    "
+                  ></div>
+                  <div
+                    style="
+                      width: 12px;
+                      height: 12px;
+                      border-radius: 50%;
+                      background: #10b981;
+                    "
+                  ></div>
+                </div>
+              </div>
+              <div class="dashboard-stats" style="z-index: 39">
+                <div
+                  class="stat-card"
+                  data-info="Total number of potential customers in your pipeline"
+                  style="z-index: 39"
+                >
+                  <div class="stat-value">142</div>
+                  <div class="stat-label" style="color: var(--primary-dark)">
+                    Total Leads
+                  </div>
+                </div>
+                <div
+                  class="stat-card"
+                  data-info="Currently active customer accounts"
+                >
+                  <div class="stat-value">87</div>
+                  <div class="stat-label" style="color: var(--primary-dark)">
+                    Active Customers
+                  </div>
+                </div>
+                <div
+                  class="stat-card"
+                  data-info="Total value of unpaid invoices"
+                >
+                  <div class="stat-value">$42.5K</div>
+                  <div class="stat-label" style="color: var(--primary-dark)">
+                    Outstanding Invoices
+                  </div>
+                </div>
+                <div class="stat-card" data-info="Cash received this month">
+                  <div class="stat-value">$28.4K</div>
+                  <div class="stat-label" style="color: var(--primary-dark)">
+                    Cash Received (MTD)
+                  </div>
+                </div>
+              </div>
+              <div class="dashboard-graph">
+                <div class="graph-title">Monthly Performance Overview</div>
+                <div class="graph-lines">
+                  <div class="graph-line"></div>
+                  <div class="graph-line"></div>
+                  <div class="graph-line"></div>
+                </div>
+                <div class="graph-container">
+                  <div class="bar-container">
+                    <div class="bar" data-value="142" style="height: 71%">
+                      <!-- <div class="bar-value" style="color: var(--primary-dark);">142 Leads</div> -->
+                    </div>
+                    <div class="bar-label">Leads</div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="bar" data-value="87" style="height: 43.5%">
+                      <!-- <div class="bar-value">87 Customers</div> -->
+                    </div>
+                    <div class="bar-label">Customers</div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="bar" data-value="42.5" style="height: 85%">
+                      <!-- <div class="bar-value">$42.5K</div> -->
+                    </div>
+                    <div class="bar-label">Invoices</div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="bar" data-value="28.4" style="height: 56.8%">
+                      <!-- <div class="bar-value">$28.4K</div> -->
+                    </div>
+                    <div class="bar-label">Revenue</div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="bar" data-value="65" style="height: 32.5%">
+                      <!-- <div class="bar-value">65% Rate</div> -->
+                    </div>
+                    <div class="bar-label">Conversion</div>
+                  </div>
+                </div>
+              </div>
+              <div class="dashboard-activity">
+                <div class="activity-item">
+                  <div class="activity-indicator"></div>
+                  <span style="color: var(--primary-dark)">Data Syncing</span>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-indicator"></div>
+                  <span style="color: var(--primary-dark)"
+                    >Real-time Updates</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .product-overview {
+        min-height: 90vh;
+        width: 90%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 4vw;
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        margin: 40px auto 0;
+        position: relative;
+        overflow: hidden;
+        border-radius: 40px;
+      }
+
+      .po-wrapper {
+        text-align: center;
+        width: 100%;
+        max-width: 1100px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .product-overview h2 {
+        font-size: 3.6rem;
+        font-weight: 700;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+        color: white;
+      }
+
+      .product-overview .tagline {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 40px;
+        line-height: 1.6;
+      }
+
+      .dashboard-frame {
+        width: 100%;
+        max-width: 1050px;
+        margin: 0 auto;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #fff;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3),
+          0 12px 25px rgba(0, 0, 0, 0.2);
+        transition: transform 0.6s ease, box-shadow 0.6s ease,
+          border-color 0.6s ease;
+        transform: perspective(1000px) rotateX(5deg) rotateY(-2deg);
+        transform-style: preserve-3d;
+      }
+
+      .dashboard-frame:hover {
+        transform: perspective(1000px) rotateX(2deg) rotateY(-1deg)
+          translateY(-10px);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 35px 80px rgba(0, 0, 0, 0.4),
+          0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .dashboard-frame img {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        transform: translateZ(20px);
+      }
+
+      .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .bg-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .circle-1 {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        right: -100px;
+      }
+
+      .circle-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -100px;
+        left: -50px;
+      }
+    </style>
+
+    <section class="product-overview" id="product-overview">
+      <div class="hero-background">
+        <div class="bg-circle circle-1"></div>
+        <div class="bg-circle circle-2"></div>
+      </div>
+
+      <div class="po-wrapper">
+        <h2>The Meray Solution</h2>
+        <p class="tagline">
+          A modern, intuitive command center that brings together your entire
+          business—customers, finances, and operations—in one beautifully
+          designed platform that works as hard as you do
+        </p>
+
+        <div class="dashboard-frame">
+          <img
+            src="Screenshot 2025-11-18 122922.png"
+            alt="Meray Dashboard UI"
+          />
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .book-features {
+        padding: 100px 5%;
+        background: var(--background);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .book-container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .book-header {
+        text-align: center;
+        margin-bottom: 80px;
+      }
+
+      .book-badge {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        letter-spacing: 0.5px;
+        box-shadow: 0 8px 25px rgba(55, 91, 109, 0.3);
+      }
+
+      .book-title {
+        font-size: 3.8rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+      }
+
+      .book-subtitle {
+        font-size: 1.4rem;
+        color: var(--text-light);
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .book-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        perspective: 1000px;
+      }
+
+      .book-card {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        box-shadow: 0 25px 60px rgba(15, 24, 35, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        position: relative;
+        overflow: hidden;
+        transform-style: preserve-3d;
+      }
+
+      .book-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.1) 50%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.6s ease;
+      }
+
+      .book-card:hover::before {
+        opacity: 1;
+      }
+
+      /* Card Header with Visual Elements */
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      .card-icon-wrapper {
+        position: relative;
+      }
+
+      .card-icon {
+        width: 90px;
+        height: 90px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.4s ease;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        z-index: 2;
+      }
+
+      .icon-glow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: all 0.4s ease;
+      }
+
+      .book-card:hover .icon-glow {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+
+      .book-card:hover .card-icon {
+        transform: scale(1.1) rotate(5deg);
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      }
+
+      .card-title-section {
+        flex: 1;
+      }
+
+      .card-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .card-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      /* Visual Features List */
+      .card-features {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: linear-gradient(
+          to bottom,
+          var(--primary-light),
+          rgba(255, 255, 255, 0.5)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .feature-item:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateX(8px);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .feature-item:hover::before {
+        opacity: 1;
+      }
+
+      .feature-check {
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+      }
+
+      .feature-item:hover .feature-check {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      .feature-text {
+        flex: 1;
+      }
+
+      .feature-main {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.3rem;
+        font-size: 1.1rem;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .feature-desc {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      /* Visual Badge */
+      .card-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 16px;
+        font-size: 1rem;
+        font-weight: 600;
+        position: relative;
+        z-index: 2;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 0.3s ease;
+      }
+
+      .book-card:hover .card-badge {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Background Elements */
+      .book-background {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .book-shape {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary) 0%, transparent 70%);
+        opacity: 0.03;
+        animation: float 20s ease-in-out infinite;
+      }
+
+      .shape-1 {
+        width: 400px;
+        height: 400px;
+        top: 10%;
+        right: 5%;
+      }
+
+      .shape-2 {
+        width: 300px;
+        height: 300px;
+        bottom: 15%;
+        left: 3%;
+        animation-delay: -10s;
+      }
+
+      .shape-3 {
+        width: 200px;
+        height: 200px;
+        top: 60%;
+        right: 10%;
+        animation-delay: -5s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg) scale(1);
+        }
+        33% {
+          transform: translateY(-30px) rotate(120deg) scale(1.05);
+        }
+        66% {
+          transform: translateY(20px) rotate(240deg) scale(0.95);
+        }
+      }
+
+      /* Hover Effects */
+      .book-card:hover {
+        transform: translateY(-15px) rotateX(5deg) rotateY(-3deg);
+        box-shadow: 0 40px 80px rgba(15, 24, 35, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 1200px) {
+        .book-cards {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 2rem;
+        }
+
+        .book-card {
+          padding: 2.5rem 2rem;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .book-cards {
+          grid-template-columns: 1fr;
+          max-width: 600px;
+          margin: 0 auto;
+          gap: 2.5rem;
+        }
+
+        .book-title {
+          font-size: 3.2rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .book-title {
+          font-size: 2.8rem;
+        }
+
+        .book-card {
+          padding: 2.5rem 2rem;
+        }
+
+        .card-header {
+          flex-direction: column;
+          text-align: center;
+          gap: 1.5rem;
+        }
+
+        .card-icon {
+          width: 80px;
+          height: 80px;
+          font-size: 2.2rem;
+        }
+
+        .icon-glow {
+          width: 100px;
+          height: 100px;
+        }
+      }
+    </style>
+
+    <section class="book-features" id="features">
+      <div class="book-background">
+        <div class="book-shape shape-1"></div>
+        <div class="book-shape shape-2"></div>
+        <div class="book-shape shape-3"></div>
+      </div>
+
+      <div class="book-container">
+        <div class="book-header">
+          <div class="book-badge">COMPLETE BUSINESS PLATFORM</div>
+          <h2 class="book-title">Everything Your Business Needs</h2>
+          <p class="book-subtitle">
+            12 powerful features organized into three core business solutions
+          </p>
+        </div>
+
+        <div class="book-cards">
+          <!-- Card 1: Core Platform -->
+          <div class="book-card">
+            <div class="card-header">
+              <div class="card-icon-wrapper">
+                <div class="card-icon">
+                  <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="icon-glow"></div>
+              </div>
+              <div class="card-title-section">
+                <h3 class="card-title">Core Platform</h3>
+                <div class="card-subtitle">Foundation & Integration</div>
+              </div>
+            </div>
+            <div class="card-features">
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Unified Accounting & CRM</div>
+                  <div class="feature-desc">
+                    Connect financial data with customer relationships
+                    seamlessly
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Bank Integration</div>
+                  <div class="feature-desc">
+                    Automatic transaction imports and reconciliation processes
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Easy Data Migration</div>
+                  <div class="feature-desc">
+                    Import from Excel, Zoho, Odoo quickly and efficiently
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Unlimited Users</div>
+                  <div class="feature-desc">
+                    Team collaboration with comprehensive role permissions
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Financial Management -->
+          <div class="book-card">
+            <div class="card-header">
+              <div class="card-icon-wrapper">
+                <div class="card-icon">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="icon-glow"></div>
+              </div>
+              <div class="card-title-section">
+                <h3 class="card-title">Financial Management</h3>
+                <div class="card-subtitle">Accounting & Compliance</div>
+              </div>
+            </div>
+            <div class="card-features">
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Smart Invoicing</div>
+                  <div class="feature-desc">
+                    Create invoices with automatic customer creation
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Supplier & Cost Management</div>
+                  <div class="feature-desc">
+                    Track suppliers with intelligent expense categorization
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Cash Flow Forecasting</div>
+                  <div class="feature-desc">
+                    Liquidity tracking with advanced predictive analytics
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">VAT & Tax Automation</div>
+                  <div class="feature-desc">
+                    Auto-calculation with FTA filing preparation included
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Operations & Insights -->
+          <div class="book-card">
+            <div class="card-header">
+              <div class="card-icon-wrapper">
+                <div class="card-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <div class="icon-glow"></div>
+              </div>
+              <div class="card-title-section">
+                <h3 class="card-title">Operations & Insights</h3>
+                <div class="card-subtitle">Tools & Analytics</div>
+              </div>
+            </div>
+            <div class="card-features">
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Receipt Scanner</div>
+                  <div class="feature-desc">
+                    Image and PDF upload with full mobile support
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Chart of Accounts</div>
+                  <div class="feature-desc">
+                    UAE-ready setup with complete customization options
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Real-Time Dashboards</div>
+                  <div class="feature-desc">
+                    Pivot-like custom reports with live analytics
+                  </div>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-check">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="feature-text">
+                  <div class="feature-main">Full Customization</div>
+                  <div class="feature-desc">
+                    Tailored specifically to your business workflows
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: Demo Video - Larger -->
+    <style>
+      .demo-section {
+        min-height: 90vh;
+        width: 95%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 4vw;
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        margin: 40px auto;
+        position: relative;
+        overflow: hidden;
+        border-radius: 40px;
+      }
+
+      .demo-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .demo-header h2 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        letter-spacing: -1.5px;
+        margin-bottom: 15px;
+        color: white;
+      }
+
+      .demo-header .tagline {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 40px;
+        line-height: 1.6;
+        font-weight: 400;
+      }
+
+      .video-frame {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #fff;
+        border: 4px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4),
+          0 15px 35px rgba(0, 0, 0, 0.3);
+        transition: transform 0.6s ease, box-shadow 0.6s ease,
+          border-color 0.6s ease;
+        transform: perspective(1000px) rotateX(5deg) rotateY(-2deg);
+        transform-style: preserve-3d;
+      }
+
+      .video-frame:hover {
+        transform: perspective(1000px) rotateX(2deg) rotateY(-1deg)
+          translateY(-10px);
+        border-color: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 45px 100px rgba(0, 0, 0, 0.5),
+          0 25px 60px rgba(0, 0, 0, 0.4);
+      }
+
+      .video-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        overflow: hidden;
+      }
+
+      .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: none;
+      }
+
+      .demo-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .demo-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .demo-circle-1 {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        right: -100px;
+      }
+
+      .demo-circle-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -100px;
+        left: -50px;
+      }
+
+      @media (max-width: 1200px) {
+        .video-frame {
+          max-width: 1000px;
+        }
+
+        .demo-header h2 {
+          font-size: 3rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .demo-section {
+          width: 90%;
+          padding: 40px 4vw;
+          min-height: 80vh;
+        }
+
+        .demo-header h2 {
+          font-size: 2.5rem;
+        }
+
+        .demo-header .tagline {
+          font-size: 1.1rem;
+          margin-bottom: 30px;
+        }
+
+        .video-frame {
+          max-height: none;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .demo-header h2 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+
+    <section class="demo-section" id="demo">
+      <div class="demo-background">
+        <div class="demo-circle demo-circle-1"></div>
+        <div class="demo-circle demo-circle-2"></div>
+      </div>
+
+      <div class="demo-container">
+        <div class="demo-header">
+          <h2>See Meray in Action</h2>
+          <p class="tagline">Your first look at Meray™ — in just 60 seconds</p>
+        </div>
+
+        <div class="video-frame">
+          <div class="video-container">
+            <video autoplay muted loop playsinline controls>
+              <source src="Meray demo video (online-video-cutter.com).mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .meray-story-section {
+        padding: 50px 5%;
+        background: var(--background);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .meray-story-container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .meray-story-header {
+        text-align: center;
+        margin-bottom: 100px;
+      }
+
+      .meray-story-badge {
+        display: inline-block;
+        background: var(--primary);
+        color: var(--background);
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        letter-spacing: 0.5px;
+        box-shadow: 0 8px 25px rgba(55, 91, 109, 0.3);
+      }
+
+      .meray-story-title {
+        font-size: 3.8rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+      }
+
+      .meray-story-subtitle {
+        font-size: 1.4rem;
+        color: var(--text-light);
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Visual Journey */
+      .meray-visual-journey {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 2rem;
+        margin-bottom: 80px;
+        position: relative;
+      }
+
+      .meray-journey-item {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .meray-journey-connector {
+        position: absolute;
+        top: 60px;
+        left: 10%;
+        width: 80%;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          var(--primary-light) 20%,
+          var(--primary) 50%,
+          var(--primary-light) 80%,
+          transparent 100%
+        );
+        z-index: 1;
+        opacity: 0.6;
+      }
+
+      .meray-journey-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 2.5rem;
+        box-shadow: 0 20px 40px rgba(15, 24, 35, 0.3);
+        border: 4px solid var(--background-alt);
+        position: relative;
+        z-index: 2;
+        transition: all 0.4s ease;
+      }
+
+      .meray-journey-item:hover .meray-journey-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 25px 50px rgba(15, 24, 35, 0.4);
+        border-color: var(--primary-light);
+      }
+
+      .meray-journey-number {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 40px;
+        height: 40px;
+        background: var(--primary-dark);
+        border: 3px solid var(--background-alt);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: var(--background);
+        font-size: 1.1rem;
+        box-shadow: 0 5px 15px rgba(15, 24, 35, 0.3);
+      }
+
+      .meray-journey-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 0.8rem;
+        line-height: 1.3;
+      }
+
+      .meray-journey-desc {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+
+      /* Stats Grid */
+      .meray-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 80px;
+      }
+
+      .meray-stat-card {
+        background: #ffffff;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        border: 2px solid var(--border);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .meray-stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--primary-light) 100%
+        );
+      }
+
+      .meray-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+        border-color: var(--primary-light);
+      }
+
+      .meray-stat-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+      }
+
+      .meray-stat-label {
+        font-size: 1.1rem;
+        color: var(--primary-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .meray-stat-desc {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+
+      /* Team Showcase */
+      .meray-team-showcase {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+      }
+
+      .meray-team-member {
+        background: var(--background-alt);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+        border: 2px solid var(--border);
+      }
+
+      .meray-team-member:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-light);
+      }
+
+      .meray-member-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        padding: 2.5rem 2rem;
+        text-align: center;
+        color: white;
+        position: relative;
+      }
+
+      .meray-member-avatar {
+        color: white;
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .meray-member-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .meray-member-role {
+        font-size: 1rem;
+        opacity: 0.9;
+        font-weight: 500;
+      }
+
+      .meray-member-body {
+        padding: 2rem;
+        background: white;
+      }
+
+      .meray-member-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .meray-member-stat {
+        text-align: center;
+        padding: 1rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        border-radius: 12px;
+        border: 1px solid var(--border);
+      }
+
+      .meray-stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.3rem;
+      }
+
+      .meray-stat-name {
+        font-size: 0.8rem;
+        color: white;
+        font-weight: 600;
+      }
+
+      .meray-member-bio {
+        color: var(--text);
+        line-height: 1.6;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      /* Background Elements */
+      .meray-story-background {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .meray-story-shape {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary) 0%, transparent 70%);
+        opacity: 0.03;
+        animation: meray-float 20s ease-in-out infinite;
+      }
+
+      .meray-story-shape-1 {
+        width: 400px;
+        height: 400px;
+        top: 10%;
+        right: 5%;
+      }
+
+      .meray-story-shape-2 {
+        width: 300px;
+        height: 300px;
+        bottom: 15%;
+        left: 3%;
+        animation-delay: -10s;
+      }
+
+      @keyframes meray-float {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg) scale(1);
+        }
+        33% {
+          transform: translateY(-30px) rotate(120deg) scale(1.05);
+        }
+        66% {
+          transform: translateY(20px) rotate(240deg) scale(0.95);
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .meray-visual-journey {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 3rem;
+        }
+
+        .meray-journey-connector {
+          display: none;
+        }
+
+        .meray-stats-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .meray-team-showcase {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+      }
+
+      /* Visual Journey - 2 items per row on mobile */
+      @media (max-width: 768px) {
+        .meray-visual-journey {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 2rem;
+        }
+
+        .meray-journey-connector {
+          display: none;
+        }
+
+        .meray-journey-icon {
+          width: 90px;
+          height: 90px;
+          font-size: 1.8rem;
+        }
+
+        .meray-journey-number {
+          width: 32px;
+          height: 32px;
+          font-size: 0.9rem;
+          top: -8px;
+          right: -8px;
+        }
+
+        .meray-journey-title {
+          font-size: 1.1rem;
+        }
+
+        .meray-journey-desc {
+          font-size: 0.85rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .meray-visual-journey {
+          gap: 1.5rem;
+        }
+
+        .meray-journey-icon {
+          width: 80px;
+          height: 80px;
+          font-size: 1.6rem;
+        }
+
+        .meray-journey-title {
+          font-size: 1rem;
+        }
+
+        .meray-journey-desc {
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Extra small devices - stack to 1 column */
+      @media (max-width: 360px) {
+        .meray-visual-journey {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+      }
+    </style>
+
+    <section class="meray-story-section">
+      <div class="meray-story-background">
+        <div class="meray-story-shape meray-story-shape-1"></div>
+        <div class="meray-story-shape meray-story-shape-2"></div>
+      </div>
+
+      <div class="meray-story-container">
+        <div class="meray-story-header">
+          <div class="meray-story-badge">OUR JOURNEY</div>
+          <h2 class="meray-story-title">Built by Experts, Made for UAE</h2>
+          <p class="meray-story-subtitle">
+            From decades of financial experience to the platform that powers
+            your business
+          </p>
+        </div>
+
+        <!-- Visual Journey Timeline -->
+        <div class="meray-visual-journey">
+          <div class="meray-journey-connector"></div>
+
+          <!-- Step 1 -->
+          <div class="meray-journey-item">
+            <div class="meray-journey-icon">
+              <i class="fas fa-user-tie"></i>
+              <div class="meray-journey-number">1</div>
+            </div>
+            <h3 class="meray-journey-title">Finance Experts</h3>
+            <p class="meray-journey-desc">
+              Founded by seasoned financial professionals
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="meray-journey-item">
+            <div class="meray-journey-icon">
+              <i class="fas fa-chart-line"></i>
+              <div class="meray-journey-number">2</div>
+            </div>
+            <h3 class="meray-journey-title">20+ Years</h3>
+            <p class="meray-journey-desc">
+              Market experience with accounting systems
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="meray-journey-item">
+            <div class="meray-journey-icon">
+              <i class="fas fa-handshake"></i>
+              <div class="meray-journey-number">3</div>
+            </div>
+            <h3 class="meray-journey-title">100+ Clients</h3>
+            <p class="meray-journey-desc">UAE business experience</p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="meray-journey-item">
+            <div class="meray-journey-icon">
+              <i class="fas fa-rocket"></i>
+              <div class="meray-journey-number">4</div>
+            </div>
+            <h3 class="meray-journey-title">Customizable</h3>
+            <p class="meray-journey-desc">User directed system</p>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="meray-journey-item">
+            <div class="meray-journey-icon">
+              <i class="fas fa-flag"></i>
+              <div class="meray-journey-number">5</div>
+            </div>
+            <h3 class="meray-journey-title">UAE Focus</h3>
+            <p class="meray-journey-desc">Made for local SMEs</p>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+
+        <!-- <div class="meray-stats-grid">
+            <div class="meray-stat-card">
+                <div class="meray-stat-number">15+</div>
+                <div class="meray-stat-label">Years Experience</div>
+                <div class="meray-stat-desc">Combined financial expertise in UAE market</div>
+            </div>
+            
+            <div class="meray-stat-card">
+                <div class="meray-stat-number">100+</div>
+                <div class="meray-stat-label">UAE Clients</div>
+                <div class="meray-stat-desc">Businesses served across various industries</div>
+            </div>
+            
+            <div class="meray-stat-card">
+                <div class="meray-stat-number">12</div>
+                <div class="meray-stat-label">Core Features</div>
+                <div class="meray-stat-desc">Built based on real client needs</div>
+            </div>
+        </div> -->
+
+        <!-- Team Showcase -->
+        <!-- <div class="meray-team-showcase">
+        
+            <div class="meray-team-member">
+                <div class="meray-member-header">
+                    <div class="meray-member-avatar">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="meray-member-name">Ahmed Al Maktoum</h3>
+                    <div class="meray-member-role">Lead Accountant & Co-founder</div>
+                </div>
+                <div class="meray-member-body">
+                    <div class="meray-member-stats">
+                        <div class="meray-member-stat">
+                            <div class="meray-stat-value">15+</div>
+                            <div class="meray-stat-name">Years</div>
+                        </div>
+                        <div class="meray-member-stat">
+                            <div class="meray-stat-value">500+</div>
+                            <div class="meray-stat-name">Clients</div>
+                        </div>
+                    </div>
+                    <p class="meray-member-bio">Specializing in UAE SME accounting, VAT compliance, and business optimization strategies.</p>
+                </div>
+            </div>
+
+            <div class="meray-team-member">
+                <div class="meray-member-header">
+                    <div class="meray-member-avatar">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="meray-member-name">Sarah Johnson</h3>
+                    <div class="meray-member-role">Financial Advisor & Co-founder</div>
+                </div>
+                <div class="meray-member-body">
+                    <div class="meray-member-stats">
+                        <div class="meray-member-stat">
+                            <div class="meray-stat-value">12+</div>
+                            <div class="meray-stat-name">Years</div>
+                        </div>
+                        <div class="meray-member-stat">
+                            <div class="meray-stat-value">Big 4</div>
+                            <div class="meray-stat-name">Background</div>
+                        </div>
+                    </div>
+                    <p class="meray-member-bio">Former Big 4 consultant with deep expertise in UAE business growth and financial strategy.</p>
+                </div>
+            </div>
+
+            <div class="meray-team-member">
+                <div class="meray-member-header">
+                    <div class="meray-member-avatar">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="meray-member-name">Mohammed Hassan</h3>
+                    <div class="meray-member-role">Technology Director</div>
+                </div>
+                <div class="meray-member-body">
+                    <div class="meray-member-stats">
+                        <div class="meray-member-stat">
+                            <div class="meray-stat-value">10+</div>
+                            <div class="meray-stat-name">Years</div>
+                        </div>
+                        <div class="meray-member-stat">
+                            <div class="meray-stat-value">50+</div>
+                            <div class="meray-stat-name">Projects</div>
+                        </div>
+                    </div>
+                    <p class="meray-member-bio">Software architect focused on creating intuitive, powerful platforms for UAE businesses.</p>
+                </div>
+            </div>
+        </div> -->
+      </div>
+    </section>
+
+
+
+
+<section class="pricing-section-professional" id="pricing-pro">
+    <div class="pricing-container">
+        <!-- Header -->
+        <div class="pricing-header-pro">
+            <h2>Flexible Solutions for Growing Businesses</h2>
+            <p class="pricing-subtitle-pro">Start with essentials, add advanced features only when you need them</p>
+        </div>
+
+        <!-- Philosophy Banner -->
+        <div class="philosophy-banner">
+            <h3>Start with Meray Essentials. Add superpowers only when you need them.</h3>
+            <p>Meray Essentials gives you everything required to stay 100% compliant with Corporate Tax + VAT — unlimited users. All other features are optional 'unfair advantages' you can add as you grow.</p>
+        </div>
+
+        <!-- Essentials Card -->
+        <div class="essentials-card-pro">
+            <div class="essentials-header-pro">
+                <div class="essentials-title-pro">
+                    <h3>Meray Essentials</h3>
+                    <p>Complete UAE compliance package </p>
+                </div>
+                <div class="essentials-price-pro">
+                    <div class="price-main-pro">60 AED</div>
+                    <div class="price-period-pro">per month | <Span style="color: greenyellow; font-size: 0.8rem;">Unlimited Users</Span> </div>
+                    <div class="setup-fee-pro">
+                        <span>Setup: </span>
+                        <span class="original-price-pro">6,000 AED</span>
+                        <span>→</span>
+                        <span class="discounted-price-pro">3,000 AED</span>
+                        <span style="color: #dc3545; font-size: 0.8rem;">(December Special)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="essentials-features-pro">
+                <div class="feature-item-pro">
+                    <div class="feature-icon-pro">✓</div>
+                    <div class="feature-text-pro">Standard WPS Payroll</div>
+                </div>
+                <div class="feature-item-pro">
+                    <div class="feature-icon-pro">✓</div>
+                    <div class="feature-text-pro">Corporate Tax & VAT automated</div>
+                </div>
+                <div class="feature-item-pro">
+                    <div class="feature-icon-pro">✓</div>
+                    <div class="feature-text-pro">Inventory Management</div>
+                </div>
+                <div class="feature-item-pro">
+                    <div class="feature-icon-pro">✓</div>
+                    <div class="feature-text-pro">Invoice & Expense Management</div>
+                </div>
+                <div class="feature-item-pro">
+                    <div class="feature-icon-pro">✓</div>
+                    <div class="feature-text-pro">SalesPath CRM</div>
+                </div>
+                <div class="feature-item-pro">
+                    <div class="feature-icon-pro">✓</div>
+                    <div class="feature-text-pro">Free support & updates</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add-Ons Cards Section -->
+        <div class="addons-cards-section">
+            <h4 class="section-title-pro">Optional Add-Ons (Your Advantage Modules)</h4>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.95rem;">Only pay for complexity when you actually have complexity.</p>
+            
+            <div class="addons-cards-grid">
+                <!-- Core Modules -->
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Debit & Credit Notes</h4>
+                            <!-- <span class="addon-card-badge">Core Module</span> -->
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Full credit/debit note management with auto-accounting
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card ">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Invoice Scanning (OCR)</h4>
+                            <span class="addon-card-badge popular-badge">Popular</span>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Automatic accounting from receipts & invoices
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Full AI Functionality</h4>
+                            <span class="addon-card-badge popular-badge">Top Pick</span>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Advanced predictions, insights & automation
+                    </div>
+                </div>
+                
+                <!-- Operations Modules -->
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Advanced Inventory Management</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Complete stock tracking with reorder alerts
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>CRM Automation</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Leads tracking & automated follow-ups
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Customer Self-Service Portal</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Client portal for invoices & statements
+                    </div>
+                </div>
+                
+                <!-- More cards for the rest of the modules -->
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Vendor Portal & Payments</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Automated vendor management & payments
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Custom Dashboards & Reports</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Customizable reports & executive dashboards
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Multi-Currency Support</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Multi-currency & multi-country operations
+                    </div>
+                </div>
+                
+                <!-- Last row -->
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Payroll Advanced Features</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        WPS compliance + benefits & reports
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Automated Tax Alerts</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Real-time compliance alerts & reminders
+                    </div>
+                </div>
+                
+                <div class="addon-card gradient-card custom-integration-card">
+                    <div class="addon-card-header">
+                        <div class="addon-card-title">
+                            <h4>Integrations with Other Systems</h4>
+                        </div>
+                    </div>
+                    <div class="addon-card-description">
+                        Custom API integration with your existing systems
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final CTA -->
+        <div class="cta-pro">
+            <h3 class="cta-title-pro">If you're lean, Keep it lean. When you grow, Meray will grow with you.</h3>
+            <p class="cta-text-pro">Start with Meray Essentials at 60 AED/month. Add powerful modules only when you need them, at your own pace.</p>
+            <a href="#early-bird-cta" class="btn btn-primary" style="padding: 0.9rem 2.5rem; font-size: 1.1rem;">
+                <i class="fas fa-rocket"></i>
+                Get Started with Essentials
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Professional Pricing Section */
+    .pricing-section-professional {
+        padding: 100px 5%;
+        background: var(--background);
+        position: relative;
+    }
+
+    .pricing-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .pricing-header-pro {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .pricing-header-pro h2 {
+        font-size: 3.2rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .pricing-subtitle-pro {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .philosophy-banner {
+         background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 3rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border-left: 4px solid var(--primary);
+    }
+
+    .philosophy-banner h3 {
+        color: white;
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .philosophy-banner p {
+        color: whitesmoke;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Essentials Card - Professional */
+    .essentials-card-pro {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin-bottom: 4rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    .essentials-header-pro {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .essentials-title-pro h3 {
+        font-size: 1.8rem;
+        color: white;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .essentials-title-pro p {
+        color: whitesmoke;
+        font-size: 1rem;
+    }
+
+    .essentials-price-pro {
+        text-align: right;
+    }
+
+    .price-main-pro {
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        line-height: 1;
+    }
+
+    .price-period-pro {
+        font-size: 1rem;
+        color: whitesmoke;
+    }
+
+    .setup-fee-pro {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        color: white;
+    }
+
+    .original-price-pro {
+        text-decoration: line-through;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .discounted-price-pro {
+        color: #90EE90;
+        font-weight: 600;
+    }
+
+    .essentials-features-pro {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .feature-item-pro {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        border-left: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .feature-icon-pro {
+        color: white;
+        font-size: 0.9rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    .feature-text-pro {
+        font-size: 0.95rem;
+        color: white;
+        font-weight: 500;
+    }
+
+    /* Add-Ons Cards Section */
+    .addons-cards-section {
+        margin-bottom: 4rem;
+    }
+
+    .section-title-pro {
+        font-size: 1.6rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .addons-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    /* Gradient Card Styling */
+    .gradient-card {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .gradient-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .addon-card-header {
+        margin-bottom: 1rem;
+    }
+
+    .addon-card-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .addon-card-title h4 {
+        font-size: 1.1rem;
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        flex: 1;
+    }
+
+    .addon-card-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .popular-badge {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+
+    .addon-card-description {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 0;
+        flex: 1;
+    }
+
+    .popular-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .popular-card::before {
+        content: "Most Popular";
+        position: absolute;
+        top: 10px;
+        right: -30px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--primary);
+        padding: 4px 30px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transform: rotate(45deg);
+    }
+
+    .top-pick-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .top-pick-card::before {
+        content: "Top Pick";
+        position: absolute;
+        top: 10px;
+        right: -30px;
+        background: #ff6b35;
+        color: white;
+        padding: 4px 30px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transform: rotate(45deg);
+    }
+
+    .custom-integration-card {
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        ) !important;
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+    }
+
+    /* Final CTA */
+    .cta-pro {
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cta-title-pro {
+        font-size: 1.8rem;
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .cta-text-pro {
+        color: white;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .essentials-features-pro {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .addons-cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .pricing-header-pro h2 {
+            font-size: 2.2rem;
+        }
+        
+        .essentials-header-pro {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        
+        .essentials-price-pro {
+            text-align: center;
+        }
+        
+        .essentials-features-pro {
+            grid-template-columns: 1fr;
+        }
+        
+        .addons-cards-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cta-pro {
+            padding: 2rem;
+        }
+        
+        .cta-title-pro {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .pricing-section-professional {
+            padding: 60px 3%;
+        }
+        
+        .essentials-card-pro {
+            padding: 1.5rem;
+        }
+        
+        .price-main-pro {
+            font-size: 2.5rem;
+        }
+        
+        .addon-card {
+            padding: 1.2rem;
+        }
+    }
+</style>
+
+
+
+
+
+
+    <style>
+      .early-bird-cta {
+        padding: 100px 5%;
+        background: var(--background);
+        position: relative;
+      }
+
+      .cta-curved-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80%;
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary) 100%
+        );
+        border-radius: 0 0 100px 100px;
+        z-index: 1;
+      }
+
+      .cta-card {
+        position: relative;
+        z-index: 2;
+        max-width: 1000px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 30px;
+        padding: 4rem;
+        box-shadow: 0 30px 60px rgba(15, 24, 35, 0.2);
+        border: 1px solid var(--border);
+      }
+
+      .cta-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .cta-badge {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.5px;
+      }
+
+      .cta-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .cta-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-light);
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .cta-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: start;
+      }
+
+      .offer-section {
+        padding-right: 2rem;
+      }
+
+      .offer-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 2.5rem;
+      }
+
+      .offer-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .offer-item:last-child {
+        border-bottom: none;
+      }
+
+      .offer-icon {
+        width: 24px;
+        height: 24px;
+        background: var(--primary);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+        margin-top: 0.2rem;
+      }
+
+      .offer-text {
+        flex: 1;
+      }
+
+      .offer-main {
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin-bottom: 0.3rem;
+      }
+
+      .offer-desc {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+      .cta-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    
+      }
+
+      .cta-note {
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--primary);
+        border-left: 4px solid var(--primary);
+        background: #375b6d;
+
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .note-icon {
+        width: 48px;
+        height: 48px;
+        background: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .note-content {
+        flex: 1;
+      }
+
+      .note-title {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.3rem;
+        font-size: 1.1rem;
+      }
+
+      .note-desc {
+        color: white;
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+
+      /* .cta-note:hover .note-title {
+        color: var(--primary);
+      } */
+
+      .form-section {
+        background: var(--background-alt);
+        padding: 2.5rem;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+      }
+
+      .form-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(55, 91, 109, 0.1);
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 1.2rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+      }
+
+      .submit-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(55, 91, 109, 0.3);
+      }
+
+      .thank-you-message {
+        display: none;
+        text-align: center;
+        padding: 3rem 2rem;
+      }
+
+      .thank-you-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+      }
+
+      .thank-you-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+      }
+
+      .thank-you-text {
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+      /* Early Bird CTA Responsive Styles */
+      /* Early Bird CTA Responsive Styles */
+      @media (max-width: 1024px) {
+        .early-bird-cta {
+          padding: 80px 4%;
+        }
+
+        .cta-card {
+          padding: 3rem 2.5rem;
+        }
+
+        .cta-title {
+          font-size: 2.5rem;
+        }
+
+        .cta-content {
+          gap: 3rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .early-bird-cta {
+          padding: 60px 3%;
+        }
+
+        .cta-card {
+          padding: 2.5rem 2rem;
+          margin: 0 0.5rem;
+          border-radius: 25px;
+        }
+
+        .cta-title {
+          font-size: 2.2rem;
+        }
+
+        .cta-subtitle {
+          font-size: 1.1rem;
+          padding: 0 1rem;
+        }
+
+        .cta-content {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+        }
+
+        .offer-section {
+          text-align: center;
+          padding-right: 0;
+        }
+
+        .offer-list {
+          margin-bottom: 2rem;
+        }
+
+        .offer-item {
+          padding: 1rem 0.5rem;
+          justify-content: center;
+          text-align: center;
+        }
+
+        .offer-text {
+          max-width: 300px;
+          margin: 0 auto;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .cta-note {
+          width: 100%;
+          max-width: 400px;
+          padding: 1.2rem;
+        }
+
+        .form-section {
+          padding: 2rem 1.5rem;
+        }
+
+        .form-title {
+          font-size: 1.2rem;
+        }
+
+        .cta-curved-bg {
+          border-radius: 0 0 40px 40px;
+          height: 70%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .early-bird-cta {
+          padding: 50px 2%;
+        }
+
+        .cta-card {
+          padding: 2rem 1.5rem;
+          border-radius: 20px;
+        }
+
+        .cta-badge {
+          padding: 8px 20px;
+          font-size: 0.85rem;
+        }
+
+        .cta-title {
+          font-size: 1.8rem;
+          margin-bottom: 0.8rem;
+        }
+
+        .cta-subtitle {
+          font-size: 1rem;
+          padding: 0;
+        }
+
+        .offer-item {
+          flex-direction: column;
+          text-align: center;
+          gap: 0.8rem;
+          padding: 1rem 0;
+        }
+
+        .offer-icon {
+          margin-top: 0;
+          align-self: center;
+        }
+
+        .offer-main {
+          font-size: 1.1rem;
+        }
+
+        .offer-desc {
+          font-size: 0.85rem;
+        }
+
+        .cta-note {
+          padding: 1rem;
+          flex-direction: column;
+          text-align: center;
+          gap: 0.8rem;
+        }
+
+        .note-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+        }
+
+        .note-title {
+          font-size: 1rem;
+        }
+
+        .note-desc {
+          font-size: 0.8rem;
+        }
+
+        .form-section {
+          padding: 1.5rem 1rem;
+        }
+
+        .form-input {
+          padding: 0.9rem;
+          font-size: 0.95rem;
+        }
+
+        .submit-btn {
+          padding: 1rem;
+          font-size: 1rem;
+        }
+
+        .thank-you-message {
+          padding: 2rem 1rem;
+        }
+
+        .thank-you-icon {
+          width: 70px;
+          height: 70px;
+          font-size: 1.8rem;
+        }
+
+        .thank-you-title {
+          font-size: 1.5rem;
+        }
+      }
+
+      @media (max-width: 360px) {
+        .cta-card {
+          padding: 1.5rem 1rem;
+        }
+
+        .cta-title {
+          font-size: 1.6rem;
+        }
+
+        .cta-buttons {
+          gap: 0.8rem;
+        }
+
+        .cta-note {
+          padding: 0.8rem;
+        }
+
+        .offer-item {
+          padding: 0.8rem 0;
+        }
+      }
+
+      /* Center align all offer items */
+      .offer-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .offer-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 400px;
+      }
+    </style>
+
+    <section class="early-bird-cta" id="early-bird-cta">
+      <div class="cta-curved-bg"></div>
+
+      <div class="cta-card">
+        <div class="cta-header">
+          <div class="cta-badge">LIMITED TIME OFFER</div>
+          <h2 class="cta-title">Get Early-Bird Access Before Launch</h2>
+          <p class="cta-subtitle">
+            Sign up today and secure exclusive founding member benefits
+          </p>
+        </div>
+
+        <div class="cta-content">
+          <!-- Offer Section -->
+          <div class="offer-section">
+            <ul class="offer-list">
+              <li class="offer-item">
+                <div class="offer-icon">%</div>
+                <div class="offer-text">
+                  <div class="offer-main">50% off setup fee</div>
+                  <div class="offer-desc">AED 3,000 instead of AED 6,000</div>
+                </div>
+              </li>
+              <li class="offer-item">
+                <div class="offer-icon">🎁</div>
+                <div class="offer-text">
+                  <div class="offer-main">60 AED per month</div>
+                  <div class="offer-desc">For unlimited users</div>
+                </div>
+              </li>
+              <li class="offer-item">
+                <div class="offer-icon">⚡</div>
+                <div class="offer-text">
+                  <div class="offer-main">Priority customization</div>
+                  <div class="offer-desc">Optional — quoted per project</div>
+                </div>
+              </li>
+            </ul>
+
+            <div class="cta-buttons">
+              <a class="cta-note cta-note-primary">
+                <div class="note-icon">
+                  <i class="fas fa-rocket"></i>
+                </div>
+                <div class="note-content">
+                  <div class="note-title">Join the Early Bird Offer</div>
+                  <div class="note-desc">
+                    50% off setup fee + 60 AED/month
+                  </div>
+                </div>
+              </a>
+              <a class="cta-note cta-note-secondary">
+                <div class="note-icon">
+                  <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="note-content">
+                  <div class="note-title">Secure your spot today</div>
+                  <div class="note-desc">
+                    Get a free demo today
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Form Section -->
+          <div class="form-section">
+            <h3 class="form-title">Get Early Access</h3>
+            <form id="earlyBirdForm" class="cta-form">
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-input"
+                  name="name"
+                  placeholder="Full Name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="text"
+                  class="form-input"
+                  name="company"
+                  placeholder="Company Name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="email"
+                  class="form-input"
+                  name="email"
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <input
+                  type="tel"
+                  class="form-input"
+                  name="phone"
+                  placeholder="Mobile Number"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <textarea
+                  class="form-input form-textarea"
+                  name="message"
+                  placeholder="What problems do you want Meray to solve? (Optional)"
+                ></textarea>
+              </div>
+              <button type="submit" class="submit-btn">
+                <i class="fas fa-lock"></i>
+                Get Access
+              </button>
+            </form>
+
+            <!-- Add this thank you message div -->
+            <div
+              id="thankYouMessage"
+              style="display: none; text-align: center; padding: 20px"
+            >
+              <h2>Thank You!</h2>
+              <p>
+                We have received your early bird access request and will contact
+                you shortly.
+              </p>
+            </div>
+
+
+<script>
+document.getElementById("earlyBirdForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector(".submit-btn");
+    const originalText = submitBtn.innerHTML;
+    
+    // Show loading state
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
+
+    // Collect form data
+    const formData = {
+        name: this.querySelector('input[name="name"]').value.trim(),
+        company: this.querySelector('input[name="company"]').value.trim(),
+        email: this.querySelector('input[name="email"]').value.trim(),
+        phone: this.querySelector('input[name="phone"]').value.trim(),
+        message: this.querySelector('textarea[name="message"]').value.trim()
+    };
+
+    try {
+        // Send to Flask server
+        const response = await fetch('https://api.meray.cloud/api/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        // Optional: Log the response (server-side) but don't block the redirect
+        try {
+            const result = await response.json();
+            console.log('Server response:', result);
+        } catch (jsonError) {
+            console.log('Non-JSON response or parse error');
+        }
+        
+    } catch (error) {
+        console.error('Fetch error:', error);
+        // Still continue to success page even if there's an error
+    } finally {
+        // Always reset form and redirect
+        this.reset();
+        window.location.href = 'success.html';
+    }
+});
+</script>
+
+            <!-- Thank You Message -->
+            <div id="thankYouMessage" class="thank-you-message">
+              <div class="thank-you-icon">
+                <i class="fas fa-check"></i>
+              </div>
+              <h3 class="thank-you-title">You're on the list!</h3>
+              <p class="thank-you-text">We'll contact you shortly</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .footer {
+        background: var(--primary-dark);
+        color: white;
+        padding: 50px 5% 30px;
+        position: relative;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-brand {
+        max-width: 400px;
+      }
+
+      .footer-logo {
+        width: 120px;
+        margin-bottom: 1rem;
+      }
+
+      .made-by {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+      }
+
+      .disclaimer {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+        line-height: 1.4;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 0.8rem;
+      }
+
+      .social-link {
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 0.9rem;
+      }
+
+      .social-link:hover {
+        background: var(--primary);
+        transform: translateY(-2px);
+      }
+
+      .footer-heading {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .footer-heading::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 30px;
+        height: 2px;
+        background: var(--primary);
+      }
+
+      .footer-links {
+        list-style: none;
+        padding: 0;
+      }
+
+      .footer-links li {
+        margin-bottom: 0.8rem;
+      }
+
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: white;
+        padding-left: 5px;
+      }
+
+      .contact-info {
+        list-style: none;
+        padding: 0;
+      }
+
+      .contact-info li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+      }
+
+      .contact-info i {
+        color: var(--primary);
+        margin-top: 0.2rem;
+        flex-shrink: 0;
+        width: 16px;
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 2rem;
+        text-align: center;
+      }
+
+      .copyright {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+      }
+
+      .back-to-top {
+        position: absolute;
+        right: 5%;
+        top: -25px;
+        width: 50px;
+        height: 50px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .back-to-top:hover {
+        background: var(--primary-light);
+        transform: translateY(-3px);
+      }
+
+      @media (max-width: 1024px) {
+        .footer-content {
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .footer-content {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+        }
+
+        .back-to-top {
+          right: 50%;
+          transform: translateX(50%);
+        }
+      }
+    </style>
+
+    <footer class="footer">
+      <button class="back-to-top" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+      </button>
+
+      <script>
+        // Back to Top Functionality
+        function scrollToTop() {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }
+
+        // Show/hide back to top button with smooth transition
+        window.addEventListener("scroll", function () {
+          const backToTopButton = document.querySelector(".back-to-top");
+          if (window.scrollY > 300) {
+            backToTopButton.classList.add("show");
+          } else {
+            backToTopButton.classList.remove("show");
+          }
+        });
+
+        // Initialize back to top button
+        document.addEventListener("DOMContentLoaded", function () {
+          const backToTopButton = document.querySelector(".back-to-top");
+
+          // Add click event listener
+          backToTopButton.addEventListener("click", scrollToTop);
+        });
+      </script>
+
+      <div class="footer-container">
+        <div class="footer-content">
+          <!-- Brand Column -->
+          <div class="footer-brand">
+            <img
+              src="image-removebg-preview (1).png"
+              alt="Meray"
+              class="footer-logo"
+            />
+            <p class="made-by">Made by Merzaai Advisory & Accounting</p>
+            <p class="disclaimer">
+              Meray is an accounting software, not a regulated financial
+              service.
+            </p>
+            <div class="social-links">
+              <a
+                href="https://www.linkedin.com/company/merzaai-advisory-and-accounting/"
+                class="social-link"
+              >
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a
+                href="https://www.instagram.com/merzaai.official?igsh=bDJmaWUzbjcza"
+                class="social-link"
+              >
+                <i class="fab fa-instagram"></i>
+              </a>
+
+              <a
+                href="https://www.reddit.com/u/Merzaai/s/F8FboAFfx3"
+                class="social-link"
+              >
+                <i class="fab fa-reddit-alien"></i>
+              </a>
+              <a
+                href="https://www.tiktok.com/@merzaai?_r=1&_d=f09dm42a688c7f&sec_uid=MS4wLjABAAAArVwHOU9_LacdMRcGobjp93x_s6YKxQ5JePFi3ePTRa0i5VBa8SQuB7LxLNYx-xRB&share_author_id=7569700368889250837&sharer_language=en&source=h5_m&u_code=f09dmil64d194m&item_author_type=1&utm_source=whatsapp&tt_from=whatsapp&enable_checksum=1&utm_medium=ios&share_link_id=EC1606F5-4288-44F1-870B-83D214ED46DD&user_id=7569700368889250837&sec_user_id=MS4wLjABAAAArVwHOU9_LacdMRcGobjp93x_s6YKxQ5JePFi3ePTRa0i5VBa8SQuB7LxLNYx-xRB&social_share_type=5&ug_btm=b8727,b0&utm_campaign=client_share&share_app_id=1233"
+                class="social-link"
+              >
+                <i class="fab fa-tiktok"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Product Column -->
+          <div class="footer-column">
+            <h4 class="footer-heading">Product</h4>
+            <ul class="footer-links">
+              <li><a href="#features">Features</a></li>
+              <li><a href="#pricing">Pricing</a></li>
+              <li><a href="#demo-section">Demo</a></li>
+              <li><a href="#early-bird-cta">Get Access</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact Column -->
+          <div class="footer-column">
+            <h4 class="footer-heading">Contact</h4>
+            <ul class="contact-info">
+              <li>
+                <i class="fas fa-envelope"></i>
+                <span>info@merzaai.com</span>
+              </li>
+              <li>
+                <i class="fas fa-phone"></i>
+                <span>+971 562768258</span>
+              </li>
+              <li>
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Dubai, UAE</span>
+              </li>
+              <li>
+                <i class="fas fa-clock"></i>
+                <span>Monday - Friday: 9AM - 6PM</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="copyright">&copy; 2025 Meray. All rights reserved.</div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile menu toggle
+      document
+        .querySelector(".mobile-menu-btn")
+        .addEventListener("click", function () {
+          document.querySelector(".nav-links").classList.toggle("active");
+        });
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Navbar background on scroll
+      window.addEventListener("scroll", function () {
+        const navbar = document.querySelector(".navbar");
+        if (window.scrollY > 100) {
+          navbar.style.background = "#f6f4e8";
+          navbar.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.1)";
+        } else {
+          navbar.style.background = "#f6f4e8";
+          navbar.style.boxShadow = "var(--shadow)";
+        }
+      });
+
+      // Enhanced dashboard functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const tooltip = document.getElementById("dashboard-tooltip");
+        const statCards = document.querySelectorAll(".stat-card");
+        const bars = document.querySelectorAll(".bar");
+
+        // Function to animate number counters
+        function animateCounter(element, target, duration) {
+          let start = 0;
+          const increment = target / (duration / 16);
+          const timer = setInterval(() => {
+            start += increment;
+            if (start >= target) {
+              element.textContent = target;
+              clearInterval(timer);
+            } else {
+              element.textContent = Math.floor(start);
+            }
+          }, 16);
+        }
+
+        // Function to animate currency counters
+        function animateCurrencyCounter(
+          element,
+          target,
+          duration,
+          prefix,
+          suffix
+        ) {
+          let start = 0;
+          const increment = target / (duration / 16);
+          const timer = setInterval(() => {
+            start += increment;
+            if (start >= target) {
+              element.textContent = `${prefix}${target}${suffix}`;
+              clearInterval(timer);
+            } else {
+              element.textContent = `${prefix}${start.toFixed(1)}${suffix}`;
+            }
+          }, 16);
+        }
+
+        // Initialize counters
+        const statValues = document.querySelectorAll(".stat-value");
+
+        // Reset values to 0 for animation
+        statValues[0].textContent = "0";
+        statValues[1].textContent = "0";
+        statValues[2].textContent = "$0";
+        statValues[3].textContent = "$0";
+
+        // Animate ALL counters
+        setTimeout(() => {
+          animateCounter(statValues[0], 142, 2000);
+          animateCounter(statValues[1], 87, 2000);
+
+          // Animate the currency values too
+          animateCurrencyCounter(statValues[2], 42.5, 2000, "$", "K");
+          animateCurrencyCounter(statValues[3], 28.4, 2000, "$", "K");
+        }, 500);
+
+        // Tooltip functionality for stat cards (simplified - no hover effects)
+        statCards.forEach((card) => {
+          // Click to update value (kept for functionality)
+          card.addEventListener("click", function () {
+            // Add visual feedback
+            this.style.background = "rgba(45, 90, 65, 0.1)";
+            setTimeout(() => {
+              this.style.background = "";
+            }, 300);
+
+            // Pulse animation
+            this.style.animation = "pulse 0.5s ease-in-out";
+            setTimeout(() => {
+              this.style.animation = "";
+            }, 500);
+          });
+        });
+
+        // Bar graph interactions
+        bars.forEach((bar) => {
+          // Animate bars on load
+          const originalHeight = bar.style.height;
+          bar.style.height = "0%";
+
+          setTimeout(() => {
+            bar.style.transition = "height 1s ease-out";
+            bar.style.height = originalHeight;
+          }, 500);
+
+          // Bar hover effects
+          bar.addEventListener("mouseenter", function (e) {
+            this.style.transform = "";
+            this.style.filter = "";
+            this.style.boxShadow = "";
+
+            // Show tooltip for bars
+            const value = this.getAttribute("data-value");
+            const label =
+              this.parentElement.querySelector(".bar-label").textContent;
+            tooltip.textContent = `${value} ${label}`;
+            tooltip.style.opacity = "1";
+            tooltip.style.left = e.pageX + 10 + "px";
+            tooltip.style.top = e.pageY - 30 + "px";
+          });
+
+          bar.addEventListener("mousemove", function (e) {
+            tooltip.style.left = e.pageX + 10 + "px";
+            tooltip.style.top = e.pageY - 30 + "px";
+          });
+
+          bar.addEventListener("mouseleave", function () {
+            this.style.transform = "scaleY(1)";
+            this.style.filter = "brightness(1)";
+            this.style.boxShadow = "none";
+            tooltip.style.opacity = "0";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
+
+
