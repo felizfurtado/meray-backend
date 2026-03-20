@@ -3972,7 +3972,7 @@
           <!-- Form Section -->
           <div class="form-section">
             <h3 class="form-title">Get Early Access</h3>
-            <form id="earlyBirdForm" class="cta-form">
+            <form id="earlyBirdForm" class="cta-form" method="POST"  action="https://meray.cloud/api/early-access/">
               <div class="form-group">
                 <input
                   type="text"
@@ -4035,54 +4035,46 @@
             </div>
 
 
-<script>
-document.getElementById("earlyBirdForm").addEventListener("submit", async function (e) {
+<!-- <script>
+async function submitEarlyAccess(e) {
     e.preventDefault();
-    
-    const submitBtn = this.querySelector(".submit-btn");
-    const originalText = submitBtn.innerHTML;
-    
-    // Show loading state
+
+    const form = document.getElementById("earlyBirdForm");
+    const submitBtn = form.querySelector(".submit-btn");
+
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
     submitBtn.disabled = true;
 
-    // Collect form data
     const formData = {
-        name: this.querySelector('input[name="name"]').value.trim(),
-        company: this.querySelector('input[name="company"]').value.trim(),
-        email: this.querySelector('input[name="email"]').value.trim(),
-        phone: this.querySelector('input[name="phone"]').value.trim(),
-        message: this.querySelector('textarea[name="message"]').value.trim()
+        name: form.querySelector('input[name="name"]').value.trim(),
+        company: form.querySelector('input[name="company"]').value.trim(),
+        email: form.querySelector('input[name="email"]').value.trim(),
+        phone: form.querySelector('input[name="phone"]').value.trim(),
+        message: form.querySelector('textarea[name="message"]').value.trim()
     };
 
     try {
-        // Send to Flask server
-        const response = await fetch('', {
-            method: 'POST',
+
+        const response = await fetch("http://localhost:8000/early-access/", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(formData)
         });
-        
-        // Optional: Log the response (server-side) but don't block the redirect
-        try {
-            const result = await response.json();
-            console.log('Server response:', result);
-        } catch (jsonError) {
-            console.log('Non-JSON response or parse error');
-        }
-        
+
+        const result = await response.json();
+        console.log(result);
+
+        form.reset();
+        window.location.href = "success.html";
+
     } catch (error) {
-        console.error('Fetch error:', error);
-        // Still continue to success page even if there's an error
-    } finally {
-        // Always reset form and redirect
-        this.reset();
-        window.location.href = 'success.html';
+        console.error("Fetch error:", error);
     }
-});
-</script>
+}
+</script> -->
+
 
             <!-- Thank You Message -->
             <div id="thankYouMessage" class="thank-you-message">
