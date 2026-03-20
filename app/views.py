@@ -18,29 +18,33 @@ def early_access(request):
 
     if request.method == "POST":
 
-        data = {
-            "name": request.POST.get("name"),
-            "company": request.POST.get("company"),
-            "email": request.POST.get("email"),
-            "phone": request.POST.get("phone"),
-            "message": request.POST.get("message")
-        }
+        try:
+            data = {
+                "name": request.POST.get("name", ""),
+                "company": request.POST.get("company", ""),
+                "email": request.POST.get("email", ""),
+                "phone": request.POST.get("phone", ""),
+                "message": request.POST.get("message", "")
+            }
 
-        file_path = os.path.join(os.path.dirname(__file__), "early_access.json")
+            file_path = os.path.join(os.path.dirname(__file__), "early_access.json")
 
-        if not os.path.exists(file_path):
+            if not os.path.exists(file_path):
+                with open(file_path, "w") as f:
+                    json.dump([], f)
+
+            with open(file_path, "r") as f:
+                records = json.load(f)
+
+            records.append(data)
+
             with open(file_path, "w") as f:
-                json.dump([], f)
+                json.dump(records, f, indent=2)
 
-        with open(file_path, "r") as f:
-            records = json.load(f)
+            return redirect("/success/")
 
-        records.append(data)
-
-        with open(file_path, "w") as f:
-            json.dump(records, f, indent=2)
-
-        return redirect("/success/")
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"})
 
