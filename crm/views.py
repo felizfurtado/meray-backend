@@ -17,11 +17,14 @@ import csv
 import io
 
 from django.shortcuts import render, redirect
-
+from django.http import HttpResponse
+from django.db import connection
 
 User = get_user_model()
 
 
+def debug_schema(request):
+    return HttpResponse(f"Schema: {connection.schema_name}")
 
 class UserListView(APIView):
 
@@ -1206,8 +1209,6 @@ class ExpenseCreateView(APIView):
 
 
 
-
-
 class ExpensePostView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -1291,6 +1292,62 @@ class AccountListByTypeView(APIView):
         })
 
 
+# class ExpenseDetailView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, pk):
+#         expense = get_object_or_404(
+#             Expense.objects.select_related(
+#                 "vendor",
+#                 "account",
+#                 "payment_account"
+#             ),
+#             pk=pk
+#         )
+
+#         return Response({
+#             "success": True,
+#             "expense": {
+#                 "id": expense.id,
+#                 "expense_number": expense.expense_number,
+#                 "date": expense.date,
+
+#                 # Vendor
+#                 "vendor": expense.vendor.id if expense.vendor else None,
+#                 "vendor_name": (
+#                     expense.vendor.company
+#                     if expense.vendor else None
+#                 ),
+
+#                 "currency": expense.currency,
+#                 "amount": float(expense.amount),
+#                 "vat_applicable": expense.vat_applicable,
+#                 "vat_amount": float(expense.vat_amount),
+#                 "total": float(expense.total),
+
+#                 # Expense Account
+#                 "account": expense.account.id if expense.account else None,
+#                 "account_name": (
+#                     f"{expense.account.code} - {expense.account.name}"
+#                     if expense.account else None
+#                 ),
+
+#                 # 🔥 Payment Account (THIS replaces payment_method)
+#                 "payment_account": expense.payment_account.id if expense.payment_account else None,
+#                 "payment_account_name": (
+#                     f"{expense.payment_account.code} - {expense.payment_account.name}"
+#                     if expense.payment_account else None
+#                 ),
+
+#                 "status": expense.status,
+#                 "notes": expense.notes,
+#                 "extra_data": expense.extra_data,
+#                 "created_by": expense.created_by.username if expense.created_by else None,
+#                 "created_at": expense.created_at,
+#                 "updated_at": expense.updated_at,
+#             }
+#         })
+
 class ExpenseDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -1303,6 +1360,16 @@ class ExpenseDetailView(APIView):
             ),
             pk=pk
         )
+
+        # 🔥 GET ATTACHMENTS
+        attachments = [
+            {
+                "id": att.id,
+                "file": att.file.url,
+                "name": att.file_name
+            }
+            for att in expense.attachments.all()
+        ]
 
         return Response({
             "success": True,
@@ -1331,7 +1398,7 @@ class ExpenseDetailView(APIView):
                     if expense.account else None
                 ),
 
-                # 🔥 Payment Account (THIS replaces payment_method)
+                # Payment Account
                 "payment_account": expense.payment_account.id if expense.payment_account else None,
                 "payment_account_name": (
                     f"{expense.payment_account.code} - {expense.payment_account.name}"
@@ -1344,10 +1411,10 @@ class ExpenseDetailView(APIView):
                 "created_by": expense.created_by.username if expense.created_by else None,
                 "created_at": expense.created_at,
                 "updated_at": expense.updated_at,
+
+
             }
         })
-
-
 
 class ExpenseUpdateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -6713,6 +6780,34 @@ class NotificationsView(APIView):
             "notifications": notifications
         })
 
+from django.db.models import F
+class InventoryNotificationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        notifications = []
+
+        low_stock_items = InventoryItem.objects.filter(
+            current_quantity__lte=F("minimum_quantity")
+        )
+
+        for item in low_stock_items:
+            notifications.append({
+                "id": f"inventory_{item.id}",
+                "type": "low_stock",
+                "title": item.item_name,
+                "item_code": item.item_code,
+                "current_quantity": float(item.current_quantity),
+                "minimum_quantity": float(item.minimum_quantity),
+                "priority": "high"
+            })
+
+        return Response({
+            "success": True,
+            "count": len(notifications),
+            "notifications": notifications
+        })
 
 
 class CustomerCSVImportView(APIView):

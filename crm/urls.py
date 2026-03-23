@@ -9,6 +9,8 @@ urlpatterns = [
     path("users/", UserListView.as_view(), name="users-list"),
 
     #schema
+            path("debug/", debug_schema),
+
     path("schema/leads/", SchemaView.as_view(), name="leads-schema"),
     path("schema/customers/", CustomerSchemaView.as_view()),
     path("schema/expenses/", ExpenseSchemaView.as_view()),
@@ -121,6 +123,8 @@ urlpatterns = [
     path("expense-invoices/<int:pk>/mark-paid/", ExpenseInvoiceMarkPaidView.as_view()),
 
 
+
+
     # Company Profile
     path("company-profile/", CompanyProfileDetailView.as_view()),
     path("company-profile/save/", CompanyProfileSaveView.as_view()),
@@ -166,6 +170,7 @@ urlpatterns = [
 
     #notifications
     path("notifications/", NotificationsView.as_view()),
+    path("notifications/inventory/", InventoryNotificationsView.as_view()),
 
     #migrations
     path("customers/import/", CustomerCSVImportView.as_view()),

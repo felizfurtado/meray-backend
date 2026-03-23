@@ -225,6 +225,27 @@ class Expense(models.Model):
 
 
 
+class ExpenseAttachment(models.Model):
+
+    expense = models.ForeignKey(
+        Expense,
+        on_delete=models.CASCADE,
+        related_name="attachments"
+    )
+
+    file = models.FileField(upload_to="expenses/")
+    file_name = models.CharField(max_length=255, blank=True)
+
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.file_name and self.file:
+            self.file_name = self.file.name
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.file_name or "Attachment"
+
 
 
 class InventoryItem(models.Model):
