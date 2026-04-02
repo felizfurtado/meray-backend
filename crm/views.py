@@ -1144,6 +1144,8 @@ class ExpenseCreateView(APIView):
 
             amount = Decimal(str(payload.get("amount", 0)))
 
+
+
             # =========================
             # CREATE EXPENSE
             # =========================
@@ -1162,6 +1164,31 @@ class ExpenseCreateView(APIView):
                 extra_data=payload.get("extra_data", {}),
                 created_by=request.user
             )
+
+
+
+            
+            import os
+
+            upload_dir = os.path.join(os.getcwd(), "attachments")
+            
+            if not os.path.exists(upload_dir):
+                os.makedirs(upload_dir)
+            
+            files = request.FILES.getlist("attachments")
+            
+            for file in files:
+                file_path = os.path.join(upload_dir, file.name)
+            
+                with open(file_path, "wb+") as f:
+                    for chunk in file.chunks():
+                        f.write(chunk)
+            
+                ExpenseAttachment.objects.create(
+                    expense=expense,
+                    file=file_path,
+                    file_name=file.name
+                )
 
             # =========================
             # AUTO JOURNAL IF POSTED
@@ -1365,8 +1392,9 @@ class ExpenseDetailView(APIView):
         attachments = [
             {
                 "id": att.id,
-                "file": att.file.url,
-                "name": att.file_name
+                "file": f"/attachments/{att.id}/",   # if using FileField
+                "name": att.file_name,
+                "download_url": f"/attachments/{att.id}/"
             }
             for att in expense.attachments.all()
         ]
@@ -1412,9 +1440,11 @@ class ExpenseDetailView(APIView):
                 "created_at": expense.created_at,
                 "updated_at": expense.updated_at,
 
-
+                # 🔥 ATTACHMENTS ADDED HERE
+                "attachments": attachments
             }
         })
+
 
 class ExpenseUpdateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -6884,6 +6914,101 @@ class LeadCSVImportView(APIView):
             "message": f"{len(leads)} leads imported"
         })
 
+class VendorCSVImportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        file = request.FILES.get("file")
+
+        if not file:
+            return Response({"error": "CSV file required"}, status=400)
+
+        decoded = file.read().decode("utf-8")
+        reader = csv.DictReader(io.StringIO(decoded))
+
+        vendors = []
+
+        for row in reader:
+
+            vendors.append(
+                Vendor(
+                    company=row.get("company"),
+                    contact_name=row.get("contact_name"),
+                    email=row.get("email"),
+                    phone=row.get("phone"),
+                    status=row.get("status"),
+                    created_by=request.user,
+                )
+            )
+
+        Vendor.objects.bulk_create(vendors)
+
+        return Response({
+            "success": True,
+            "message": f"{len(vendors)} vendors imported"
+        })
+
+from django.utils.dateparse import parse_date
+
+class InvoiceCSVImportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        file = request.FILES.get("file")
+
+        if not file:
+            return Response({"error": "CSV file required"}, status=400)
+
+        decoded = file.read().decode("utf-8")
+        reader = csv.DictReader(io.StringIO(decoded))
+
+        created = 0
+
+        for row in reader:
+
+            # ✅ HANDLE CUSTOMER (by name)
+            customer = None
+            if row.get("customer"):
+                customer = Customer.objects.filter(
+                    company=row.get("customer")
+                ).first()
+
+            # ✅ SAFE PARSE VALUES
+            quantity = float(row.get("quantity") or 0)
+            price = float(row.get("price") or 0)
+
+            vat_flag = str(row.get("vat_included", "")).lower() == "true"
+
+            # ✅ ITEM STRUCTURE MATCH MODEL
+            items = [
+                {
+                    "name": row.get("item_name") or "",
+                    "quantity": quantity,
+                    "price": price,
+                    "vat_included": vat_flag
+                }
+            ]
+
+            invoice = Invoice(
+                number=row.get("number"),
+                customer=customer,
+                date=parse_date(row.get("date")) if row.get("date") else None,
+                due_date=parse_date(row.get("due_date")) if row.get("due_date") else None,
+                status=row.get("status") or "draft",
+                items=items,
+                created_by=request.user
+            )
+
+            # ✅ IMPORTANT: USE SAVE (NOT bulk_create)
+            invoice.save()
+            created += 1
+
+        return Response({
+            "success": True,
+            "message": f"{created} invoices imported"
+        })
 
 
 
@@ -6894,15 +7019,50 @@ class LeadCSVImportView(APIView):
 
 
 
+class InventoryCSVImportView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
 
+        file = request.FILES.get("file")
 
+        if not file:
+            return Response({"error": "CSV file required"}, status=400)
 
+        decoded = file.read().decode("utf-8")
+        reader = csv.DictReader(io.StringIO(decoded))
 
+        created = 0
 
+        for row in reader:
 
+            item = InventoryItem(
+                item_code=row.get("item_code") or "",
+                item_name=row.get("item_name") or "",
 
+                category=row.get("category"),
+                description=row.get("description"),
+                unit_of_measure=row.get("unit_of_measure") or "Unit",
 
+                cost_price=Decimal(row.get("cost_price") or 0),
+                selling_price=Decimal(row.get("selling_price") or 0),
+
+                current_quantity=Decimal(row.get("current_quantity") or 0),
+                minimum_quantity=Decimal(row.get("minimum_quantity") or 0),
+
+                warehouse=row.get("warehouse"),
+                status=row.get("status") or "ACTIVE",
+
+                created_by=request.user
+            )
+
+            item.save()
+            created += 1
+
+        return Response({
+            "success": True,
+            "message": f"{created} inventory items imported"
+        })
 
 
 
@@ -7482,3 +7642,24 @@ class BankReconciliationSummaryView(APIView):
             "transactions": transactions.count()
         })
 
+
+
+
+from django.http import FileResponse, Http404
+import os
+
+def download_attachment(request, pk):
+    try:
+        att = ExpenseAttachment.objects.get(id=pk)
+
+        if not os.path.exists(att.file):
+            raise Http404("File not found")
+
+        return FileResponse(
+            open(att.file, "rb"),
+            as_attachment=True,
+            filename=att.file_name
+        )
+
+    except ExpenseAttachment.DoesNotExist:
+        raise Http404("Attachment not found")

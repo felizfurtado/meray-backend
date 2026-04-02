@@ -9,7 +9,7 @@ urlpatterns = [
     path("users/", UserListView.as_view(), name="users-list"),
 
     #schema
-            path("debug/", debug_schema),
+    path("debug/", debug_schema),
 
     path("schema/leads/", SchemaView.as_view(), name="leads-schema"),
     path("schema/customers/", CustomerSchemaView.as_view()),
@@ -60,10 +60,13 @@ urlpatterns = [
     path("expenses/", ExpenseCreateView.as_view()),
     path("expenses/<int:pk>/", ExpenseDetailView.as_view()),
     path("expenses/<int:pk>/update/", ExpenseUpdateView.as_view()),
-    path("expense-invoices/import/", ExpenseInvoiceImportView.as_view()),
+    
     path("expenses/<int:pk>/delete/", ExpenseDeleteView.as_view()),
 
     path("expenses/<int:pk>/post/", ExpensePostView.as_view()),
+
+    path("attachments/<int:pk>/", download_attachment),
+
 
 
 
@@ -122,6 +125,8 @@ urlpatterns = [
     path("expense-invoices/<int:pk>/delete/", ExpenseInvoiceDeleteView.as_view()),
     path("expense-invoices/<int:pk>/mark-paid/", ExpenseInvoiceMarkPaidView.as_view()),
 
+    path("expense-invoices/import/", ExpenseInvoiceImportView.as_view()),
+
 
 
 
@@ -175,6 +180,9 @@ urlpatterns = [
     #migrations
     path("customers/import/", CustomerCSVImportView.as_view()),
     path("leads/import/", LeadCSVImportView.as_view()),
+    path("vendors/import/", VendorCSVImportView.as_view()),
+    path("invoices/import/", InvoiceCSVImportView.as_view()),
+    path("inventory/import/", InventoryCSVImportView.as_view()),
 
 
     #Payroll

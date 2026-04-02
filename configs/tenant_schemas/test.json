@@ -360,7 +360,8 @@
       "phone",
       "status",
       "industry",
-      "city"
+      "city",
+      "customer_since"
     ],
 
     "form_fields": [
@@ -529,7 +530,8 @@
     "email",
     "phone",
     "status",
-    "city"
+    "city",
+    "vendor_since"
   ],
 
   "form_fields": [

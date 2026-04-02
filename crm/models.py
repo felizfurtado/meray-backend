@@ -233,7 +233,7 @@ class ExpenseAttachment(models.Model):
         related_name="attachments"
     )
 
-    file = models.FileField(upload_to="expenses/")
+    file = models.CharField(max_length=500)
     file_name = models.CharField(max_length=255, blank=True)
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
