@@ -1322,6 +1322,61 @@ class AccountListByTypeView(APIView):
         })
 
 
+# class ExpenseDetailView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, pk):
+#         expense = get_object_or_404(
+#             Expense.objects.select_related(
+#                 "vendor",
+#                 "account",
+#                 "payment_account"
+#             ),
+#             pk=pk
+#         )
+
+#         return Response({
+#             "success": True,
+#             "expense": {
+#                 "id": expense.id,
+#                 "expense_number": expense.expense_number,
+#                 "date": expense.date,
+
+#                 # Vendor
+#                 "vendor": expense.vendor.id if expense.vendor else None,
+#                 "vendor_name": (
+#                     expense.vendor.company
+#                     if expense.vendor else None
+#                 ),
+
+#                 "currency": expense.currency,
+#                 "amount": float(expense.amount),
+#                 "vat_applicable": expense.vat_applicable,
+#                 "vat_amount": float(expense.vat_amount),
+#                 "total": float(expense.total),
+
+#                 # Expense Account
+#                 "account": expense.account.id if expense.account else None,
+#                 "account_name": (
+#                     f"{expense.account.code} - {expense.account.name}"
+#                     if expense.account else None
+#                 ),
+
+#                 # 🔥 Payment Account (THIS replaces payment_method)
+#                 "payment_account": expense.payment_account.id if expense.payment_account else None,
+#                 "payment_account_name": (
+#                     f"{expense.payment_account.code} - {expense.payment_account.name}"
+#                     if expense.payment_account else None
+#                 ),
+
+#                 "status": expense.status,
+#                 "notes": expense.notes,
+#                 "extra_data": expense.extra_data,
+#                 "created_by": expense.created_by.username if expense.created_by else None,
+#                 "created_at": expense.created_at,
+#                 "updated_at": expense.updated_at,
+#             }
+#         })
 
 class ExpenseDetailView(APIView):
     permission_classes = [IsAuthenticated]
