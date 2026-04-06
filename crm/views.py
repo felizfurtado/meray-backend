@@ -1152,6 +1152,8 @@ class ExpenseCreateView(APIView):
             # =========================
             # CREATE EXPENSE
             # =========================
+            vat_raw = payload.get("vat_applicable")
+            vat_applicable = True if vat_raw == "True" else False
 
             expense = Expense.objects.create(
                 expense_number=payload.get("expense_number"),
@@ -1159,7 +1161,7 @@ class ExpenseCreateView(APIView):
                 vendor=vendor,  # ✅ FIXED
                 currency=payload.get("currency", "AED"),
                 amount=amount,
-                vat_applicable=payload.get("vat_applicable", True),
+                vat_applicable=vat_applicable,
                 account=expense_account,
                 payment_account=payment_account,
                 status=payload.get("status", "DRAFT"),
@@ -5697,7 +5699,7 @@ class ProfitLossReportView(APIView):
         journals = ManualJournal.objects.filter(
             date__gte=start_date,
             date__lte=end_date,
-            status="Posted"
+            status__iexact="posted"
         )
 
         revenue_accounts = {}
