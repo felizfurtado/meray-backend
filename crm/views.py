@@ -940,9 +940,10 @@ class AccountCreateView(APIView):
         parent = None
         if payload.get("parent_id"):
             parent = get_object_or_404(Account, id=payload["parent_id"])
+        
 
         account = Account.objects.create(
-            accountid=payload.get("accountid"),
+            accountid=payload["code"],
             code=payload["code"],
             name=payload["name"],
             type=payload["type"],
