@@ -6682,113 +6682,164 @@ class TaskDeleteView(APIView):
         })
 
 
+from django.utils import timezone
 
-
-
-from datetime import date
-class NotificationsView(APIView):
+class NotificationListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
 
-        today = date.today()
+        today = timezone.localdate()
 
-        # Ignore completed tasks
-        tasks = Task.objects.exclude(status="done")
+        # 🧹 Remove notifications of completed tasks
+        Notification.objects.filter(
+            user=request.user,
+            task__status="done"
+        ).delete()
 
-        notifications = []
+        tasks = Task.objects.filter(
+            assigned_to=request.user
+        ).exclude(status="done")
 
         for task in tasks:
 
-            task_date = task.due_date
+            message = None
 
-            # TASK DUE TODAY
-            if task_date == today:
-                notifications.append({
-                    "id": f"due_{task.id}",
-                    "type": "due_today",
-                    "title": task.title,
-                    "priority": task.priority,
-                    "due_date": task.due_date,
-                    "task_id": task.id
-                })
+            if task.due_date == today:
+                message = f"Task '{task.title}' is due today"
+
+            elif task.due_date < today:
+                message = f"Task '{task.title}' is overdue"
+
+            else:
                 continue
 
-            # OVERDUE TASK
-            if task_date < today:
-                notifications.append({
-                    "id": f"overdue_{task.id}",
-                    "type": "overdue",
-                    "title": task.title,
-                    "priority": "high",
-                    "due_date": task.due_date,
-                    "task_id": task.id
-                })
-                continue
+            # 🔥 IMPORTANT FIX
+            already_read = Notification.objects.filter(
+                user=request.user,
+                task=task,
+                message=message,
+                is_read=True
+            ).exists()
 
-            # RECURRING TASKS
-            if task.recurring:
+            exists = Notification.objects.filter(
+                user=request.user,
+                task=task,
+                message=message
+            ).exists()
 
-                # WEEKLY
-                if task.recurrence_pattern == "weekly":
-                    if task_date.weekday() == today.weekday():
+            # ✅ Only create if NOT read before
+            if not exists and not already_read:
+                Notification.objects.create(
+                    user=request.user,
+                    task=task,
+                    message=message
+                )
 
-                        notifications.append({
-                            "id": f"weekly_{task.id}",
-                            "type": "recurring_weekly",
-                            "title": task.title,
-                            "priority": task.priority,
-                            "due_date": task.due_date,
-                            "task_id": task.id
-                        })
+        # ❗ ONLY UNREAD notifications returned
+        notifications = Notification.objects.filter(
+            user=request.user,
+            is_read=False
+        ).order_by("-created_at")
 
-                # MONTHLY
-                if task.recurrence_pattern == "monthly":
-                    if task_date.day == today.day:
+        data = []
 
-                        notifications.append({
-                            "id": f"monthly_{task.id}",
-                            "type": "recurring_monthly",
-                            "title": task.title,
-                            "priority": task.priority,
-                            "due_date": task.due_date,
-                            "task_id": task.id
-                        })
+        for n in notifications:
+            data.append({
+                "id": n.id,
+                "message": n.message,
+                "is_read": n.is_read,
+                "created_at": n.created_at
+            })
 
-        return Response({
-            "success": True,
-            "count": len(notifications),
-            "notifications": notifications
-        })
+        return Response(data)
 
-from django.db.models import F
-class InventoryNotificationsView(APIView):
+
+class MarkNotificationRead(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+
+        try:
+            notification = Notification.objects.get(
+                id=pk,
+                user=request.user
+            )
+
+            notification.is_read = True
+            notification.save()
+
+            return Response({
+                "success": True,
+                "message": "Marked as read"
+            })
+
+        except Notification.DoesNotExist:
+            return Response({
+                "error": "Not found"
+            }, status=404)
+
+
+
+class InventoryNotificationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
 
-        notifications = []
+        items = InventoryItem.objects.all()
 
-        low_stock_items = InventoryItem.objects.filter(
-            current_quantity__lte=F("minimum_quantity")
-        )
+        for item in items:
 
-        for item in low_stock_items:
-            notifications.append({
-                "id": f"inventory_{item.id}",
-                "type": "low_stock",
-                "title": item.item_name,
-                "item_code": item.item_code,
-                "current_quantity": float(item.current_quantity),
-                "minimum_quantity": float(item.minimum_quantity),
-                "priority": "high"
+            # ✅ LOW STOCK CHECK
+            if item.current_quantity < item.minimum_quantity:
+
+                message = f"{item.item_name} is running low on stock (Qty: {item.current_quantity})"
+
+                # 🔍 check existing
+                exists = Notification.objects.filter(
+                    user=request.user,
+                    message=message
+                ).exists()
+
+                # 🔍 check already read
+                already_read = Notification.objects.filter(
+                    user=request.user,
+                    message=message,
+                    is_read=True
+                ).exists()
+
+                # ✅ create only if needed
+                if not exists and not already_read:
+                    Notification.objects.create(
+                        user=request.user,
+                        message=message
+                    )
+
+            else:
+                # 🧹 OPTIONAL: remove notification if stock is fixed
+                Notification.objects.filter(
+                    user=request.user,
+                    message__icontains=item.item_name
+                ).delete()
+
+        # ✅ FETCH ONLY UNREAD INVENTORY NOTIFICATIONS
+        notifications = Notification.objects.filter(
+            user=request.user,
+            is_read=False,
+            task__isnull=True
+        ).order_by("-created_at")
+
+        data = []
+
+        for n in notifications:
+            data.append({
+                "id": n.id,
+                "message": n.message,
+                "is_read": n.is_read,
+                "created_at": n.created_at
             })
 
-        return Response({
-            "success": True,
-            "count": len(notifications),
-            "notifications": notifications
-        })
+        return Response(data)
 
 
 class CustomerCSVImportView(APIView):

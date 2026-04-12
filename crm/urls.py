@@ -174,8 +174,9 @@ urlpatterns = [
     path("tasks/<int:pk>/mark-done/", TaskMarkAsDoneView.as_view()),
 
     #notifications
-    path("notifications/", NotificationsView.as_view()),
-    path("notifications/inventory/", InventoryNotificationsView.as_view()),
+    path("notifications/", NotificationListView.as_view()),
+    path("notifications/<int:pk>/read/", MarkNotificationRead.as_view()),
+    path("notifications/inventory/", InventoryNotificationView.as_view()),
 
     #migrations
     path("customers/import/", CustomerCSVImportView.as_view()),
